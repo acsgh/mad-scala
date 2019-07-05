@@ -1,0 +1,25 @@
+subprojects{
+    apply plugin: 'java'
+    apply plugin: 'scala'
+
+
+    sourceCompatibility = 11
+    targetCompatibility = 11
+
+    repositories {
+        mavenCentral()
+    }
+
+    task bundle(type: Copy, dependsOn: 'assemble') {
+        into "build/lib/libs"
+        from configurations.runtime
+    }
+
+    dependencies {
+        compile 'org.scala-lang:scala-library:2.12.8'
+        compile 'com.beachape:enumeratum_2.12:1.5.13'
+
+        compile 'org.slf4j:slf4j-api:1.7.21'
+    }
+
+}
