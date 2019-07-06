@@ -42,8 +42,8 @@ object DefaultExceptionHandler {
 
 class DefaultExceptionHandler extends ExceptionHandler {
   override def handle(requestContext: RequestContext, throwable: Throwable): Response = {
-    requestContext.responseBuilder.status(ResponseStatus.INTERNAL_SERVER_ERROR)
-    requestContext.responseBuilder.body(DefaultExceptionHandler.stacktraceToHtml(throwable))
-    requestContext.responseBuilder.build
+    requestContext.response.status(ResponseStatus.INTERNAL_SERVER_ERROR)
+    requestContext.response.body(DefaultExceptionHandler.stacktraceToHtml(throwable))
+    requestContext.response.build
   }
 }

@@ -26,7 +26,8 @@ sealed trait Routable extends DefaultFormats with DefaultParamHandling
 case class RequestContext
 (
   request: Request,
-  responseBuilder: ResponseBuilder
+  response: ResponseBuilder,
+  router: HttpRouter
 ) {
   def ofRoute(httpRoute: Route[_]): RequestContext = copy(request = request.ofRoute(httpRoute))
 }
@@ -52,7 +53,7 @@ trait HttpRouter extends LogSupport {
   private[router] def filter(route: Route[RequestFilter]): Unit = filters = filters ++ List(route)
 
   def process(httpRequest: Request): Response = {
-    val context = RequestContext(httpRequest, ResponseBuilder(this, httpRequest))
+    val context = RequestContext(httpRequest, ResponseBuilder(this, httpRequest), this)
     log.trace("Request {} {}", Array(httpRequest.method, httpRequest.uri): _*)
     val stopWatch = new StopWatch().start()
     try {

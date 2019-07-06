@@ -1,6 +1,6 @@
 package com.acs.scala.server.mad.router
 
-import com.acs.scala.server.mad.router.constant.{ProtocolVersion, RedirectStatus, RequestMethod, ResponseStatus}
+import com.acs.scala.server.mad.router.constant.{ProtocolVersion, RequestMethod, ResponseStatus}
 import com.acs.scala.server.mad.router.exception.UnexpectedContentTypeException
 
 trait BodyReader[T] {
@@ -64,13 +64,11 @@ case class Response
 ) extends Model
 
 object ResponseBuilder {
-  def apply(router: HttpRouter, request: Request) = new ResponseBuilder(router, request, request.protocolVersion)
+  def apply(router: HttpRouter, request: Request) = new ResponseBuilder(request.protocolVersion)
 }
 
 case class ResponseBuilder
 (
-  private var httpRouter: HttpRouter,
-  private var httpRequest: Request,
   private var protocolVersion: ProtocolVersion,
   private var responseStatus: ResponseStatus = ResponseStatus.OK,
   private var httpHeaders: Map[String, List[String]] = Map(),
@@ -111,17 +109,5 @@ case class ResponseBuilder
   }
 
   def build = Response(responseStatus, protocolVersion, httpHeaders, bodyBytes)
-
-  def redirect(url: String)(implicit requestContext: RequestContext): Response = redirect(url, RedirectStatus.FOUND)
-
-  def redirect(url: String, redirectStatus: RedirectStatus)(implicit requestContext: RequestContext): Response = {
-    requestContext.responseBuilder.header("Location", url)
-    httpRouter.getErrorResponse(requestContext, redirectStatus.status)
-  }
-
-  def error(errorCode: ResponseStatus)(implicit requestContext: RequestContext): Response = httpRouter.getErrorResponse(requestContext, errorCode)
-
-  def serve(url: String): Response = httpRouter.process(httpRequest.ofUri(url))
-
 }
 

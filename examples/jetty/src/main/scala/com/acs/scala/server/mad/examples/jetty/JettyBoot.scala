@@ -11,8 +11,12 @@ object JettyBoot extends JettyMadServer with Directives {
   get("/hello") { implicit context =>
     queryParam("name") { name =>
       responseHeader("Location", "asd") {
-        context.responseBuilder.body(s"Hello: $name").build
+        context.response.body(s"Hello: $name")
       }
     }
+  }
+
+  get("/hi") { implicit context =>
+    redirect("/hello?name=alberto")
   }
 }

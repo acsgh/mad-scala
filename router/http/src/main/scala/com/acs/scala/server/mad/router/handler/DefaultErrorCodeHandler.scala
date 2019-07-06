@@ -5,9 +5,9 @@ import com.acs.scala.server.mad.router.{ErrorCodeHandler, RequestContext, Respon
 
 class DefaultErrorCodeHandler extends ErrorCodeHandler {
   override def handle(requestContext: RequestContext, status: ResponseStatus): Response = {
-    requestContext.responseBuilder.status(status)
-    requestContext.responseBuilder.body(getStatusBody(status))
-    requestContext.responseBuilder.build
+    requestContext.response.status(status)
+    requestContext.response.body(getStatusBody(status))
+    requestContext.response.build
   }
 
   private def getStatusBody(status: ResponseStatus): String = {
