@@ -2,6 +2,7 @@ rootProject.name = 'mad-server'
 
 include ':utils'
 
+include ':core'
 include ':router:http'
 include ':router:websocket'
 
@@ -10,7 +11,6 @@ include ':converter:template:common'
 include ':converter:template:freemarker'
 include ':converter:template:thymeleaf'
 
-include ':provider:common'
 include ':provider:servlet'
 include ':provider:netty'
 include ':provider:jetty'

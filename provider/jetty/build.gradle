@@ -1,5 +1,4 @@
 dependencies {
-    compile project(":provider:common")
     compile project(":provider:servlet")
 
     compile 'org.eclipse.jetty:jetty-server:9.4.19.v20190610'

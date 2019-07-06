@@ -2,9 +2,9 @@ package com.acs.scala.server.mad.provider.jetty
 
 import java.util.concurrent.TimeUnit
 
-import com.acs.scala.server.mad.provider.common.App
+import com.acs.scala.server.mad.App
 import com.acs.scala.server.mad.provider.servlet.MadServerServlet
-import com.acs.scala.server.mad.router.MadServer
+import com.acs.scala.server.mad.router.HttpServer
 import org.eclipse.jetty.server.{Server, ServerConnector}
 import org.eclipse.jetty.util.ssl.SslContextFactory
 import org.eclipse.jetty.util.thread.QueuedThreadPool
@@ -17,7 +17,7 @@ case class SSLConfig
   truststorePassword: Option[String]
 )
 
-trait JettyMadServer extends App with MadServer {
+trait JettyMadServer extends App with HttpServer {
   protected val maxThreads: Option[Int] = None
   protected val minThreads: Option[Int] = None
   protected val threadTimeoutMillis: Option[Int] = None
@@ -25,19 +25,19 @@ trait JettyMadServer extends App with MadServer {
   protected val httpsPort: Option[Int] = None
   protected val sslConfig: Option[SSLConfig] = None
 
-  private var server: Option[Server] = None
+  private var jettyServer: Option[Server] = None
 
   onConfigure {
-    server = Some(createServer())
+    jettyServer = Some(createServer())
   }
 
   onStart {
-    server.foreach(_.start())
+    jettyServer.foreach(_.start())
   }
 
   onStop {
-    server.foreach(_.stop())
-    server = None
+    jettyServer.foreach(_.stop())
+    jettyServer = None
   }
 
   private def createServer(): Server = {
@@ -46,7 +46,7 @@ trait JettyMadServer extends App with MadServer {
     val idleTimeout = threadTimeoutMillis.filter(_ > 0).getOrElse(60000)
     val server = new Server(new QueuedThreadPool(max, min, idleTimeout))
 
-    val servlet = new MadServerServlet(this)
+    val servlet = new MadServerServlet(this.httpRouter)
     server.setHandler(new JettyHandler(servlet))
 
     httpPort.foreach { port =>

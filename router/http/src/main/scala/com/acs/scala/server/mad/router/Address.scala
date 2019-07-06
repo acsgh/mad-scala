@@ -4,6 +4,8 @@ import java.io.UnsupportedEncodingException
 import java.net.{URI, URISyntaxException, URLDecoder}
 import java.util.regex.{Matcher, Pattern}
 
+import com.acs.scala.server.mad.LogSupport
+
 object Address extends LogSupport {
 
   def build(rawUri: String): Address = try {

@@ -64,31 +64,48 @@ case class Response
 ) extends Model
 
 object ResponseBuilder {
-  def apply(router: MadServer, request: Request) = new ResponseBuilder(router, request, request.protocolVersion)
+  def apply(router: HttpRouter, request: Request) = new ResponseBuilder(router, request, request.protocolVersion)
 }
 
 case class ResponseBuilder
 (
-  private var httpRouter: MadServer,
+  private var httpRouter: HttpRouter,
   private var httpRequest: Request,
   private var protocolVersion: ProtocolVersion,
   private var responseStatus: ResponseStatus = ResponseStatus.OK,
   private var httpHeaders: Map[String, List[String]] = Map(),
   private var bodyBytes: Array[Byte] = Array[Byte]()
 ) {
-  def version(input: ProtocolVersion): ResponseBuilder = copy(protocolVersion = input)
+  def version(input: ProtocolVersion): ResponseBuilder = {
+    protocolVersion = input
+    this
+  }
 
-  def status(input: ResponseStatus): ResponseBuilder = copy(responseStatus = input)
+  def status(input: ResponseStatus): ResponseBuilder = {
+    responseStatus = input
+    this
+  }
 
-  def headers(input: Map[String, List[String]]): ResponseBuilder = copy(httpHeaders = input)
+  def headers(input: Map[String, List[String]]): ResponseBuilder = {
+    httpHeaders = input
+    this
+  }
 
-  def header(key: String, value: String): ResponseBuilder = copy(httpHeaders = httpHeaders + (key -> httpHeaders.getOrElse(key, List())))
+  def header(key: String, value: String): ResponseBuilder = {
+    httpHeaders = httpHeaders + (key -> httpHeaders.getOrElse(key, List()))
+    this
+  }
 
-  def body(input: Array[Byte]): ResponseBuilder = copy(bodyBytes = input)
+  def body(input: Array[Byte]): ResponseBuilder = {
+    bodyBytes = input
+    this
+  }
 
   def body[T](input: T)(implicit writer: BodyWriter[T]): ResponseBuilder = {
-    val resultWithHeader = if (httpHeaders.contains("Content-Type")) this else header("Content-Type", writer.contentType)
-    resultWithHeader.body(writer.write(input))
+    if (!httpHeaders.contains("Content-Type")) {
+      header("Content-Type", writer.contentType)
+    }
+    body(writer.write(input))
   }
 
   def build = Response(responseStatus, protocolVersion, httpHeaders, bodyBytes)

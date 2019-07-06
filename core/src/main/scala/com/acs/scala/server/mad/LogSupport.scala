@@ -1,4 +1,4 @@
-package com.acs.scala.server.mad.router
+package com.acs.scala.server.mad
 
 import org.slf4j.{Logger, LoggerFactory}
 

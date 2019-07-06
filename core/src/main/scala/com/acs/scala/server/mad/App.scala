@@ -1,8 +1,7 @@
-package com.acs.scala.server.mad.provider.common
+package com.acs.scala.server.mad
 
 import java.util.concurrent.atomic.AtomicBoolean
 
-import com.acs.scala.server.mad.router.LogSupport
 import com.acs.scala.server.mad.utils.{LogLevel, StopWatch}
 
 trait App extends LogSupport {

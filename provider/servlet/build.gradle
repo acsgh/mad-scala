@@ -1,6 +1,5 @@
 dependencies {
     compile project(":router:http")
-    compile project(":provider:common")
 
     compile 'javax.servlet:javax.servlet-api:4.0.1'
 }

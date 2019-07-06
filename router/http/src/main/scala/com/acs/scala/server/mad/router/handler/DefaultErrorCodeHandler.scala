@@ -13,10 +13,10 @@ class DefaultErrorCodeHandler extends ErrorCodeHandler {
   private def getStatusBody(status: ResponseStatus): String = {
     s"""<html>
        |<head>
-       |   <title>$status</title>
+       |   <title>${status.code } - ${status.message}</title>
        |</head>
        |<body>
-       |   <h1>$status</h1>
+       |   <h1>${status.code } - ${status.message}</h1>
        |</body>
        |</html>""".stripMargin
   }
