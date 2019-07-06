@@ -5,25 +5,32 @@ import com.acs.scala.server.mad.router.convertions.{BodyReader, DefaultFormats, 
 import com.acs.scala.server.mad.router.exception.UnexpectedContentTypeException
 import com.acs.scala.server.mad.router.model.Response
 
+object Main {
+  def main(args: Array[String]): Unit = {
 
-trait RequestDirectives extends DefaultParamHandling with DefaultFormats {
+    (1 to 15).foreach { i =>
+      var generics = List[String]()
+      var params = List[String]()
+      var action = List[String]()
+      var result = List[String]()
 
-  //  def requestQueryParam(name: String)(action: String => Response)(implicit context: RequestContext): Response = {
-  //    val param = context.request.queryParams(name).head
-  //    action(param)
-  //  }
+      (1 to i).foreach { k =>
+        generics = generics ++ List(s"P$k, R$k")
+        params = params ++ List(s"param$k: Param[P$k, R$k]")
+        action = action ++ List(s"R$k")
+        result = result ++ List(s"param$k.pathValue")
+      }
 
-  def requestQuery[P1, R1](param1: Param[P1, R1])(action: R1 => Response)(implicit context: RequestContext): Response = {
-    action(param1.queryValue)
+      println(
+        s"""def requestParam[${generics.mkString(",")}](${params.mkString(",")})(action: (${action.mkString(",")}) => Response)(implicit context: RequestContext): Response = {
+           |    action(${result.mkString(",")})
+           |}
+         """.stripMargin)
+    }
   }
+}
 
-  def requestQuery[T1, R1, T2, R2](param1: Param[T1, R1], param2: Param[T2, R2])(action: (R1, R2) => Response)(implicit context: RequestContext): Response = {
-    action(param1.queryValue, param2.queryValue)
-  }
-
-  def requestHeader[P1, R1](param1: Param[P1, R1])(action: R1 => Response)(implicit context: RequestContext): Response = {
-    action(param1.headerValue)
-  }
+trait RequestDirectives extends DefaultParamHandling with DefaultFormats with RequestParamsDirectives with RequestHeaderDirectives with RequestQueryDirectives {
 
   def requestBody(action: Array[Byte] => Response)(implicit context: RequestContext): Response = action(context.request.bodyBytes)
 
