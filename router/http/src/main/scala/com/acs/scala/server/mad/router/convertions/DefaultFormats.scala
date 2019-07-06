@@ -1,9 +1,10 @@
-package com.acs.scala.server.mad.router
+package com.acs.scala.server.mad.router.convertions
 
+import com.acs.scala.server.mad.router.{Response, ResponseBuilder}
 
 trait DefaultFormats {
 
-  implicit def builderToResponse(builder:ResponseBuilder) :Response = builder.build
+  implicit def builderToResponse(builder: ResponseBuilder): Response = builder.build
 
   implicit object HtmlBodyWriter extends BodyWriter[String] {
     override val contentType: String = "text/html"
@@ -12,6 +13,3 @@ trait DefaultFormats {
   }
 
 }
-
-
-

@@ -1,19 +1,8 @@
 package com.acs.scala.server.mad.router
 
 import com.acs.scala.server.mad.router.constant.{ProtocolVersion, RequestMethod, ResponseStatus}
+import com.acs.scala.server.mad.router.convertions.BodyReader
 import com.acs.scala.server.mad.router.exception.UnexpectedContentTypeException
-
-trait BodyReader[T] {
-  val contentTypes: Set[String] = Set()
-
-  def read(body: Array[Byte]): T
-}
-
-trait BodyWriter[T] {
-  val contentType: String = "text/html"
-
-  def write(body: T): Array[Byte]
-}
 
 trait Model {
   val protocolVersion: ProtocolVersion
@@ -84,6 +73,8 @@ case class ResponseBuilder
     this
   }
 
+  def hasHeader(name: String): Boolean = httpHeaders.contains(name)
+
   def headers(input: Map[String, List[String]]): ResponseBuilder = {
     httpHeaders = input
     this
@@ -99,13 +90,6 @@ case class ResponseBuilder
   def body(input: Array[Byte]): ResponseBuilder = {
     bodyBytes = input
     this
-  }
-
-  def body[T](input: T)(implicit writer: BodyWriter[T]): ResponseBuilder = {
-    if (!httpHeaders.contains("Content-Type")) {
-      header("Content-Type", writer.contentType)
-    }
-    body(writer.write(input))
   }
 
   def build = Response(responseStatus, protocolVersion, httpHeaders, bodyBytes)

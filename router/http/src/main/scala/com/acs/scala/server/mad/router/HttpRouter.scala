@@ -2,7 +2,7 @@ package com.acs.scala.server.mad.router
 
 import com.acs.scala.server.mad.LogSupport
 import com.acs.scala.server.mad.router.constant.{RequestMethod, ResponseStatus}
-import com.acs.scala.server.mad.router.directives.DefaultParamHandling
+import com.acs.scala.server.mad.router.directives.Directives
 import com.acs.scala.server.mad.router.exception.BadRequestException
 import com.acs.scala.server.mad.router.handler.{DefaultErrorCodeHandler, DefaultExceptionHandler}
 import com.acs.scala.server.mad.utils.{LogLevel, StopWatch}
@@ -13,15 +13,15 @@ private[router] case class Route[T <: Routable](uri: String, methods: Set[Reques
   private def validMethod(httpRequest: Request): Boolean = methods.isEmpty || methods.contains(httpRequest.method)
 }
 
-trait ErrorCodeHandler extends DefaultFormats with DefaultParamHandling {
-  def handle(requestContext: RequestContext, responseStatus: ResponseStatus): Response
+trait ErrorCodeHandler extends Directives {
+  def handle(responseStatus: ResponseStatus)(implicit requestContext: RequestContext): Response
 }
 
-trait ExceptionHandler extends DefaultFormats with DefaultParamHandling {
-  def handle(requestContext: RequestContext, throwable: Throwable): Response
+trait ExceptionHandler extends Directives {
+  def handle(throwable: Throwable)(implicit requestContext: RequestContext): Response
 }
 
-sealed trait Routable extends DefaultFormats with DefaultParamHandling
+sealed trait Routable extends Directives
 
 case class RequestContext
 (
@@ -64,7 +64,7 @@ trait HttpRouter extends LogSupport {
         getErrorResponse(context, ResponseStatus.BAD_REQUEST)
       case e: Exception =>
         log.error("Error during request", e)
-        exceptionHandler.handle(context, e)
+        exceptionHandler.handle(e)(context)
     } finally {
       stopWatch.printElapseTime("Request " + httpRequest.method + " " + httpRequest.uri, log, LogLevel.DEBUG)
     }
@@ -72,7 +72,7 @@ trait HttpRouter extends LogSupport {
 
   private[router] def getErrorResponse(context: RequestContext, responseStatus: ResponseStatus): Response = {
     val errorCodeHandler = errorCodeHandlers.getOrElse(responseStatus, defaultErrorCodeHandler)
-    errorCodeHandler.handle(context, responseStatus)
+    errorCodeHandler.handle(responseStatus)(context)
   }
 
   private def processFilters(context: RequestContext): Response = {

@@ -1,4 +1,4 @@
-package com.acs.scala.server.mad.router.directives
+package com.acs.scala.server.mad.router.convertions
 
 trait DefaultParamHandling {
 
@@ -11,6 +11,3 @@ trait DefaultParamHandling {
   }
 
 }
-
-
-

@@ -4,10 +4,10 @@ import com.acs.scala.server.mad.router.constant.ResponseStatus
 import com.acs.scala.server.mad.router.{ErrorCodeHandler, RequestContext, Response}
 
 class DefaultErrorCodeHandler extends ErrorCodeHandler {
-  override def handle(requestContext: RequestContext, status: ResponseStatus): Response = {
-    requestContext.response.status(status)
-    requestContext.response.body(getStatusBody(status))
-    requestContext.response.build
+  override def handle(status: ResponseStatus)(implicit requestContext: RequestContext): Response = {
+    responseStatus(status) {
+      responseBody(getStatusBody(status))
+    }
   }
 
   private def getStatusBody(status: ResponseStatus): String = {

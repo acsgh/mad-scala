@@ -9,9 +9,9 @@ object JettyBoot extends JettyMadServer with Directives {
   override protected val httpPort: Option[Int] = Some(7654)
 
   get("/hello") { implicit context =>
-    queryParam("name") { name =>
+    requestQueryParam("name") { name =>
       responseHeader("Location", "asd") {
-        context.response.body(s"Hello: $name")
+        responseBody(s"Hello: $name")
       }
     }
   }

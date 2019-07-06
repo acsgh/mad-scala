@@ -1,7 +1,7 @@
 package com.acs.scala.server.mad.router
 
 import com.acs.scala.server.mad.router.constant.RequestMethod
-import com.acs.scala.server.mad.router.directives.DefaultParamHandling
+import com.acs.scala.server.mad.router.convertions.{DefaultFormats, DefaultParamHandling}
 
 trait Routes extends DefaultFormats with DefaultParamHandling {
 
