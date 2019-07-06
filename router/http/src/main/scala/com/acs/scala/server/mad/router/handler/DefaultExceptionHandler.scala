@@ -1,16 +1,18 @@
 package com.acs.scala.server.mad.router.handler
 
 import com.acs.scala.server.mad.router.RequestContext
+import com.acs.scala.server.mad.router.exception.BadRequestException
 import com.acs.scala.server.mad.router.model.{Response, ResponseStatus}
 
 object DefaultExceptionHandler {
 
-  def stacktraceToHtml(throwable: Throwable): String = {
+  def stacktraceToHtml(status: ResponseStatus, throwable: Throwable): String = {
     var result = "<html>"
     result += "<head>"
-    result += "<title>Internal Server Error</title>"
+    result += s"<title>${status.code} - ${status.message}</title>"
     result += "</head>"
     result += "<body>"
+    result += s"<h2>${status.code} - ${status.message}</h2>"
     result += "<p>"
     result += stacktraceToHtmlInternal(throwable, causeThrowable = false)
     var cause = throwable.getCause
@@ -42,8 +44,9 @@ object DefaultExceptionHandler {
 
 class DefaultExceptionHandler extends ExceptionHandler {
   override def handle(throwable: Throwable)(implicit requestContext: RequestContext): Response = {
-    responseStatus(ResponseStatus.INTERNAL_SERVER_ERROR) {
-      responseBody(DefaultExceptionHandler.stacktraceToHtml(throwable))
+    val status = if (throwable.isInstanceOf[BadRequestException]) ResponseStatus.BAD_REQUEST else ResponseStatus.INTERNAL_SERVER_ERROR
+    responseStatus(status) {
+      responseBody(DefaultExceptionHandler.stacktraceToHtml(status, throwable))
     }
   }
 }

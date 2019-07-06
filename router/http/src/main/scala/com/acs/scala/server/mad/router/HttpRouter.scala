@@ -1,11 +1,11 @@
 package com.acs.scala.server.mad.router
 
-import com.acs.scala.server.mad.LogSupport
 import com.acs.scala.server.mad.router.directives.Directives
 import com.acs.scala.server.mad.router.exception.BadRequestException
 import com.acs.scala.server.mad.router.handler.{DefaultErrorCodeHandler, DefaultExceptionHandler, ErrorCodeHandler, ExceptionHandler}
 import com.acs.scala.server.mad.router.model._
 import com.acs.scala.server.mad.utils.{LogLevel, StopWatch}
+import com.acs.scala.server.mad.{LogSupport, URLSupport}
 
 case class RequestContext
 (
@@ -13,8 +13,10 @@ case class RequestContext
   response: ResponseBuilder,
   router: HttpRouter,
   route: Option[HttpRoute[_]] = None
-) {
+) extends URLSupport {
   def ofRoute(newRoute: HttpRoute[_]): RequestContext = copy(route = Some(newRoute))
+
+  val pathParams: Map[String, String] = route.map(r => extractPathParams(r.uri, request.uri)).getOrElse(Map())
 }
 
 trait RequestFilter extends Directives {
@@ -45,8 +47,8 @@ trait HttpRouter extends LogSupport {
       processFilters(context)
     } catch {
       case e: BadRequestException =>
-        log.debug("Invalid Parameter", e)
-        getErrorResponse(ResponseStatus.BAD_REQUEST, Some(e.message))
+        log.debug("Bad request", e)
+        exceptionHandler.handle(e)
       case e: Exception =>
         log.error("Error during request", e)
         exceptionHandler.handle(e)
