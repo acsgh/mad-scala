@@ -1,8 +1,8 @@
 package com.acs.scala.server.mad.router.directives
 
-import com.acs.scala.server.mad.router.constant.{ProtocolVersion, ResponseStatus}
+import com.acs.scala.server.mad.router.model.{ProtocolVersion, Response, ResponseStatus}
 import com.acs.scala.server.mad.router.convertions.{BodyWriter, DefaultFormats, DefaultParamHandling, ParamWriter}
-import com.acs.scala.server.mad.router.{RequestContext, Response}
+import com.acs.scala.server.mad.router.RequestContext
 
 trait ResponseDirectives extends DefaultParamHandling with DefaultFormats {
 

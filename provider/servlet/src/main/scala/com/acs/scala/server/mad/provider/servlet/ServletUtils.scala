@@ -1,11 +1,10 @@
 package com.acs.scala.server.mad.provider.servlet
 
 
-import java.nio.charset.Charset
+import java.net.URI
 import java.util
 
-import com.acs.scala.server.mad.router.constant.{ProtocolVersion, RequestMethod}
-import com.acs.scala.server.mad.router.{Address, Request, Response}
+import com.acs.scala.server.mad.router.model._
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 
 import scala.io.Source
@@ -26,17 +25,17 @@ object ServletUtils {
     getBody(request)
   )
 
-  private def getUri(request: HttpServletRequest): Address = {
+  private def getUri(request: HttpServletRequest): URI = {
     var result = request.getRequestURI
 
     if (request.getQueryString != null) {
       result += "?" + request.getQueryString
     }
 
-    Address.build(result)
+    URI.create(result)
   }
 
-  private def getBody(request: HttpServletRequest):Array[Byte] = Source.fromInputStream(request.getInputStream, "UTF-8").mkString.getBytes("UTF-8")
+  private def getBody(request: HttpServletRequest): Array[Byte] = Source.fromInputStream(request.getInputStream, "UTF-8").mkString.getBytes("UTF-8")
 
   private def getHeaders(request: HttpServletRequest) =
     toList(request.getHeaderNames).map(name => (name, toList(request.getHeaders(name)))).toMap

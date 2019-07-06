@@ -1,7 +1,7 @@
 package com.acs.scala.server.mad.router.handler
 
-import com.acs.scala.server.mad.router.constant.ResponseStatus
-import com.acs.scala.server.mad.router.{ExceptionHandler, RequestContext, Response}
+import com.acs.scala.server.mad.router.RequestContext
+import com.acs.scala.server.mad.router.model.{Response, ResponseStatus}
 
 object DefaultExceptionHandler {
 

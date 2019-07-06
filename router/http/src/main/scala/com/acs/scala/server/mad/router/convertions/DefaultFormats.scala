@@ -1,6 +1,6 @@
 package com.acs.scala.server.mad.router.convertions
 
-import com.acs.scala.server.mad.router.{Response, ResponseBuilder}
+import com.acs.scala.server.mad.router.model.{Response, ResponseBuilder}
 
 trait DefaultFormats {
 

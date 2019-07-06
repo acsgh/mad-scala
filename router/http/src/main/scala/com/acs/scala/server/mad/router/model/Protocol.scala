@@ -1,4 +1,4 @@
-package com.acs.scala.server.mad.router.constant
+package com.acs.scala.server.mad.router.model
 
 import enumeratum._
 

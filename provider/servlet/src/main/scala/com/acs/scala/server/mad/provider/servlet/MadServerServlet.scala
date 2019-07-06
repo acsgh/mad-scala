@@ -1,8 +1,8 @@
 package com.acs.scala.server.mad.provider.servlet
 
 import com.acs.scala.server.mad.LogSupport
-import com.acs.scala.server.mad.router.constant.ResponseStatus
-import com.acs.scala.server.mad.router.{HttpRouter, Response}
+import com.acs.scala.server.mad.router.model.{Response, ResponseStatus}
+import com.acs.scala.server.mad.router.HttpRouter
 import javax.servlet._
 import javax.servlet.http.{HttpServlet, HttpServletRequest, HttpServletResponse}
 

@@ -1,47 +1,27 @@
-package com.acs.scala.server.mad.router
+package com.acs.scala.server.mad.router.model
 
-import com.acs.scala.server.mad.router.constant.{ProtocolVersion, RequestMethod, ResponseStatus}
-import com.acs.scala.server.mad.router.convertions.BodyReader
-import com.acs.scala.server.mad.router.exception.UnexpectedContentTypeException
+import java.net.URI
 
-trait Model {
-  val protocolVersion: ProtocolVersion
-  val headers: Map[String, List[String]]
-}
+import com.acs.scala.server.mad.URLSupport
+import com.acs.scala.server.mad.router.HttpRouter
 
 case class Request
 (
   method: RequestMethod,
   remoteAddress: String,
-  private[router] val address: Address,
+  uri: URI,
   protocolVersion: ProtocolVersion,
   headers: Map[String, List[String]],
   bodyBytes: Array[Byte]
-) extends Model {
+) extends URLSupport {
 
-  val uri: String = address.uri.getPath
+  val path: String = uri.getPath
 
-  val fullUri: String = address.uri.toString
+  val fullUri: String = uri.toString
 
-  val pathParams: Params = address.pathParams
+  val queryParams: Map[String, List[String]] = extractQueryParam(uri)
 
-  val queryParams: Params = address.queryParams
-
-  def entity[T](implicit reader: BodyReader[T]): T = {
-    val contentType = headers("Content-Type").head
-
-    if (!validContentType(reader.contentTypes, contentType)) {
-      throw UnexpectedContentTypeException(contentType)
-    }
-
-    reader.read(bodyBytes)
-  }
-
-  private[router] def ofUri(uri: String) = copy(address = Address.build(uri))
-
-  private[router] def ofRoute(httpRoute: Route[_]) = copy(address = address.ofRoute(httpRoute.uri))
-
-  private def validContentType(contentTypes: Set[String], contentType: String) = contentTypes.isEmpty || contentTypes.exists(t => t.equalsIgnoreCase(contentType))
+  private[router] def validContentType(contentTypes: Set[String], contentType: String) = contentTypes.isEmpty || contentTypes.exists(t => t.equalsIgnoreCase(contentType))
 }
 
 case class Response
@@ -50,7 +30,7 @@ case class Response
   protocolVersion: ProtocolVersion,
   headers: Map[String, List[String]],
   bodyBytes: Array[Byte]
-) extends Model
+)
 
 object ResponseBuilder {
   def apply(router: HttpRouter, request: Request) = new ResponseBuilder(request.protocolVersion)
