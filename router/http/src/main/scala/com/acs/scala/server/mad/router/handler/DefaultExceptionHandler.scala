@@ -1,7 +1,7 @@
 package com.acs.scala.server.mad.router.handler
 
 import com.acs.scala.server.mad.router.constant.ResponseStatus
-import com.acs.scala.server.mad.router.{ExceptionHandler, Request, Response, ResponseBuilder}
+import com.acs.scala.server.mad.router.{ExceptionHandler, Request, RequestContext, Response, ResponseBuilder}
 
 object DefaultExceptionHandler {
 
@@ -41,20 +41,9 @@ object DefaultExceptionHandler {
 }
 
 class DefaultExceptionHandler extends ExceptionHandler {
-  override def handle(request: Request, responseBuilder: ResponseBuilder, throwable: Throwable): Response = {
-    responseBuilder.status(ResponseStatus.INTERNAL_SERVER_ERROR)
-    responseBuilder.body(getStatusBody(ResponseStatus.INTERNAL_SERVER_ERROR, throwable))
-    responseBuilder.build
-  }
-
-  private def getStatusBody(status: ResponseStatus, throwable: Throwable): String = {
-    s"""<html>
-       |<head>
-       |   <title>${status.code } - ${status.message}</title>
-       |</head>
-       |<body>
-       |   <h1>${DefaultExceptionHandler.stacktraceToHtml(throwable)}</h1>
-       |</body>
-       |</html>""".stripMargin
+  override def handle(requestContext: RequestContext, throwable: Throwable): Response = {
+    requestContext.responseBuilder.status(ResponseStatus.INTERNAL_SERVER_ERROR)
+    requestContext.responseBuilder.body(DefaultExceptionHandler.stacktraceToHtml(throwable))
+    requestContext.responseBuilder.build
   }
 }

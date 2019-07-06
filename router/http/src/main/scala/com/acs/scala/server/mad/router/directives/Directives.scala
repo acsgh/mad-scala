@@ -1,15 +1,16 @@
 package com.acs.scala.server.mad.router.directives
 
-import com.acs.scala.server.mad.router.{Request, Response, ResponseBuilder}
+import com.acs.scala.server.mad.router.{RequestContext, Response}
 
 trait Directives {
-  def pass: Directive0 = Directive.Empty
 
-  def provide[T](value: T): Directive1[T] = tprovide(Tuple1(value))
+  def queryParam(name: String)(action: String => Response)(implicit context: RequestContext): Response = {
+    val param = context.request.queryParams.get(name)
+    action(param)
+  }
 
-  def tprovide[L: Tuple](values: L): Directive[L] = Directive { _(values) }
-
-  def header(name:String)(action: String => Response)(implicit request:Request) : Response
-
-  def query(name:String)(action: String => Response) : Response
+  def responseHeader[T](name: String, value:T)(action: => Response)(implicit context: RequestContext, converter:ParamWriter[T]): Response = {
+    context.responseBuilder.header(name, converter.write(value))
+    action
+  }
 }

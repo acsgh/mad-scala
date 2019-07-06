@@ -92,7 +92,9 @@ case class ResponseBuilder
   }
 
   def header(key: String, value: String): ResponseBuilder = {
-    httpHeaders = httpHeaders + (key -> httpHeaders.getOrElse(key, List()))
+    val previousHeaders: List[String] = httpHeaders.getOrElse(key, List())
+    val currentHeaders: List[String] = previousHeaders ++ List(value)
+    httpHeaders = httpHeaders + (key -> currentHeaders)
     this
   }
 
@@ -110,12 +112,14 @@ case class ResponseBuilder
 
   def build = Response(responseStatus, protocolVersion, httpHeaders, bodyBytes)
 
-  def redirect(url: String): Response = redirect(url, RedirectStatus.FOUND)
+  def redirect(url: String)(implicit requestContext: RequestContext): Response = redirect(url, RedirectStatus.FOUND)
 
-  def redirect(url: String, redirectStatus: RedirectStatus): Response =
-    httpRouter.getErrorResponse(httpRequest, header("Location", url), redirectStatus.status)
+  def redirect(url: String, redirectStatus: RedirectStatus)(implicit requestContext: RequestContext): Response = {
+    requestContext.responseBuilder.header("Location", url)
+    httpRouter.getErrorResponse(requestContext, redirectStatus.status)
+  }
 
-  def error(errorCode: ResponseStatus): Response = httpRouter.getErrorResponse(httpRequest, this, errorCode)
+  def error(errorCode: ResponseStatus)(implicit requestContext: RequestContext): Response = httpRouter.getErrorResponse(requestContext, errorCode)
 
   def serve(url: String): Response = httpRouter.process(httpRequest.ofUri(url))
 
