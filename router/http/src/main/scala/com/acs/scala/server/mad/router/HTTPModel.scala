@@ -94,7 +94,7 @@ case class HTTPResponseBuilder
 
   def body[T](input: T)(implicit writer: BodyWriter[T]): HTTPResponseBuilder = {
     val resultWithHeader = if(httpHeaders.contains("Content-Type")) this else header("Content-Type", writer.contentType)
-    resultWithHeader.body(writer(input))
+    resultWithHeader.body(writer.write(input))
   }
 
   def build = HTTPResponse(responseStatus, protocolVersion, httpHeaders, bodyBytes)
