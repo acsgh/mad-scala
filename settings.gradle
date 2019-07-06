@@ -11,9 +11,9 @@ include ':converter:template:freemarker'
 include ':converter:template:thymeleaf'
 
 include ':provider:common'
+include ':provider:servlet'
 include ':provider:netty'
 include ':provider:jetty'
-include ':provider:sevlet'
 
 include ':examples:netty'
 include ':examples:jetty'

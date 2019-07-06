@@ -4,22 +4,22 @@ import java.io.UnsupportedEncodingException
 import java.net.{URI, URISyntaxException, URLDecoder}
 import java.util.regex.{Matcher, Pattern}
 
-object HTTPAddress extends LogSupport {
+object Address extends LogSupport {
 
-  def build(rawUri: String): HTTPAddress = try {
+  def build(rawUri: String): Address = try {
     val uri = new URI(rawUri)
-    new HTTPAddress(uri, new HTTPParams, extractQueryParam(uri.getQuery))
+    new Address(uri, new Params, extractQueryParam(uri.getQuery))
   } catch {
     case e: URISyntaxException =>
       throw new RuntimeException(e)
   }
 
-  private def extractQueryParam(query: String): HTTPParams = {
+  private def extractQueryParam(query: String): Params = {
     if (query == null) {
-      HTTPParams()
+      Params()
     } else {
-      val params = query.split("&").flatMap(toMapEntry).toMap
-      HTTPParams(params)
+      val params = query.split("&").flatMap(toMapEntry).groupBy(_._1).mapValues(_.map(_._2).toList)
+      Params(params)
     }
   }
 
@@ -39,22 +39,22 @@ object HTTPAddress extends LogSupport {
 
 }
 
-case class HTTPAddress
+case class Address
 (
   uri: URI,
-  pathParams: HTTPParams,
-  queryParams: HTTPParams
+  pathParams: Params,
+  queryParams: Params
 ) {
 
-  private[router] def ofRoute(routeUri: String): HTTPAddress = new HTTPAddress(uri, extractPathParams(routeUri), queryParams)
+  private[router] def ofRoute(routeUri: String): Address = new Address(uri, extractPathParams(routeUri), queryParams)
 
   private[router] def matchUrl(routeUri: String): Boolean = {
     val pattern = getPattern(routeUri)
     Pattern.matches(pattern, uri.getPath)
   }
 
-  private def extractPathParams(routeUri: String): HTTPParams = {
-    var params = Map[String, String]()
+  private def extractPathParams(routeUri: String): Params = {
+    var params = Map[String, List[String]]()
 
     if (matchUrl(routeUri)) {
       val names = getParamNames(routeUri)
@@ -64,11 +64,15 @@ case class HTTPAddress
 
       if (matcher.find) {
         (1 to matcher.groupCount()).foreach { i =>
-          params = params + (names(i - 1) -> urlDecode(matcher.group(i)))
+          val name: String = names(i - 1)
+          val previousValues: List[String] = params.getOrElse(name, List())
+          val currentValue: String = urlDecode(matcher.group(i))
+          val nextValues: List[String] = currentValue :: previousValues
+          params = params + (name -> nextValues)
         }
       }
     }
-    HTTPParams(params)
+    Params(params)
   }
 
   private def urlDecode(value: String): String = {
