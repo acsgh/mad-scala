@@ -19,23 +19,23 @@ case class RequestContext
   val pathParams: Map[String, String] = route.map(r => extractPathParams(r.uri, request.uri)).getOrElse(Map())
 }
 
-trait RequestFilter extends Directives {
-  def handle(requestContext: RequestContext, nextJump: () => Response): Response
+trait RequestFilter extends LogSupport with Directives {
+  def handle(nextJump: () => Response)(implicit requestContext: RequestContext): Response
 }
 
-trait RequestHandler extends Directives {
-  def handle(requestContext: RequestContext): Response
+trait RequestServlet extends LogSupport with Directives {
+  def handle(implicit requestContext: RequestContext): Response
 }
 
 trait HttpRouter extends LogSupport {
 
   var filters: List[HttpRoute[RequestFilter]] = List()
-  var servlet: List[HttpRoute[RequestHandler]] = List()
+  var servlet: List[HttpRoute[RequestServlet]] = List()
   val errorCodeHandlers: Map[ResponseStatus, ErrorCodeHandler] = Map()
   val defaultErrorCodeHandler: ErrorCodeHandler = new DefaultErrorCodeHandler()
   val exceptionHandler: ExceptionHandler = new DefaultExceptionHandler()
 
-  private[router] def servlet(route: HttpRoute[RequestHandler]): Unit = servlet = servlet ++ List(route)
+  private[router] def servlet(route: HttpRoute[RequestServlet]): Unit = servlet = servlet ++ List(route)
 
   private[router] def filter(route: HttpRoute[RequestFilter]): Unit = filters = filters ++ List(route)
 
@@ -73,7 +73,7 @@ trait HttpRouter extends LogSupport {
       log.trace("Filter {} {}", Array(currentFilter.methods, currentFilter.uri): _*)
       val stopWatch = new StopWatch().start()
       try {
-        currentFilter.handler.handle(context.ofRoute(currentFilter), runFilter(context, nextFilters.tail))
+        currentFilter.handler.handle(runFilter(context, nextFilters.tail))(context.ofRoute(currentFilter))
       } finally {
         stopWatch.printElapseTime("Filter " + currentFilter.methods + " " + currentFilter.uri, log, LogLevel.TRACE)
       }

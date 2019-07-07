@@ -2,7 +2,6 @@ package com.acs.scala.server.mad.provider.jetty
 
 import java.util.concurrent.TimeUnit
 
-import com.acs.scala.server.mad.App
 import com.acs.scala.server.mad.provider.servlet.MadServerServlet
 import com.acs.scala.server.mad.router.HttpServer
 import org.eclipse.jetty.server.{Server, ServerConnector}
@@ -17,7 +16,7 @@ case class SSLConfig
   truststorePassword: Option[String]
 )
 
-trait JettyMadServer extends App with HttpServer {
+trait JettyMadServer extends HttpServer {
   protected val maxThreads: Option[Int] = None
   protected val minThreads: Option[Int] = None
   protected val threadTimeoutMillis: Option[Int] = None

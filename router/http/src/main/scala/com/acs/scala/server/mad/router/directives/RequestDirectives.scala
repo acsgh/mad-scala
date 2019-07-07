@@ -2,10 +2,9 @@ package com.acs.scala.server.mad.router.directives
 
 import com.acs.scala.server.mad.router.RequestContext
 import com.acs.scala.server.mad.router.convertions.{BodyReader, DefaultFormats, DefaultParamHandling}
-import com.acs.scala.server.mad.router.exception.UnexpectedContentTypeException
-import com.acs.scala.server.mad.router.model.Response
+import com.acs.scala.server.mad.router.model.{Response, ResponseStatus}
 
-trait RequestDirectives extends DefaultParamHandling with DefaultFormats with RequestParamsDirectives with RequestHeaderDirectives with RequestQueryDirectives {
+trait RequestDirectives extends DefaultParamHandling with DefaultFormats with RequestParamsDirectives with RequestHeaderDirectives with RequestQueryDirectives with RouteDirectives {
 
   def requestBody(action: Array[Byte] => Response)(implicit context: RequestContext): Response = action(context.request.bodyBytes)
 
@@ -13,10 +12,11 @@ trait RequestDirectives extends DefaultParamHandling with DefaultFormats with Re
     requestHeader("Content-Type") { contentType =>
 
       if (!context.request.validContentType(reader.contentTypes, contentType)) {
-        throw new UnexpectedContentTypeException(contentType)
+        error(ResponseStatus.UNSUPPORTED_MEDIA_TYPE)
+      } else {
+        action(reader.read(context.request.bodyBytes))
       }
 
-      action(reader.read(context.request.bodyBytes))
     }
   }
 }

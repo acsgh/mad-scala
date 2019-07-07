@@ -6,8 +6,8 @@ include ':core'
 include ':router:http'
 include ':router:websocket'
 
-include ':converter:json'
-include ':converter:template:common'
+include ':converter:json:jackson'
+include ':converter:json:spray'
 include ':converter:template:freemarker'
 include ':converter:template:thymeleaf'
 

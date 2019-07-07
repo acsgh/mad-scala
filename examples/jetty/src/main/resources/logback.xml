@@ -8,7 +8,7 @@
         </encoder>
     </appender>
 
-    <logger name="com.acs.wave" level="DEBUG"/>
+    <logger name="com.acs" level="DEBUG"/>
 
 
     <root level="info">

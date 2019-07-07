@@ -1,0 +1,5 @@
+dependencies {
+    compile project(":router:http")
+
+    compile 'org.freemarker:freemarker:2.3.28'
+}

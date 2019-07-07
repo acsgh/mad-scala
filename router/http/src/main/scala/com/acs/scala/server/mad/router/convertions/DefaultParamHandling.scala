@@ -1,7 +1,7 @@
 package com.acs.scala.server.mad.router.convertions
 
 import com.acs.scala.server.mad.router.RequestContext
-import com.acs.scala.server.mad.router.directives.{ListParam, OptionParam, Param, SingleParam}
+import com.acs.scala.server.mad.router.directives._
 
 trait DefaultParamHandling {
 
@@ -28,27 +28,31 @@ trait DefaultParamHandling {
 
     def opt: OptionParam[String] = OptionParam[String](name)
 
+    def default(defaultValue: String): DefaultParam[String] = DefaultParam[String](name, defaultValue)
+
     def list: ListParam[String] = ListParam[String](name)
   }
 
   implicit class SingleParamEnhanced[P](param: SingleParam[P])(implicit reader: ParamReader[P]) {
     def opt: OptionParam[P] = OptionParam[P](param.name)
 
+    def default(defaultValue: P): DefaultParam[P] = DefaultParam[P](param.name, defaultValue)
+
     def list: ListParam[P] = ListParam[P](param.name)
   }
 
   implicit class ParamsEnhanced[P, R](param: Param[P, R]) {
-    def queryValue(implicit context:RequestContext): R = {
+    def queryValue(implicit context: RequestContext): R = {
       val value = context.request.queryParams.getOrElse(param.name, List())
       param("Query", value)
     }
 
-    def pathValue(implicit context:RequestContext): R = {
+    def pathValue(implicit context: RequestContext): R = {
       val value = context.pathParams.get(param.name).toList
       param("Path", value)
     }
 
-    def headerValue(implicit context:RequestContext): R = {
+    def headerValue(implicit context: RequestContext): R = {
       val value = context.request.headers.getOrElse(param.name, List())
       param("Header", value)
     }
