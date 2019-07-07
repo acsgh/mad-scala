@@ -2,11 +2,11 @@ package com.acs.scala.server.mad.converter.json.jackson
 
 import java.io.ByteArrayOutputStream
 
-import com.acs.scala.server.mad.router.RequestContext
-import com.acs.scala.server.mad.router.convertions.{BodyReader, BodyWriter}
-import com.acs.scala.server.mad.router.directives.Directives
-import com.acs.scala.server.mad.router.exception.BadRequestException
-import com.acs.scala.server.mad.router.model.Response
+import com.acs.scala.server.mad.router.http.RequestContext
+import com.acs.scala.server.mad.router.http.convertions.{BodyReader, BodyWriter}
+import com.acs.scala.server.mad.router.http.directives.Directives
+import com.acs.scala.server.mad.router.http.exception.BadRequestException
+import com.acs.scala.server.mad.router.http.model.Response
 
 trait JacksonDirectives {
   directives: Directives =>

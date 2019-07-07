@@ -2,9 +2,9 @@ package com.acs.scala.server.mad.converter.template.freemarker
 
 import java.io.{ByteArrayOutputStream, PrintWriter}
 
-import com.acs.scala.server.mad.router.RequestContext
-import com.acs.scala.server.mad.router.directives.Directives
-import com.acs.scala.server.mad.router.model.Response
+import com.acs.scala.server.mad.router.http.RequestContext
+import com.acs.scala.server.mad.router.http.directives.Directives
+import com.acs.scala.server.mad.router.http.model.Response
 
 trait FreemarkerDirectives {
   directives: Directives =>

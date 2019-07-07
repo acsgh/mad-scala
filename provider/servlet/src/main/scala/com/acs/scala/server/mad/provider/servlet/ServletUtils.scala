@@ -4,7 +4,7 @@ package com.acs.scala.server.mad.provider.servlet
 import java.net.URI
 import java.util
 
-import com.acs.scala.server.mad.router.model._
+import com.acs.scala.server.mad.router.http.model._
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 
 import scala.io.Source

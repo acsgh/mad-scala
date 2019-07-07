@@ -1,0 +1,6 @@
+dependencies {
+    compile project(":router:http")
+
+    compile 'io.netty:netty-all:4.1.37.Final'
+}
+

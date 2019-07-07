@@ -1,6 +1,6 @@
 package com.acs.scala.server.mad.converter.json.jackson
 
-import com.acs.scala.server.mad.router.HttpServer
+import com.acs.scala.server.mad.router.http.HttpServer
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 

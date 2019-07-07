@@ -1,6 +1,6 @@
 package com.acs.scala.server.mad.converter.template.thymeleaf
 
-import com.acs.scala.server.mad.router.HttpServer
+import com.acs.scala.server.mad.router.http.HttpServer
 import org.thymeleaf.TemplateEngine
 import org.thymeleaf.templatemode.TemplateMode
 import org.thymeleaf.templateresolver.{ClassLoaderTemplateResolver, FileTemplateResolver}

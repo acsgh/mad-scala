@@ -4,10 +4,10 @@ import java.util.concurrent.atomic.AtomicLong
 
 import com.acs.scala.server.mad.converter.json.jackson.JacksonHttpServer
 import com.acs.scala.server.mad.converter.template.thymeleaf.ThymeleafHttpServer
-import com.acs.scala.server.mad.provider.jetty.JettyMadServer
-import com.acs.scala.server.mad.router.model.ResponseStatus
+import com.acs.scala.server.mad.provider.jetty.JettyServer
+import com.acs.scala.server.mad.router.http.model.ResponseStatus
 
-object JettyBoot extends JettyMadServer with ThymeleafHttpServer with JacksonHttpServer {
+object JettyBoot extends JettyServer with ThymeleafHttpServer with JacksonHttpServer {
   override val name: String = "Jetty Boot Example"
 
   override protected val httpPort: Option[Int] = Some(7654)

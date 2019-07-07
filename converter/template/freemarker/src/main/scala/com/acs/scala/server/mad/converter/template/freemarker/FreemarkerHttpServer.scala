@@ -2,7 +2,7 @@ package com.acs.scala.server.mad.converter.template.freemarker
 
 import java.io.File
 
-import com.acs.scala.server.mad.router.HttpServer
+import com.acs.scala.server.mad.router.http.HttpServer
 import freemarker.cache.ClassTemplateLoader
 import freemarker.template.{Configuration, TemplateExceptionHandler}
 

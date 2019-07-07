@@ -1,8 +1,11 @@
 dependencies {
     compile project(":provider:servlet")
+    compile project(":router:websocket")
 
     compile 'org.eclipse.jetty:jetty-server:9.4.19.v20190610'
     compile 'org.eclipse.jetty:jetty-webapp:9.4.19.v20190610'
+//    compile 'org.eclipse.jetty.websocket:websocket-server:9.4.19.v20190610'
+//    compile 'org.eclipse.jetty.websocket:websocket-servlet:9.3.6.v20151106'
 
 }
 
