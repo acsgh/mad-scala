@@ -5,7 +5,11 @@ import com.acsgh.scala.mad.router.ws.handler.{DefaultHandler, WSHandler}
 import com.acsgh.scala.mad.router.ws.model.{WSRequest, WSResponse, WSResponseBuilder}
 import com.acsgh.scala.mad.utils.{LogLevel, StopWatch}
 
-private[router] case class WSRoute(uri: String, subprotocol: String)
+private[router] case class WSRoute
+(
+  uri: String,
+  subprotocol: Option[String]
+)
 
 case class WSRequestContext
 (
@@ -16,12 +20,12 @@ case class WSRequestContext
 
 trait WSRouter extends LogSupport {
 
-  protected var wsRoutes: Map[WSRoute, WSHandler] = Map()
+  private[mad] var wsRoutes: Map[WSRoute, WSHandler] = Map()
   protected val defaultHandler: WSHandler = new DefaultHandler()
 
   private[ws] def route(route: WSRoute)(handler: WSHandler): Unit = wsRoutes = wsRoutes + (route -> handler)
 
-  def process(request: WSRequest): WSResponse = {
+  def process(request: WSRequest): Option[WSResponse] = {
     implicit val context: WSRequestContext = WSRequestContext(request, WSResponseBuilder(request))
     log.trace("WS Request {} {}", Array(request.uri, request.subprotocol): _*)
     val stopWatch = new StopWatch().start()

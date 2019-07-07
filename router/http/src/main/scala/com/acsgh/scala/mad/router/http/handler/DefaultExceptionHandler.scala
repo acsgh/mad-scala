@@ -6,14 +6,8 @@ import com.acsgh.scala.mad.router.http.model.{Response, ResponseStatus}
 
 object DefaultExceptionHandler {
 
-  def stacktraceToHtml(status: ResponseStatus, throwable: Throwable): String = {
-    var result = "<html>"
-    result += "<head>"
-    result += s"<title>${status.code} - ${status.message}</title>"
-    result += "</head>"
-    result += "<body>"
-    result += s"<h2>${status.code} - ${status.message}</h2>"
-    result += "<p>"
+  def stacktraceToHtml(throwable: Throwable): String = {
+    var result = "<p>"
     result += stacktraceToHtmlInternal(throwable, causeThrowable = false)
     var cause = throwable.getCause
 
@@ -23,8 +17,6 @@ object DefaultExceptionHandler {
     }
 
     result += "</p>"
-    result += "</body>"
-    result += "</html>"
     result
   }
 
@@ -42,11 +34,23 @@ object DefaultExceptionHandler {
   }
 }
 
-class DefaultExceptionHandler extends ExceptionHandler {
+class DefaultExceptionHandler(productionMode: => Boolean) extends ExceptionHandler {
   override def handle(throwable: Throwable)(implicit requestContext: RequestContext): Response = {
     val status = if (throwable.isInstanceOf[BadRequestException]) ResponseStatus.BAD_REQUEST else ResponseStatus.INTERNAL_SERVER_ERROR
     responseStatus(status) {
-      responseBody(DefaultExceptionHandler.stacktraceToHtml(status, throwable))
+      responseBody(getStatusBody(status, throwable))
     }
+  }
+
+  private def getStatusBody(status: ResponseStatus, throwable: Throwable): String = {
+    s"""<html>
+       |<head>
+       |   <title>${status.code} - ${status.message}</title>
+       |</head>
+       |<body>
+       |   <h2>${status.code} - ${status.message}</h2>
+       |   ${if (productionMode) "" else DefaultExceptionHandler.stacktraceToHtml(throwable)}
+       |</body>
+       |</html>""".stripMargin
   }
 }

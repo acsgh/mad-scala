@@ -6,7 +6,7 @@ sealed trait WSRequest {
   val id: String
   val remoteAddress: String
   val uri: URI
-  val subprotocol: String
+  val subprotocol: Option[String]
 }
 
 case class WSRequestConnect
@@ -14,7 +14,7 @@ case class WSRequestConnect
   id: String,
   remoteAddress: String,
   uri: URI,
-  subprotocol: String
+  subprotocol: Option[String]
 ) extends WSRequest
 
 case class WSRequestDisconnect
@@ -22,7 +22,7 @@ case class WSRequestDisconnect
   id: String,
   remoteAddress: String,
   uri: URI,
-  subprotocol: String
+  subprotocol: Option[String]
 ) extends WSRequest
 
 case class WSRequestBinary
@@ -30,7 +30,7 @@ case class WSRequestBinary
   id: String,
   remoteAddress: String,
   uri: URI,
-  subprotocol: String,
+  subprotocol: Option[String],
   bytes: Array[Byte]
 ) extends WSRequest
 
@@ -39,6 +39,6 @@ case class WSRequestText
   id: String,
   remoteAddress: String,
   uri: URI,
-  subprotocol: String,
+  subprotocol: Option[String],
   text: String
 ) extends WSRequest

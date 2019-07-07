@@ -15,5 +15,5 @@ include ':provider:servlet'
 include ':provider:netty'
 include ':provider:jetty'
 
-//include ':examples:netty'
+include ':examples:netty'
 include ':examples:jetty'

@@ -1,5 +1,6 @@
 dependencies {
     compile project(":router:http")
+    compile project(":router:websocket")
 
     compile 'io.netty:netty-all:4.1.37.Final'
 }

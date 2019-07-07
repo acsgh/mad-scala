@@ -5,7 +5,7 @@ import com.acsgh.scala.mad.router.http.exception.BadRequestException
 import com.acsgh.scala.mad.router.http.handler.{DefaultErrorCodeHandler, DefaultExceptionHandler, ErrorCodeHandler, ExceptionHandler}
 import com.acsgh.scala.mad.router.http.model.{Request, Response, ResponseBuilder, ResponseStatus}
 import com.acsgh.scala.mad.utils.{LogLevel, StopWatch}
-import com.acsgh.scala.mad.{LogSupport, URLSupport}
+import com.acsgh.scala.mad.{LogSupport, ProductionInfo, URLSupport}
 
 case class RequestContext
 (
@@ -27,13 +27,13 @@ trait RequestServlet extends LogSupport with Directives {
   def handle(implicit requestContext: RequestContext): Response
 }
 
-trait HttpRouter extends LogSupport {
+trait HttpRouter extends LogSupport with ProductionInfo {
 
   protected var filters: List[HttpRoute[RequestFilter]] = List()
   protected var servlet: List[HttpRoute[RequestServlet]] = List()
   protected val errorCodeHandlers: Map[ResponseStatus, ErrorCodeHandler] = Map()
   protected val defaultErrorCodeHandler: ErrorCodeHandler = new DefaultErrorCodeHandler()
-  protected val exceptionHandler: ExceptionHandler = new DefaultExceptionHandler()
+  protected val exceptionHandler: ExceptionHandler = new DefaultExceptionHandler({productionMode})
 
   private[http] def servlet(route: HttpRoute[RequestServlet]): Unit = servlet = servlet ++ List(route)
 
