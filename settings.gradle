@@ -12,7 +12,7 @@ include ':converter:template:freemarker'
 include ':converter:template:thymeleaf'
 
 include ':provider:servlet'
-//include ':provider:netty'
+include ':provider:netty'
 include ':provider:jetty'
 
 //include ':examples:netty'
