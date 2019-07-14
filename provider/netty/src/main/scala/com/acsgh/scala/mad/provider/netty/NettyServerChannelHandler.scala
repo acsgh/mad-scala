@@ -2,7 +2,7 @@ package com.acsgh.scala.mad.provider.netty
 
 import java.net.{InetSocketAddress, SocketAddress, URI}
 
-import com.acsgh.scala.mad.LogSupport
+import com.acsgh.common.scala.log.LogSupport
 import com.acsgh.scala.mad.router.http.HttpRouter
 import com.acsgh.scala.mad.router.http.model.{ProtocolVersion, Request, RequestMethod, Response}
 import io.netty.buffer.{ByteBufUtil, Unpooled}

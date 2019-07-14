@@ -4,6 +4,8 @@ import java.io.UnsupportedEncodingException
 import java.net.{URI, URLDecoder}
 import java.util.regex.{Matcher, Pattern}
 
+import com.acsgh.common.scala.log.LogSupport
+
 trait URLSupport extends LogSupport {
 
   protected def extractPathParams(routeUri: String, requestUri: URI): Map[String, String] = {

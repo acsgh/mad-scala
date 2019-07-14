@@ -2,7 +2,8 @@ package com.acsgh.scala.mad
 
 import java.util.concurrent.atomic.AtomicBoolean
 
-import com.acsgh.scala.mad.utils.{LogLevel, StopWatch}
+import com.acsgh.common.scala.log.{LogLevel, LogSupport}
+import com.acsgh.common.scala.time.StopWatch
 
 trait App extends LogSupport {
   private var configureActions: List[() => Unit] = List()
@@ -28,7 +29,7 @@ trait App extends LogSupport {
 
   def start(): Unit = {
     if (started.compareAndSet(false, true)) {
-      val stopWatch = new StopWatch().start()
+      val stopWatch = StopWatch.createStarted()
       try {
         executeAll("Configure", configureActions)
         executeAll("Start", startActions)
@@ -40,7 +41,7 @@ trait App extends LogSupport {
 
   def stop(): Unit = {
     if (started.compareAndSet(true, false)) {
-      val stopWatch = new StopWatch().start()
+      val stopWatch = StopWatch.createStarted()
       try {
         executeAll("Stop", stopActions)
       } finally {
@@ -50,7 +51,7 @@ trait App extends LogSupport {
   }
 
   private def executeAll(actionName: String, actions: List[() => Unit]): Unit = {
-    val stopWatch = new StopWatch().start()
+    val stopWatch = StopWatch.createStarted()
     try {
       actions.foreach(_ ())
     } catch {

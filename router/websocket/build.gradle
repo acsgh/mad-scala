@@ -1,3 +1,5 @@
 dependencies {
     compile project(":router:http")
 }
+
+apply plugin: 'acsgh-publish'

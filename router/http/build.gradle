@@ -1,4 +1,5 @@
 dependencies {
-    compile project(":utils")
     compile project(":core")
 }
+
+apply plugin: 'acsgh-publish'

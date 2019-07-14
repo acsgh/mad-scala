@@ -9,3 +9,5 @@ dependencies {
 
 }
 
+apply plugin: 'acsgh-publish'
+

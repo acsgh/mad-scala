@@ -3,3 +3,5 @@ dependencies {
 
     compile 'javax.servlet:javax.servlet-api:4.0.1'
 }
+
+apply plugin: 'acsgh-publish'

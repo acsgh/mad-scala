@@ -3,7 +3,7 @@ package com.acsgh.scala.mad.provider.netty
 import java.net.URI
 import java.util
 
-import com.acsgh.scala.mad.LogSupport
+import com.acsgh.common.scala.log.LogSupport
 import com.acsgh.scala.mad.router.ws.WSRouter
 import com.acsgh.scala.mad.router.ws.model._
 import io.netty.buffer.{ByteBufUtil, Unpooled}

@@ -1,9 +1,9 @@
 package com.acsgh.scala.mad.router.ws
 
-import com.acsgh.scala.mad.LogSupport
+import com.acsgh.common.scala.log.{LogLevel, LogSupport}
+import com.acsgh.common.scala.time.StopWatch
 import com.acsgh.scala.mad.router.ws.handler.{DefaultHandler, WSHandler}
 import com.acsgh.scala.mad.router.ws.model.{WSRequest, WSResponse, WSResponseBuilder}
-import com.acsgh.scala.mad.utils.{LogLevel, StopWatch}
 
 private[router] case class WSRoute
 (
@@ -28,7 +28,7 @@ trait WSRouter extends LogSupport {
   def process(request: WSRequest): Option[WSResponse] = {
     implicit val context: WSRequestContext = WSRequestContext(request, WSResponseBuilder(request))
     log.trace("WS Request {} {}", Array(request.uri, request.subprotocol): _*)
-    val stopWatch = new StopWatch().start()
+    val stopWatch = StopWatch.createStarted()
     try {
       wsRoutes.getOrElse(WSRoute(request.uri.toString, request.subprotocol), defaultHandler).handle
     } catch {

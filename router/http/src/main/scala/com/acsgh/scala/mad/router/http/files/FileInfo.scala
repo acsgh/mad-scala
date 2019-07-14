@@ -3,7 +3,7 @@ package com.acsgh.scala.mad.router.http.files
 import java.text.ParseException
 import java.util.Date
 
-import com.acsgh.scala.mad.LogSupport
+import com.acsgh.common.scala.log.LogSupport
 
 case class FileInfo
 (

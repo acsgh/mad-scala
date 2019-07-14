@@ -1,7 +1,5 @@
 rootProject.name = 'mad-server'
 
-include ':utils'
-
 include ':core'
 include ':router:http'
 include ':router:websocket'

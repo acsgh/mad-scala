@@ -4,8 +4,9 @@ import com.acsgh.scala.mad.router.http.directives.Directives
 import com.acsgh.scala.mad.router.http.exception.BadRequestException
 import com.acsgh.scala.mad.router.http.handler.{DefaultErrorCodeHandler, DefaultExceptionHandler, ErrorCodeHandler, ExceptionHandler}
 import com.acsgh.scala.mad.router.http.model.{Request, Response, ResponseBuilder, ResponseStatus}
-import com.acsgh.scala.mad.utils.{LogLevel, StopWatch}
-import com.acsgh.scala.mad.{LogSupport, ProductionInfo, URLSupport}
+import com.acsgh.common.scala.log.{LogLevel, LogSupport}
+import com.acsgh.common.scala.time.StopWatch
+import com.acsgh.scala.mad.{ProductionInfo, URLSupport}
 
 case class RequestContext
 (
@@ -42,7 +43,7 @@ trait HttpRouter extends LogSupport with ProductionInfo {
   def process(httpRequest: Request): Response = {
     implicit val context: RequestContext = RequestContext(httpRequest, ResponseBuilder(httpRequest), this)
     log.trace("Request {} {}", Array(httpRequest.method, httpRequest.uri): _*)
-    val stopWatch = new StopWatch().start()
+    val stopWatch = StopWatch.createStarted()
     try {
       processFilters(context)
     } catch {
@@ -71,7 +72,7 @@ trait HttpRouter extends LogSupport with ProductionInfo {
     if (nextFilters.nonEmpty) {
       val currentFilter = nextFilters.head
       log.trace("Filter {} {}", Array(currentFilter.methods, currentFilter.uri): _*)
-      val stopWatch = new StopWatch().start()
+      val stopWatch = StopWatch.createStarted()
       try {
         currentFilter.handler.handle(runFilter(context, nextFilters.tail))(context.ofRoute(currentFilter))
       } finally {
@@ -86,7 +87,7 @@ trait HttpRouter extends LogSupport with ProductionInfo {
     servlet
       .find(_.canApply(context.request))
       .map { httpRoute =>
-        val stopWatch = new StopWatch().start
+        val stopWatch = StopWatch.createStarted()
         try {
           httpRoute.handler.handle(context.ofRoute(httpRoute))
         } finally {

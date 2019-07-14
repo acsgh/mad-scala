@@ -1,6 +1,6 @@
 package com.acsgh.scala.mad.provider.servlet
 
-import com.acsgh.scala.mad.LogSupport
+import com.acsgh.common.scala.log.LogSupport
 import com.acsgh.scala.mad.router.http.HttpRouter
 import com.acsgh.scala.mad.router.http.model.Response
 import com.acsgh.scala.mad.router.http.model.ResponseStatus.NOT_FOUND

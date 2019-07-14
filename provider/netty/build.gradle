@@ -5,3 +5,4 @@ dependencies {
     compile 'io.netty:netty-all:4.1.37.Final'
 }
 
+apply plugin: 'acsgh-publish'
