@@ -4,3 +4,7 @@ title: Mad Server
 description: Light Scala HTTP framework
 
 show_downloads: "true"
+
+site:
+  github:
+    is_project_page: "true"
