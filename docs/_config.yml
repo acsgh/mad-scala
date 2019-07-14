@@ -1,0 +1,6 @@
+theme: jekyll-theme-slate
+
+title: Mad Server
+description: Light Scala HTTP framework
+
+show_downloads: "true"
