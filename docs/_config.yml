@@ -3,7 +3,7 @@ theme: jekyll-theme-minimal
 title: Mad Server
 description: Light Scala HTTP framework
 
-show_downloads: "true"
+show_downloads: "false"
 
 site:
   github:
