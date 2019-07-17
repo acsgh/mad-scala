@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit
 import com.acsgh.scala.mad.provider.servlet.MadServerServlet
 import com.acsgh.scala.mad.router.http.HttpServer
 import com.acsgh.scala.mad.router.ws.WSServer
+import org.eclipse.jetty.server.handler.HandlerList
 import org.eclipse.jetty.server.{Server, ServerConnector}
 import org.eclipse.jetty.util.ssl.SslContextFactory
 import org.eclipse.jetty.util.thread.QueuedThreadPool
@@ -21,7 +22,7 @@ trait JettyServer extends HttpServer with WSServer {
   protected val maxThreads: Option[Int] = None
   protected val minThreads: Option[Int] = None
   protected val threadTimeoutMillis: Option[Int] = None
-  //  protected val webSocketIdleTimeoutMillis: Option[Int] = None
+  protected val webSocketIdleTimeoutMillis: Option[Int] = None
 
   protected val httpsPort: Option[Int] = None
   protected val sslConfig: Option[SSLConfig] = None
@@ -48,11 +49,19 @@ trait JettyServer extends HttpServer with WSServer {
     val server = new Server(new QueuedThreadPool(max, min, idleTimeout))
 
     val servlet = new MadServerServlet(this.httpRouter)
-    server.setHandler(new JettyHandler(servlet))
 
-    //    if (wsRoutes.nonEmpty) {
-    //      server.setHandler(createWSHandler())
-    //    }
+    if (wsRoutes.nonEmpty) {
+      val handlers = new HandlerList
+      handlers.setHandlers(
+        List(
+          new JettyHttpHandler(servlet, wsRouter),
+          new JettyWsHandler(wsRouter, webSocketIdleTimeoutMillis).init(),
+        ).toArray
+      )
+      server.setHandler(handlers)
+    } else {
+      server.setHandler(new JettyHttpHandler(servlet, wsRouter))
+    }
 
     httpPort.foreach { port =>
       server.addConnector(getServerConnector(server, port))

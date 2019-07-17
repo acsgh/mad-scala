@@ -17,7 +17,13 @@ class NettyServerChannelInitializer(private val httpRouter: HttpRouter, private 
     p.addLast(new HttpObjectAggregator(64 * 1024 * 1024))
 
     for (route <- wsRouter.wsRoutes) {
-      p.addLast(new NettyWebSocketFrameHandler(wsRouter, route._1.uri, route._1.subprotocol))
+      if (route._2.subprotocols.isEmpty) {
+        p.addLast(new NettyWebSocketFrameHandler(wsRouter, route._1, None))
+      } else {
+        for (subprotocol <- route._2.subprotocols) {
+          p.addLast(new NettyWebSocketFrameHandler(wsRouter, route._1, Some(subprotocol)))
+        }
+      }
     }
 
     p.addLast(new NettyServerChannelHandler(httpRouter))

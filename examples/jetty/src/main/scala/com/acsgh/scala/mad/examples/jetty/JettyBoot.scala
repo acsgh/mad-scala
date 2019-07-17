@@ -76,6 +76,12 @@ object JettyBoot extends JettyServer with ThymeleafHttpServer with JacksonHttpSe
     }
   }
 
+  ws("/echo") { implicit context =>
+    requestString { input =>
+      responseBody(s"You said: $input")
+    }
+  }
+
 
   filter("/*") { implicit context =>
     nextJump =>

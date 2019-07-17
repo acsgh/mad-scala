@@ -5,10 +5,10 @@ import com.acsgh.common.scala.time.StopWatch
 import com.acsgh.scala.mad.router.ws.handler.{DefaultHandler, WSHandler}
 import com.acsgh.scala.mad.router.ws.model.{WSRequest, WSResponse, WSResponseBuilder}
 
-private[router] case class WSRoute
+case class WSRoute
 (
-  uri: String,
-  subprotocol: Option[String]
+  subprotocols: Set[String],
+  handler: WSHandler
 )
 
 case class WSRequestContext
@@ -20,23 +20,23 @@ case class WSRequestContext
 
 trait WSRouter extends LogSupport {
 
-  private[mad] var wsRoutes: Map[WSRoute, WSHandler] = Map()
+  private[mad] var wsRoutes: Map[String, WSRoute] = Map()
   protected val defaultHandler: WSHandler = new DefaultHandler()
 
-  private[ws] def route(route: WSRoute)(handler: WSHandler): Unit = wsRoutes = wsRoutes + (route -> handler)
+  private[ws] def route(uri: String, subprotocols: Set[String] = Set())(handler: WSHandler): Unit = wsRoutes = wsRoutes + (uri -> WSRoute(subprotocols, handler))
 
   def process(request: WSRequest): Option[WSResponse] = {
     implicit val context: WSRequestContext = WSRequestContext(request, WSResponseBuilder(request))
-    log.trace("WS Request {} {}", Array(request.uri, request.subprotocol): _*)
+    log.trace("WS Request {} {}", Array(request.uri): _*)
     val stopWatch = StopWatch.createStarted()
     try {
-      wsRoutes.getOrElse(WSRoute(request.uri.toString, request.subprotocol), defaultHandler).handle
+      wsRoutes.get(request.uri.toString).map(_.handler).getOrElse(defaultHandler).handle
     } catch {
       case e: Exception =>
         log.error("Error during request", e)
         throw e
     } finally {
-      stopWatch.printElapseTime("Request " + request.uri + " " + request.subprotocol, log, LogLevel.DEBUG)
+      stopWatch.printElapseTime("Request " + request.uri, log, LogLevel.DEBUG)
     }
   }
 }

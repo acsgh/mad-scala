@@ -55,30 +55,26 @@ class NettyWebSocketFrameHandler(private val wsRouter: WSRouter, private val uri
   private def toWebSocketConnectedRequest(ctx: ChannelHandlerContext) = WSRequestConnect(
     ctx.channel.id.asLongText,
     ctx.channel.remoteAddress.toString,
-    URI.create(uri),
-    subprotocol
+    URI.create(uri)
   )
 
   private def toWebSocketDisconnectedRequest(ctx: ChannelHandlerContext) = WSRequestDisconnect(
     ctx.channel.id.asLongText,
     ctx.channel.remoteAddress.toString,
-    URI.create(uri),
-    subprotocol
+    URI.create(uri)
   )
 
   private def getTextRequest(ctx: ChannelHandlerContext, frame: TextWebSocketFrame) = WSRequestText(
     ctx.channel.id.asLongText,
     ctx.channel.remoteAddress.toString,
     URI.create(uri),
-    subprotocol,
-    frame.text
+    frame.text()
   )
 
   private def getBinaryRequest(ctx: ChannelHandlerContext, frame: BinaryWebSocketFrame) = WSRequestBinary(
     ctx.channel.id.asLongText,
     ctx.channel.remoteAddress.toString,
     URI.create(uri),
-    subprotocol,
     ByteBufUtil.getBytes(frame.content)
   )
 }
