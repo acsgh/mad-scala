@@ -38,11 +38,11 @@ trait Routes extends DefaultFormats with DefaultParamHandling with Directives {
 
   def webjars()(implicit httpRouter: HttpRouter): Unit = resourceFolder("/webjars/{path+}", "META-INF/resources/webjars")
 
-  private def servlet(uri: String, method: RequestMethod)(action: RequestContext => Response)(implicit httpRouter: HttpRouter): Unit = {
+  protected def servlet(uri: String, method: RequestMethod)(action: RequestContext => Response)(implicit httpRouter: HttpRouter): Unit = {
     httpRouter.servlet(new HttpRoute[RequestServlet](uri, Set(method), (context: RequestContext) => action(context)))
   }
 
-  private def filterInt(uri: String, methods: Set[RequestMethod] = Set())(action: RequestFilter)(implicit httpRouter: HttpRouter): Unit = {
+  protected def filterInt(uri: String, methods: Set[RequestMethod] = Set())(action: RequestFilter)(implicit httpRouter: HttpRouter): Unit = {
     httpRouter.filter(new HttpRoute[RequestFilter](uri, methods, action))
   }
 

@@ -6,12 +6,23 @@ import com.acsgh.scala.mad.converter.json.jackson.JacksonHttpServer
 import com.acsgh.scala.mad.converter.template.thymeleaf.ThymeleafHttpServer
 import com.acsgh.scala.mad.provider.jetty.JettyServer
 import com.acsgh.scala.mad.router.http.model.ResponseStatus
+import com.acsgh.scala.mad.support.swagger.SwaggerRoutes
+import com.acsgh.scala.mad.support.swagger.builder.OpenApiBuilder
 
-object JettyBoot extends JettyServer with ThymeleafHttpServer with JacksonHttpServer {
+object JettyBoot extends JettyServer with ThymeleafHttpServer with JacksonHttpServer with SwaggerRoutes {
   override val name: String = "Jetty Boot Example"
 
   override protected val httpPort: Option[Int] = Some(7654)
   override protected val prefix: String = "/templates/"
+
+  implicit protected val openApi: OpenApiBuilder = OpenApiBuilder()
+    .info
+    .title("Hello There")
+    .contact.email("dummy@asd.com")
+    .root
+
+
+  swaggerRoutes()
 
   val ids = new AtomicLong(0)
 

@@ -1,11 +1,11 @@
 package com.acsgh.scala.mad.router.http
 
+import com.acsgh.common.scala.log.{LogLevel, LogSupport}
+import com.acsgh.common.scala.time.StopWatch
 import com.acsgh.scala.mad.router.http.directives.Directives
 import com.acsgh.scala.mad.router.http.exception.BadRequestException
 import com.acsgh.scala.mad.router.http.handler.{DefaultErrorCodeHandler, DefaultExceptionHandler, ErrorCodeHandler, ExceptionHandler}
-import com.acsgh.scala.mad.router.http.model.{Request, Response, ResponseBuilder, ResponseStatus}
-import com.acsgh.common.scala.log.{LogLevel, LogSupport}
-import com.acsgh.common.scala.time.StopWatch
+import com.acsgh.scala.mad.router.http.model._
 import com.acsgh.scala.mad.{ProductionInfo, URLSupport}
 
 case class RequestContext
@@ -34,9 +34,17 @@ trait HttpRouter extends LogSupport with ProductionInfo {
   protected var servlet: List[HttpRoute[RequestServlet]] = List()
   protected val errorCodeHandlers: Map[ResponseStatus, ErrorCodeHandler] = Map()
   protected val defaultErrorCodeHandler: ErrorCodeHandler = new DefaultErrorCodeHandler()
-  protected val exceptionHandler: ExceptionHandler = new DefaultExceptionHandler({productionMode})
+  protected val exceptionHandler: ExceptionHandler = new DefaultExceptionHandler({
+    productionMode
+  })
 
-  private[http] def servlet(route: HttpRoute[RequestServlet]): Unit = servlet = servlet ++ List(route)
+  private[http] def servlet(route: HttpRoute[RequestServlet]): Unit = {
+    if (containsRoute(servlet, route.uri, route.methods)) {
+      log.debug("The servlet method {} - {} has been already defined", Some(route.methods).filter(_.nonEmpty).map(_.mkString(", ")).getOrElse("All"), route.uri)
+    } else {
+      servlet = servlet ++ List(route)
+    }
+  }
 
   private[http] def filter(route: HttpRoute[RequestFilter]): Unit = filters = filters ++ List(route)
 
@@ -66,6 +74,14 @@ trait HttpRouter extends LogSupport with ProductionInfo {
   private def processFilters(context: RequestContext): Response = {
     val httpRoutes = filters.filter(_.canApply(context.request))
     runFilter(context, httpRoutes)()
+  }
+
+  private def containsRoute(routesList: List[HttpRoute[_]], uri: String, methods: Set[RequestMethod]): Boolean = {
+    val routes = routesList.map(e => (e.uri, e.methods)).groupBy(_._1).mapValues(_.flatMap(_._2).toSet)
+
+    routes.get(uri).exists{ r=>
+      (r.isEmpty && methods.isEmpty) || r.intersect(methods).nonEmpty
+    }
   }
 
   private def runFilter(context: RequestContext, nextFilters: List[HttpRoute[RequestFilter]]): () => Response = () => {

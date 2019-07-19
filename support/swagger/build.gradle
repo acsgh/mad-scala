@@ -1,0 +1,11 @@
+dependencies {
+    compile project(":router:http")
+    compile project(":converter:json:jackson")
+
+    compile 'io.swagger.core.v3:swagger-core:2.0.8'
+
+    compile 'org.webjars:swagger-ui:3.23.0'
+}
+
+apply plugin: 'acsgh-publish'
+

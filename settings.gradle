@@ -13,5 +13,7 @@ include ':provider:servlet'
 include ':provider:netty'
 include ':provider:jetty'
 
+include ':support:swagger'
+
 include ':examples:netty'
 include ':examples:jetty'
