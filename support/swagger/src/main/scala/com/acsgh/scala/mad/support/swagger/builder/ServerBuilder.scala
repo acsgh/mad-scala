@@ -15,7 +15,7 @@ case class ServerBuilder(parent: OpenApiBuilder, protected val delegate: Server)
 
   def url: String = delegate.getUrl
 
-  def url(url: String): ServerBuilder = {
+  private[builder] def url(url: String): ServerBuilder = {
     delegate.setUrl(url)
     this
   }
