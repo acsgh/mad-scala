@@ -8,6 +8,7 @@ import com.acsgh.scala.mad.provider.jetty.JettyServer
 import com.acsgh.scala.mad.router.http.model.ResponseStatus
 import com.acsgh.scala.mad.support.swagger.SwaggerRoutes
 import com.acsgh.scala.mad.support.swagger.dsl._
+import com.acsgh.scala.mad.support.swagger.dsl.model.{Contact, Info, OpenAPI, Server, ServerVariable, ServerVariables, Tag}
 
 object JettyBoot extends JettyServer with ThymeleafHttpServer with JacksonHttpServer with SwaggerRoutes {
   override val name: String = "Jetty Boot Example"
@@ -36,6 +37,14 @@ object JettyBoot extends JettyServer with ThymeleafHttpServer with JacksonHttpSe
           )
         )
       )
+    ),
+    security = List(
+      Map(
+        "Authentication" -> List("Bearer")
+      )
+    ),
+    tags = List(
+      Tag("asd")
     )
   )
 

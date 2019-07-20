@@ -4,10 +4,11 @@ import com.acsgh.scala.mad.converter.json.jackson.JacksonDirectives
 import com.acsgh.scala.mad.router.http.model.RequestMethod._
 import com.acsgh.scala.mad.router.http.model.{RequestMethod, Response}
 import com.acsgh.scala.mad.router.http.{HttpRouter, RequestContext, Routes}
-import com.acsgh.scala.mad.support.swagger.dsl.{OpenAPI, Operation, SwaggerDSL}
+import com.acsgh.scala.mad.support.swagger.dsl.converter._
+import com.acsgh.scala.mad.support.swagger.dsl.model.{OpenAPI, Operation}
 import io.swagger.v3.core.util.{Json, Yaml}
 
-trait SwaggerRoutes extends Routes with JacksonDirectives with SwaggerDSL {
+trait SwaggerRoutes extends Routes with JacksonDirectives {
 
   def swaggerRoutes(docPath: String = "/api-docs")(implicit httpRouter: HttpRouter, openAPi: OpenAPI): Unit = {
     webjars()
