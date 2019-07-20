@@ -2,9 +2,9 @@ package com.acsgh.scala.mad.support.swagger.builder
 
 import io.swagger.v3.oas.models.info.License
 
-case class LicenseBuilder(parent: InfoBuilder, private val delegate: License) {
+import scala.collection.JavaConverters._
 
-  val root: OpenApiBuilder = parent.root
+case class LicenseBuilder(parent: InfoBuilder, protected val delegate: License) extends Builder[InfoBuilder, License] {
 
   def name: String = delegate.getName
 

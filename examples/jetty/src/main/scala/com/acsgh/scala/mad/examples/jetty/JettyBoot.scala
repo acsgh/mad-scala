@@ -20,6 +20,8 @@ object JettyBoot extends JettyServer with ThymeleafHttpServer with JacksonHttpSe
     .title("Hello There")
     .contact.email("dummy@asd.com")
     .root
+      .tag("dummy")
+      .root
 
 
   swaggerRoutes()

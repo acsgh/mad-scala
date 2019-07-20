@@ -2,9 +2,9 @@ package com.acsgh.scala.mad.support.swagger.builder
 
 import io.swagger.v3.oas.models.info.Contact
 
-case class ContactBuilder(parent: InfoBuilder, private val delegate: Contact) {
+import scala.collection.JavaConverters._
 
-  val root: OpenApiBuilder = parent.root
+case class ContactBuilder(parent: InfoBuilder, protected val delegate: Contact) extends Builder[InfoBuilder, Contact] {
 
   def name: String = delegate.getName
 

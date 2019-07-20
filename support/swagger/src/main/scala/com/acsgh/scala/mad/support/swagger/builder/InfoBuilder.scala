@@ -2,9 +2,9 @@ package com.acsgh.scala.mad.support.swagger.builder
 
 import io.swagger.v3.oas.models.info.{Contact, Info, License}
 
-case class InfoBuilder(parent: OpenApiBuilder, private val delegate: Info) {
+import scala.collection.JavaConverters._
 
-  val root: OpenApiBuilder = parent
+case class InfoBuilder(parent: OpenApiBuilder, protected val delegate: Info) extends Builder[OpenApiBuilder, Info] {
 
   def title(title: String): InfoBuilder = {
     delegate.setTitle(title)

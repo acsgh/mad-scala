@@ -20,13 +20,13 @@ trait SwaggerRoutes extends Routes with JacksonDirectives {
 
     get(s"$docPath.json") { implicit context =>
       responseHeader("Content-Type", "application/json") {
-        responseBody(Json.pretty().writeValueAsString(openAPi))
+        responseBody(Json.pretty().writeValueAsString(openAPi.build))
       }
     }
 
     get(s"$docPath.yaml") { implicit context =>
       responseHeader("Content-Type", "application/yaml") {
-        responseBody(Yaml.pretty().writeValueAsString(openAPi))
+        responseBody(Yaml.pretty().writeValueAsString(openAPi.build))
       }
     }
   }
@@ -48,7 +48,7 @@ trait SwaggerRoutes extends Routes with JacksonDirectives {
   def trace(uri: String, operation: Operation)(action: RequestContext => Response)(implicit httpRouter: HttpRouter, openAPi: OpenApiBuilder): Unit = servlet(uri, TRACE, operation)(action)
 
   protected def servlet(uri: String, method: RequestMethod, operation: Operation)(action: RequestContext => Response)(implicit httpRouter: HttpRouter, openAPi: OpenApiBuilder): Unit = {
-    openAPi.addOperation(uri, method, operation)
+    openAPi.operation(uri, method, operation)
     servlet(uri, method)(action)
   }
 }
