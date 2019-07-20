@@ -30,13 +30,16 @@ case class OpenApiBuilder(protected val delegate: OpenAPI = new OpenAPI()) exten
     this
   }
 
-  //  def schema(name: String, schema: Schema[_]): OpenAPI = delegate.schema(name, schema)
-
   def path(name: String, path: PathItem): OpenAPI = delegate.path(name, path)
 
-//  def setComponents(components: Components): Unit = delegate.setComponents(components)
-//
-//  def getComponents: Components = delegate.getComponents
+  def setComponents(components: Components): Unit = delegate.setComponents(components)
+
+  def components: ComponentsBuilder = {
+    if (delegate.getComponents == null) {
+      delegate.setComponents(new Components())
+    }
+    ComponentsBuilder(this, delegate.getComponents)
+  }
 
   def tag(name: String): TagBuilder[OpenApiBuilder] = {
     if (delegate.getTags == null) {
@@ -46,7 +49,7 @@ case class OpenApiBuilder(protected val delegate: OpenAPI = new OpenAPI()) exten
     tags
       .find(_.getName == name)
       .map(TagBuilder[OpenApiBuilder](this, _))
-      .getOrElse{
+      .getOrElse {
         val tag = new Tag()
         delegate.addTagsItem(tag)
         TagBuilder[OpenApiBuilder](this, tag).name(name)
@@ -60,8 +63,8 @@ case class OpenApiBuilder(protected val delegate: OpenAPI = new OpenAPI()) exten
 
   def tags: List[Tag] = List() ++ delegate.getTags.asScala
 
-  def security(name: String, items:String*): OpenApiBuilder = {
-    if(security.isEmpty){
+  def security(name: String, items: String*): OpenApiBuilder = {
+    if (security.isEmpty) {
       delegate.addSecurityItem(new SecurityRequirement)
     }
 
@@ -72,7 +75,7 @@ case class OpenApiBuilder(protected val delegate: OpenAPI = new OpenAPI()) exten
 
   def security: List[SecurityRequirement] = List() ++ delegate.getSecurity.asScala
 
-  def server(url:String): ServerBuilder = {
+  def server(url: String): ServerBuilder = {
     if (delegate.getServers == null) {
       delegate.setServers(new util.ArrayList[Server]())
     }
@@ -80,7 +83,7 @@ case class OpenApiBuilder(protected val delegate: OpenAPI = new OpenAPI()) exten
     servers
       .find(_.getUrl == url)
       .map(ServerBuilder(this, _))
-      .getOrElse{
+      .getOrElse {
         val serverDelegate = new Server()
         delegate.addServersItem(serverDelegate)
         ServerBuilder(this, serverDelegate).url(url)
