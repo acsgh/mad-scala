@@ -14,8 +14,3 @@ case class Tag
   externalDocs: ExternalDocumentation = null,
   extensions: Map[String, AnyRef] = null
 )
-
-case class Operation
-(
-
-)
