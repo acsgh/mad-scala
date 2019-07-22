@@ -1,14 +1,13 @@
 package com.acsgh.scala.mad.support.swagger
 
-import com.acsgh.scala.mad.converter.json.jackson.JacksonDirectives
 import com.acsgh.scala.mad.router.http.model.RequestMethod._
 import com.acsgh.scala.mad.router.http.model.{RequestMethod, Response}
 import com.acsgh.scala.mad.router.http.{HttpRouter, RequestContext, Routes}
-import com.acsgh.scala.mad.support.swagger.dsl.converter._
-import com.acsgh.scala.mad.support.swagger.dsl.model.{OpenAPI, Operation}
+import com.acsgh.scala.mad.support.swagger.dsl.OpenApiBuilder
 import io.swagger.v3.core.util.{Json, Yaml}
+import io.swagger.v3.oas.models.{OpenAPI, Operation, PathItem, Paths}
 
-trait SwaggerRoutes extends Routes with JacksonDirectives {
+trait SwaggerRoutes extends Routes with OpenApiBuilder {
 
   def swaggerRoutes(docPath: String = "/api-docs")(implicit httpRouter: HttpRouter, openAPi: OpenAPI): Unit = {
     webjars()
@@ -16,13 +15,13 @@ trait SwaggerRoutes extends Routes with JacksonDirectives {
 
     get(s"$docPath.json") { implicit context =>
       responseHeader("Content-Type", "application/json") {
-        responseBody(Json.pretty().writeValueAsString(openAPi.asJava))
+        responseBody(Json.pretty().writeValueAsString(openAPi))
       }
     }
 
     get(s"$docPath.yaml") { implicit context =>
       responseHeader("Content-Type", "application/yaml") {
-        responseBody(Yaml.pretty().writeValueAsString(openAPi.asJava))
+        responseBody(Yaml.pretty().writeValueAsString(openAPi))
       }
     }
   }
@@ -44,7 +43,33 @@ trait SwaggerRoutes extends Routes with JacksonDirectives {
   def trace(uri: String, operation: Operation)(action: RequestContext => Response)(implicit httpRouter: HttpRouter, openAPi: OpenAPI): Unit = servlet(uri, TRACE, operation)(action)
 
   protected def servlet(uri: String, method: RequestMethod, operation: Operation)(action: RequestContext => Response)(implicit httpRouter: HttpRouter, openAPi: OpenAPI): Unit = {
-    openAPi.operation(uri, method, operation)
+    if(openAPi.getPaths == null){
+      openAPi.setPaths(new Paths)
+    }
+
+    openAPi.getPaths.putIfAbsent(uri, new PathItem())
+
+    val item = openAPi.getPaths.get(uri)
+
+    method match {
+      case RequestMethod.OPTIONS =>
+        item.options(operation)
+      case RequestMethod.GET =>
+        item.get(operation)
+      case RequestMethod.HEAD =>
+        item.head(operation)
+      case RequestMethod.POST =>
+        item.post(operation)
+      case RequestMethod.PUT =>
+        item.put(operation)
+      case RequestMethod.PATCH =>
+        item.patch(operation)
+      case RequestMethod.DELETE =>
+        item.delete(operation)
+      case RequestMethod.TRACE =>
+        item.trace(operation)
+    }
+
     servlet(uri, method)(action)
   }
 }
