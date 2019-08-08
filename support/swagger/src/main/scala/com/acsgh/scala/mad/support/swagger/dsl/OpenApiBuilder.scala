@@ -1,15 +1,32 @@
 package com.acsgh.scala.mad.support.swagger.dsl
 
+import io.swagger.v3.core.converter.ModelConverters
+import io.swagger.v3.core.util.Json
 import io.swagger.v3.oas.models._
 import io.swagger.v3.oas.models.callbacks.Callback
+import io.swagger.v3.oas.models.examples.Example
+import io.swagger.v3.oas.models.headers.Header
 import io.swagger.v3.oas.models.info._
-import io.swagger.v3.oas.models.parameters.{Parameter, RequestBody}
+import io.swagger.v3.oas.models.links.Link
+import io.swagger.v3.oas.models.media.Encoding.StyleEnum
+import io.swagger.v3.oas.models.media.{Content, Encoding, MediaType, Schema, StringSchema}
+import io.swagger.v3.oas.models.parameters.{RequestBody, Parameter => SwaggerParameter}
 import io.swagger.v3.oas.models.responses.{ApiResponse, ApiResponses}
 import io.swagger.v3.oas.models.security.SecurityRequirement
 import io.swagger.v3.oas.models.servers.{Server, ServerVariable, ServerVariables}
 import io.swagger.v3.oas.models.tags.Tag
 
 import scala.collection.JavaConverters._
+
+object OpenApiBuilderDefault extends OpenApiBuilder {
+
+  private val converter = {
+    ScalaSwaggerSupport.register()
+    ModelConverters.getInstance()
+  }
+
+  def read(clazz: Class[_]): Map[String, Schema[_]] = Map() ++ converter.readAll(clazz).asScala
+}
 
 trait OpenApiBuilder {
 
@@ -175,9 +192,9 @@ trait OpenApiBuilder {
     description: String = null,
     externalDocs: ExternalDocumentation = null,
     operationId: String = null,
-    parameters: List[Parameter] = null,
+    parameters: List[SwaggerParameter] = null,
     requestBody: RequestBody = null,
-    responses: ApiResponses = null,
+    responses: ApiResponses = new ApiResponses,
     callbacks: Map[String, Callback] = null,
     deprecated: java.lang.Boolean = null,
     security: List[SecurityRequirement] = null,
@@ -203,16 +220,369 @@ trait OpenApiBuilder {
 
   def ApiResponses
   (
-    default: ApiResponse,
-    responses: Map[Long, ApiResponse] = null
+    responses: (Int, ApiResponse)*
   ): ApiResponses = {
     val result = new ApiResponses()
-    result._default(default)
 
     if (responses != null) {
       responses.foreach(e => result.put(e._1.toString, e._2))
     }
 
     result
+  }
+
+  def RequestBody
+  (
+    description: String = null,
+    content: Content = null,
+    required: java.lang.Boolean = null,
+    extensions: Map[String, AnyRef] = null,
+    $ref: String = null
+  ): RequestBody = {
+    val result = new RequestBody()
+
+    result.description(description)
+    result.content(content)
+    result.required(required)
+    result.extensions(extensions.asJava)
+    result.$ref($ref)
+
+    result
+  }
+
+  def ApiResponse
+  (
+    description: String = null,
+    headers: Map[String, Header] = null,
+    content: Content = null,
+    links: Map[String, Link] = null,
+    extensions: Map[String, AnyRef] = null,
+    $ref: String = null
+  ): ApiResponse = {
+    val result = new ApiResponse()
+
+    result.description(description)
+    result.headers(headers.asJava)
+    result.content(content)
+    result.setLinks(links.asJava)
+    result.extensions(extensions.asJava)
+    result.$ref($ref)
+
+    result
+  }
+
+  def Content
+  (
+    values: Map[String, MediaType]
+  ): Content = {
+    val result = new Content()
+
+    result.putAll(values.asJava)
+
+    result
+  }
+
+  def MediaType
+  (
+    schema: Schema[_] = null,
+    examples: Map[String, Example] = null,
+    example: Object = null,
+    encoding: Map[String, Encoding] = null,
+    extensions: Map[String, Object] = null,
+  ): MediaType = {
+    val result = new MediaType()
+
+    result.schema(schema)
+    result.examples(examples.asJava)
+    result.example(example)
+    result.encoding(encoding.asJava)
+    result.extensions(extensions.asJava)
+
+    result
+  }
+
+  def Encoding
+  (
+    contentType: String = "application/json",
+    headers: Map[String, Header],
+    style: StyleEnum,
+    explode: java.lang.Boolean,
+    allowReserved: java.lang.Boolean,
+    extensions: Map[String, Object] = null
+  ): Encoding = {
+    val result = new Encoding()
+
+    result.contentType(contentType)
+    result.headers(headers.asJava)
+    result.style(style)
+    result.explode(explode)
+    result.allowReserved(allowReserved)
+    result.extensions(extensions.asJava)
+
+    result
+  }
+
+  def Example
+  (
+    value: Object,
+    summary: String = null,
+    description: String = null,
+    externalValue: String = null,
+    $ref: String = null,
+    extensions: Map[String, Object] = null
+  ): Example = {
+    val result = new Example()
+
+    result.summary(summary)
+    result.description(description)
+    result.value(value)
+    result.externalValue(externalValue)
+    result.$ref($ref)
+    result.extensions(extensions.asJava)
+
+    result
+  }
+
+  def Parameter
+  (
+    name: String,
+    in: String = null,
+    description: String = null,
+    required: java.lang.Boolean = null,
+    deprecated: java.lang.Boolean = null,
+    allowEmptyValue: java.lang.Boolean = null,
+    $ref: String = null,
+    style: SwaggerParameter.StyleEnum = null,
+    explode: java.lang.Boolean = null,
+    allowReserved: java.lang.Boolean = null,
+    schema: Schema[_] = new StringSchema,
+    examples: Map[String, Example] = null,
+    example: AnyRef = null,
+    content: Content = null,
+    extensions: Map[String, AnyRef] = null,
+  ): SwaggerParameter = {
+    val result = new SwaggerParameter()
+
+    result.name(name)
+    result.in(in)
+    result.description(description)
+    result.required(required)
+    result.deprecated(deprecated)
+    result.allowEmptyValue(allowEmptyValue)
+    result.$ref($ref)
+    result.style(style)
+    result.explode(explode)
+    result.allowReserved(allowReserved)
+    result.schema(schema)
+    result.examples(examples.asJava)
+    result.example(example)
+    result.content(content)
+    result.extensions(extensions.asJava)
+
+    result
+  }
+
+  def PathParameter
+  (
+    name: String,
+    description: String = null,
+    deprecated: java.lang.Boolean = null,
+    allowEmptyValue: java.lang.Boolean = null,
+    $ref: String = null,
+    style: SwaggerParameter.StyleEnum = null,
+    explode: java.lang.Boolean = null,
+    allowReserved: java.lang.Boolean = null,
+    schema: Schema[_]  = new StringSchema,
+    examples: Map[String, Example] = null,
+    example: AnyRef = null,
+    content: Content = null,
+    extensions: Map[String, AnyRef] = null,
+  ): SwaggerParameter = Parameter(
+    name,
+    "path",
+    description,
+    true,
+    deprecated,
+    allowEmptyValue,
+    $ref,
+    style,
+    explode,
+    allowReserved,
+    schema,
+    examples,
+    example,
+    content,
+    extensions
+  )
+
+  def QueryParameter
+  (
+    name: String,
+    description: String = null,
+    required: java.lang.Boolean = null,
+    deprecated: java.lang.Boolean = null,
+    allowEmptyValue: java.lang.Boolean = null,
+    $ref: String = null,
+    style: SwaggerParameter.StyleEnum = null,
+    explode: java.lang.Boolean = null,
+    allowReserved: java.lang.Boolean = null,
+    schema: Schema[_]  = new StringSchema,
+    examples: Map[String, Example] = null,
+    example: AnyRef = null,
+    content: Content = null,
+    extensions: Map[String, AnyRef] = null,
+  ): SwaggerParameter = Parameter(
+    name,
+    "query",
+    description,
+    required,
+    deprecated,
+    allowEmptyValue,
+    $ref,
+    style,
+    explode,
+    allowReserved,
+    schema,
+    examples,
+    example,
+    content,
+    extensions
+  )
+
+  def HeaderParameter
+  (
+    name: String,
+    description: String = null,
+    required: java.lang.Boolean = null,
+    deprecated: java.lang.Boolean = null,
+    allowEmptyValue: java.lang.Boolean = null,
+    $ref: String = null,
+    style: SwaggerParameter.StyleEnum = null,
+    explode: java.lang.Boolean = null,
+    allowReserved: java.lang.Boolean = null,
+    schema: Schema[_]  = new StringSchema,
+    examples: Map[String, Example] = null,
+    example: AnyRef = null,
+    content: Content = null,
+    extensions: Map[String, AnyRef] = null,
+  ): SwaggerParameter = Parameter(
+    name,
+    "header",
+    description,
+    required,
+    deprecated,
+    allowEmptyValue,
+    $ref,
+    style,
+    explode,
+    allowReserved,
+    schema,
+    examples,
+    example,
+    content,
+    extensions
+  )
+
+  def CookieParameter
+  (
+    name: String,
+    description: String = null,
+    required: java.lang.Boolean = null,
+    deprecated: java.lang.Boolean = null,
+    allowEmptyValue: java.lang.Boolean = null,
+    $ref: String = null,
+    style: SwaggerParameter.StyleEnum = null,
+    explode: java.lang.Boolean = null,
+    allowReserved: java.lang.Boolean = null,
+    schema: Schema[_]  = new StringSchema,
+    examples: Map[String, Example] = null,
+    example: AnyRef = null,
+    content: Content = null,
+    extensions: Map[String, AnyRef] = null,
+  ): SwaggerParameter = Parameter(
+    name,
+    "cookie",
+    description,
+    required,
+    deprecated,
+    allowEmptyValue,
+    $ref,
+    style,
+    explode,
+    allowReserved,
+    schema,
+    examples,
+    example,
+    content,
+    extensions
+  )
+
+
+  def RequestBodyJson[T <: AnyRef]
+  (
+    contentClass: Class[T],
+    description: String = null,
+    required: Boolean = true,
+    example: T = null,
+  )(implicit openApi: OpenAPI): RequestBody = {
+    val result = new RequestBody()
+
+    result.description(description)
+    result.required(required)
+
+    addSchemas(contentClass)
+    result.content(ContentJson(contentClass, example))
+    result
+  }
+
+
+  def ApiResponseJson[T <: AnyRef]
+  (
+    contentClass: Class[T],
+    description: String = null,
+    example: T = null
+  )(implicit openApi: OpenAPI): ApiResponse = {
+    val result = new ApiResponse()
+    result.description(description)
+    result.content(ContentJson(contentClass, example))
+    result
+  }
+
+  def ContentJson[T <: AnyRef]
+  (
+    contentClass: Class[T],
+    example: T = null
+  )(implicit openApi: OpenAPI): Content = {
+    addSchemas(contentClass)
+
+    val examples = if (example != null) {
+      Map(
+        "default" -> Example(
+          Json.pretty().writeValueAsString(example)
+        )
+      )
+    } else {
+      null
+    }
+
+    Content(
+      Map(
+        "application/json" -> MediaType(
+          schema = new Schema[T]().$ref(contentClass.getSimpleName),
+          examples = examples
+        )
+      )
+    )
+  }
+
+
+  private def addSchemas(contentClass: Class[_])(implicit openApi: OpenAPI): Unit = {
+    val schemas = OpenApiBuilderDefault.read(contentClass)
+
+    if (openApi.getComponents == null) {
+      openApi.setComponents(new Components)
+    }
+
+    schemas.foreach(e => openApi.getComponents.addSchemas(e._1, e._2))
   }
 }

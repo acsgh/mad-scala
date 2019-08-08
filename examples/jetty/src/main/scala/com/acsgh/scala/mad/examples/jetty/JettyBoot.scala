@@ -49,17 +49,32 @@ object JettyBoot extends JettyServer with ThymeleafHttpServer with JacksonHttpSe
   }
 
   get("/persons", Operation(
-    operationId="getAllPersons",
+    operationId = "findAll",
     summary = "Get All",
     description = "Get all persons of the service",
+    responses = ApiResponses(
+      200 -> ApiResponseJson(classOf[List[Person]], "All persons"),
+    )
   )) { implicit context =>
-    responseJson(persons.values)
+    responseJson(persons.values.toList.sortBy(_.id))
   }
 
   post("/persons", Operation(
-    operationId="createPerson",
+    operationId = "createPerson",
     summary = "Create person",
     description = "Get all persons of the service",
+    requestBody = RequestBodyJson(
+      classOf[Person],
+      example = Person(
+        123,
+        "Alberto",
+        32
+      )
+    ),
+    responses = ApiResponses(
+      201 -> ApiResponseJson(classOf[Person], "The person created"),
+      400 -> ApiResponse("Invalid request")
+    )
   )) { implicit context =>
     requestJson(classOf[Person]) { person =>
       val personWithId = person.copy(id = ids.addAndGet(1))
@@ -71,10 +86,29 @@ object JettyBoot extends JettyServer with ThymeleafHttpServer with JacksonHttpSe
     }
   }
 
-  put("/persons/{id}") { implicit context =>
+  put("/persons/{id}", Operation(
+    operationId = "editPerson",
+    summary = "Edit person",
+    parameters = List(
+      PathParameter("id", "The person id")
+    ),
+    requestBody = RequestBodyJson(
+      classOf[Person],
+      example = Person(
+        123,
+        "Alberto",
+        32
+      )
+    ),
+    responses = ApiResponses(
+      201 -> ApiResponseJson(classOf[Person], "The person modified"),
+      204 -> ApiResponse("Person not found"),
+      400 -> ApiResponse("Invalid request")
+    )
+  )) { implicit context =>
     requestParam("id".as[Long]) { id =>
       requestJson(classOf[Person]) { personNew =>
-        persons.get(id).fold(error(ResponseStatus.NOT_FOUND)) { personOld =>
+        persons.get(id).fold(error(ResponseStatus.NO_CONTENT)) { personOld =>
           val result = personNew.copy(id = id)
           persons = persons + (result.id -> result)
           responseJson(result)
@@ -83,17 +117,39 @@ object JettyBoot extends JettyServer with ThymeleafHttpServer with JacksonHttpSe
     }
   }
 
-  get("/persons/{id}") { implicit context =>
+  get("/persons/{id}", Operation(
+    operationId = "getPerson",
+    summary = "Get person",
+    parameters = List(
+      PathParameter("id", "The person id")
+    ),
+    responses = ApiResponses(
+      200 -> ApiResponseJson(classOf[Person], "The person"),
+      204 -> ApiResponse("Person not found"),
+      400 -> ApiResponse("Invalid request")
+    )
+  )) { implicit context =>
     requestParam("id".as[Long]) { id =>
-      persons.get(id).fold(error(ResponseStatus.NOT_FOUND)) { personOld =>
+      persons.get(id).fold(error(ResponseStatus.NO_CONTENT)) { personOld =>
         responseJson(personOld)
       }
     }
   }
 
-  delete("/persons/{id}") { implicit context =>
+  delete("/persons/{id}", Operation(
+    operationId = "deletePerson",
+    summary = "Delete person",
+    parameters = List(
+      PathParameter("id", "The person id")
+    ),
+    responses = ApiResponses(
+      200 -> ApiResponseJson(classOf[Person], "The person deleted"),
+      204 -> ApiResponse("Person not found"),
+      400 -> ApiResponse("Invalid request")
+    )
+  )) { implicit context =>
     requestParam("id".as[Long]) { id =>
-      persons.get(id).fold(error(ResponseStatus.NOT_FOUND)) { personOld =>
+      persons.get(id).fold(error(ResponseStatus.NO_CONTENT)) { personOld =>
         persons = persons - id
         responseJson(personOld)
       }
@@ -111,7 +167,7 @@ object JettyBoot extends JettyServer with ThymeleafHttpServer with JacksonHttpSe
     nextJump =>
       log.info("Handling: {}", context.request.uri)
       val result = nextJump()
-      log.info("Handling: {}, done", context.request.uri)
+      log.info("Handling: {} - {}, done", context.request.uri, context.response.responseStatus)
       result
   }
 }

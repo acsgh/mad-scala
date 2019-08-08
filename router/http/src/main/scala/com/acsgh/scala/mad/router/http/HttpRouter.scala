@@ -49,18 +49,11 @@ trait HttpRouter extends LogSupport with ProductionInfo {
   private[http] def filter(route: HttpRoute[RequestFilter]): Unit = filters = filters ++ List(route)
 
   def process(httpRequest: Request): Response = {
-    implicit val context: RequestContext = RequestContext(httpRequest, ResponseBuilder(httpRequest), this)
+    val context: RequestContext = RequestContext(httpRequest, ResponseBuilder(httpRequest), this)
     log.trace("Request {} {}", Array(httpRequest.method, httpRequest.uri): _*)
     val stopWatch = StopWatch.createStarted()
     try {
-      processFilters(context)
-    } catch {
-      case e: BadRequestException =>
-        log.debug("Bad request", e)
-        exceptionHandler.handle(e)
-      case e: Exception =>
-        log.error("Error during request", e)
-        exceptionHandler.handle(e)
+      runSafe(context)(processFilters)
     } finally {
       stopWatch.printElapseTime("Request " + httpRequest.method + " " + httpRequest.uri, log, LogLevel.DEBUG)
     }
@@ -79,27 +72,29 @@ trait HttpRouter extends LogSupport with ProductionInfo {
   private def containsRoute(routesList: List[HttpRoute[_]], uri: String, methods: Set[RequestMethod]): Boolean = {
     val routes = routesList.map(e => (e.uri, e.methods)).groupBy(_._1).mapValues(_.flatMap(_._2).toSet)
 
-    routes.get(uri).exists{ r=>
+    routes.get(uri).exists { r =>
       (r.isEmpty && methods.isEmpty) || r.intersect(methods).nonEmpty
     }
   }
 
   private def runFilter(context: RequestContext, nextFilters: List[HttpRoute[RequestFilter]]): () => Response = () => {
-    if (nextFilters.nonEmpty) {
-      val currentFilter = nextFilters.head
-      log.trace("Filter {} {}", Array(currentFilter.methods, currentFilter.uri): _*)
-      val stopWatch = StopWatch.createStarted()
-      try {
-        currentFilter.handler.handle(runFilter(context, nextFilters.tail))(context.ofRoute(currentFilter))
-      } finally {
-        stopWatch.printElapseTime("Filter " + currentFilter.methods + " " + currentFilter.uri, log, LogLevel.TRACE)
+    runSafe(context) { c1 =>
+      if (nextFilters.nonEmpty) {
+        val currentFilter = nextFilters.head
+        log.trace("Filter {} {}", Array(currentFilter.methods, currentFilter.uri): _*)
+        val stopWatch = StopWatch.createStarted()
+        try {
+          currentFilter.handler.handle(runFilter(c1, nextFilters.tail))(c1.ofRoute(currentFilter))
+        } finally {
+          stopWatch.printElapseTime("Filter " + currentFilter.methods + " " + currentFilter.uri, log, LogLevel.TRACE)
+        }
+      } else {
+        runSafe(c1)(runServlet)
       }
-    } else {
-      runServlet()(context)
     }
   }
 
-  private def runServlet()(implicit context: RequestContext): Response = {
+  private def runServlet(context: RequestContext): Response = {
     servlet
       .find(_.canApply(context.request))
       .map { httpRoute =>
@@ -111,7 +106,20 @@ trait HttpRouter extends LogSupport with ProductionInfo {
         }
       }
       .getOrElse({
-        getErrorResponse(ResponseStatus.NOT_FOUND)
+        getErrorResponse(ResponseStatus.NOT_FOUND)(context)
       })
+  }
+
+  private def runSafe(context: RequestContext)(action: (RequestContext) => Response): Response = {
+    try {
+      action(context)
+    } catch {
+      case e: BadRequestException =>
+        log.debug("Bad request", e)
+        exceptionHandler.handle(e)(context)
+      case e: Exception =>
+        log.error("Error during request", e)
+        exceptionHandler.handle(e)(context)
+    }
   }
 }

@@ -74,24 +74,6 @@ trait JettyServer extends HttpServer with WSServer {
     server
   }
 
-  //  private def createWSHandler(): ServletContextHandler = {
-  //    try {
-  //      val webSocketServletContextHandler = new ServletContextHandler(null, "/", true, false)
-  //      val webSocketUpgradeFilter: WebSocketUpgradeFilter = WebSocketUpgradeFilter.configureContext(webSocketServletContextHandler)
-  //      webSocketIdleTimeoutMillis.foreach(v => webSocketUpgradeFilter.getFactory.getPolicy.setIdleTimeout(v))
-  //
-  //      wsRoutes.foreach{ route =>
-  //        val webSocketCreator: WebSocketCreator = WebSocketCreatorFactory.create(webSocketHandlers.get(path))
-  //        webSocketUpgradeFilter.addMapping(new ServletPathSpec(route.), webSocketCreator)
-  //
-  //      }
-  //    } catch {
-  //      case ex: Exception =>
-  //        log.error("creation of websocket context handler failed.", ex)
-  //        throw ex;
-  //    }
-  //  }
-
   private def getServerConnector(server: Server, port: Int): ServerConnector = {
     val connector = new ServerConnector(server)
     connector.setIdleTimeout(TimeUnit.HOURS.toMillis(1))
