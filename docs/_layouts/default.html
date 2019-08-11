@@ -30,16 +30,13 @@
                     <a class="nav-link" href="/mad-server/modules">Modules</a>
                 </li>
             </ul>
-            <span class="navbar-text">
-
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item {% if page.path=='modules.md' %}active{% endif %}">
-                    <a class="nav-link" href="/mad-server/modules">Modules</a>
-                </li>
-            </ul>
-<!--      <Navbar text with an inline element>-->
-<!--        https://pages-themes.github.io/slate/assets/images/blacktocat.png-->
-    </span>
+            <span>
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/mad-server/modules"><img src="https://pages-themes.github.io/slate/assets/images/blacktocat.png"></img>Github</a>
+                    </li>
+                </ul>
+            </span>
         </div>
     </nav>
 </header>
@@ -57,7 +54,9 @@
 <!-- FOOTER  -->
 <footer class="mx-auto" style="width: 100%;">
     <div class="inner">
-        <p style="text-align: center;"><i class="far fa-copyright"></i> {{ site.title | default: site.github.repository_name }} maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a></p>
+        <p style="text-align: center;"><i class="far fa-copyright"></i> {{ site.title | default:
+            site.github.repository_name }} maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name
+                }}</a></p>
     </div>
 </footer>
 
