@@ -14,7 +14,6 @@
 </head>
 
 <body>
-
 <header>
     <!-- Fixed navbar -->
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
@@ -28,7 +27,7 @@
                 <li class="nav-item active">
                     <a class="nav-link" href="/mad-server">Home</a>
                 </li>
-                <li class="nav-item {% if id=='modules' %}active{% endif %}">
+                <li class="nav-item {% if page.path=='modules.md' %}active{% endif %}">
                     <a class="nav-link" href="/mad-server/modules">Modules</a>
                 </li>
             </ul>
@@ -40,8 +39,6 @@
 <main role="main" class="flex-shrink-0">
     <div class="container">
         <section id="main_content" class="inner">
-    <p>{{ page.path }}</p>
-    <p>{{ page.url }}</p>
             {{ content }}
         </section>
     </div>
