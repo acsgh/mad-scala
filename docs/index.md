@@ -1,4 +1,3 @@
-# mad-server
 Light web framework very extensible yeahh
 
 ![alt text](https://travis-ci.org/acsgh/mad-server.svg?branch=master)
