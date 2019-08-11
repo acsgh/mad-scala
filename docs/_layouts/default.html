@@ -24,7 +24,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
+                <li class="nav-item {% if page.path=='index.md' %}active{% endif %}">
                     <a class="nav-link" href="/mad-server">Home</a>
                 </li>
                 <li class="nav-item {% if page.path=='modules.md' %}active{% endif %}">
