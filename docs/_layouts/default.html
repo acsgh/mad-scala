@@ -28,7 +28,7 @@
                 <li class="nav-item active">
                     <a class="nav-link" href="/mad-server">Home</a>
                 </li>
-                <li class="nav-item {% if id.google_analytics %}active{% endif %}">
+                <li class="nav-item {% if id=='modules' %}active{% endif %}">
                     <a class="nav-link" href="/mad-server/modules">Modules</a>
                 </li>
             </ul>
@@ -38,9 +38,10 @@
 
 <!-- MAIN CONTENT -->
 <main role="main" class="flex-shrink-0">
-    <p>{{ page.path }}</p>
     <div class="container">
         <section id="main_content" class="inner">
+    <p>{{ page.path }}</p>
+    <p>{{ page.url }}</p>
             {{ content }}
         </section>
     </div>
