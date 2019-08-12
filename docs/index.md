@@ -4,9 +4,9 @@
 Light web framework very extensible.
 - Fully written in scala
 - You can choose between multiple providers:
-- Netty
-- Jetty
-- Web Servets
+    - Netty
+    - Jetty
+    - Web Servets
 - Multiple Json support
 - No annotations based
 - Swagger support
