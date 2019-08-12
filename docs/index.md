@@ -1,24 +1,19 @@
-![alt text](https://travis-ci.org/acsgh/mad-server.svg?branch=master)
-[![Maven Central](https://img.shields.io/maven-central/v/com.github.acsgh.mad.scala/core_2.12.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.acsgh.mad.scala%22%20AND%20a:%22core_2.12%22)
+# Extensible Light web framework
 
-Light web framework very extensible.
-- Fully written in scala
-- You can choose between multiple providers:
-    - Netty
-    - Jetty
-    - Web Servets
-- Multiple Json support
-- No annotations based
-- Swagger support
+<br/>
+<ul class="list">
+  <li>Fully written in scala</li>
+  <li>You can choose between multiple providers: Jetty, Netty</li>
+  <li>Multiple Json support: Spray JSON, Jackson</li>
+  <li>No annotations based</li>
+  <li>Swagger support</li>
+</ul>
 
-1.  Sample first item.
-
-    * sub-bullet one
-    * sub-bullet two
-
-2.  Continuing the list
-
-    1. sub-list numbered one
-    2. sub-list numbered two
-
-3.  Another list item.
+<br/>
+## Links
+<ul class="list">
+  <li><a href="installation">Installation</a></li>
+  <li><a href="getting-started">Getting Started</a></li>
+  <li><a href="documentation">Documentation</a></li>
+  <li><a href="examples">Examples</a></li>
+</ul>

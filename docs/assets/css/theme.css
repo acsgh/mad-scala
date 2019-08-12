@@ -1,7 +1,29 @@
 body {
-  margin-top: 80px;
+    margin-top: 80px;
 }
 
 .github-logo {
     margin-left: 10px;
+}
+
+.list {
+    margin-left: 20px;
+}
+
+footer {
+    position: fixed;
+    height: 60px;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+}
+
+footer hr {
+    width: 80%;
+    text-align:center;
+    margin: 0 auto;
+}
+
+footer p {
+    margin-top: 15px;
 }
