@@ -7,7 +7,8 @@
     <meta name="viewport" content="width=device-width,maximum-scale=2">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" media="screen" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
+<!--    <link rel="stylesheet" type="text/css" media="screen"-->
+<!--          href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">-->
     <link rel="stylesheet" type="text/css" media="screen" href="assets/css/theme.css">
     <script src="https://kit.fontawesome.com/30c8f79236.js"></script>
     {% seo %}
@@ -40,13 +41,18 @@
             <span>
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="https://travis-ci.org/acsgh/mad-server"><img src="https://travis-ci.org/acsgh/mad-server.svg?branch=master"></img></a>
+                        <a class="nav-link" href="https://travis-ci.org/acsgh/mad-server"><img
+                                src="https://travis-ci.org/acsgh/mad-server.svg?branch=master"></img></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="https://search.maven.org/search?q=g:%22com.github.acsgh.mad.scala%22%20AND%20a:%22core_2.12%22"><img src="https://img.shields.io/maven-central/v/com.github.acsgh.mad.scala/core_2.12.svg?label=Maven%20Central"></img></a>
+                        <a class="nav-link"
+                           href="https://search.maven.org/search?q=g:%22com.github.acsgh.mad.scala%22%20AND%20a:%22core_2.12%22"><img
+                                src="https://img.shields.io/maven-central/v/com.github.acsgh.mad.scala/core_2.12.svg?label=Maven%20Central"></img></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ site.github.repository_url }}">View on GitHub<img class="github-logo" src="https://pages-themes.github.io/slate/assets/images/blacktocat.png"></img></a>
+                        <a class="nav-link" href="{{ site.github.repository_url }}">View on GitHub<img
+                                class="github-logo"
+                                src="https://pages-themes.github.io/slate/assets/images/blacktocat.png"></img></a>
                     </li>
                 </ul>
             </span>
@@ -90,6 +96,12 @@
     ga('send', 'pageview');
 </script>
 {% endif %}
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>

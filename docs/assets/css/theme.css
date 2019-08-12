@@ -16,6 +16,7 @@ footer {
     bottom: 0;
     width: 100%;
     text-align: center;
+    background: white;
 }
 
 footer hr {
@@ -26,4 +27,12 @@ footer hr {
 
 footer p {
     margin-top: 15px;
+}
+
+.markdown-toc {
+ border: 1px lightgray;
+}
+
+.highlight{
+    background: rgba(211, 211, 211, 0.4);
 }
