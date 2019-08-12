@@ -14,6 +14,7 @@ Table of content:
 Contains the basic routing logic it has two submodules, one to handle only http and other that give WS support
 
 #### 1.1.1 HTTP
+##### 1.1.1.1 Dependencies
 <ul class="nav nav-tabs" id="myTab" role="tablist">
   <li class="nav-item">
     <a class="nav-link active" id="maven-tab" data-toggle="tab" href="#http-maven" role="tab" aria-controls="home" aria-selected="true">Maven</a>
@@ -27,7 +28,7 @@ Contains the basic routing logic it has two submodules, one to handle only http 
   ```
   <dependency>
     <groupId>com.github.acsgh.mad.scala.router</groupId>
-    <artifactId>htto_2.12</artifactId>
+    <artifactId>http_2.12</artifactId>
     <version>{{ page.current_version}}</version>
     <type>pom</type>
   </dependency>
@@ -39,3 +40,6 @@ Contains the basic routing logic it has two submodules, one to handle only http 
   ``` 
   </div>
 </div>
+
+##### 1.1.1.2 Usage
+The main class in this module is the class **HttpRouter**. Any server contains one and it is an abstraction of all the routes an application holds.
