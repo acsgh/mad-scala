@@ -2,6 +2,7 @@
 build/
 classes/
 node_modules/
+out/
 
 .directory
 
