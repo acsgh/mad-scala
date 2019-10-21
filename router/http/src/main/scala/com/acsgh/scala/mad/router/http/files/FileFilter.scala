@@ -1,6 +1,6 @@
 package com.acsgh.scala.mad.router.http.files
 
-import java.io.InputStream
+import java.io.{ByteArrayOutputStream, InputStream}
 import java.math.BigInteger
 import java.net.URLConnection
 import java.security.MessageDigest
@@ -69,7 +69,21 @@ abstract class FileFilter extends RequestFilter {
     result
   }
 
-  protected def bytes(input: InputStream): Array[Byte] = Source.fromInputStream(input, "UTF-8").mkString.getBytes("UTF-8")
+  protected def bytes(input: InputStream): Array[Byte] = {
+    val output = new ByteArrayOutputStream()
+
+    try {
+      val buffer = new Array[Byte](1024)
+
+      Stream.continually(input.read(buffer))
+        .takeWhile(_ != -1)
+        .foreach(output.write(buffer, 0, _))
+
+      output.toByteArray
+    } finally {
+      output.close()
+    }
+  }
 
 
   private def uri(context: RequestContext) = context.pathParams.get("path").map(addTradingSlash).map(removeEndingSlash).getOrElse(context.request.path)

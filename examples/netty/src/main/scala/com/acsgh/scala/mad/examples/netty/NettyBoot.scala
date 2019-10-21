@@ -3,7 +3,7 @@ package com.acsgh.scala.mad.examples.netty
 import java.util.concurrent.atomic.AtomicLong
 
 import com.acsgh.scala.mad.converter.json.spray.SprayDirectives
-import com.acsgh.scala.mad.converter.template.thymeleaf.ThymeleafHttpServer
+import com.acsgh.scala.mad.converter.template.thymeleaf.{ThymeleafHttpServer, ThymeleafTemplate}
 import com.acsgh.scala.mad.provider.netty.NettyServer
 import com.acsgh.scala.mad.router.http.model.ResponseStatus
 
@@ -28,7 +28,7 @@ object NettyBoot extends NettyServer with ThymeleafHttpServer with JsonProtocol 
 
   get("/") { implicit context =>
     requestQuery("name".default("Jonh Doe")) { name =>
-      thymeleafTemplate("index", Map("name" -> name))
+      responseBody(ThymeleafTemplate("index", Map("name" -> name)))
     }
   }
 
@@ -87,7 +87,7 @@ object NettyBoot extends NettyServer with ThymeleafHttpServer with JsonProtocol 
     nextJump =>
       log.info("Handling: {}", context.request.uri)
       val result = nextJump()
-      log.info("Handling: {}, done", context.request.uri)
+      log.info("Handling: {} - {}, done", context.request.uri, context.response.responseStatus)
       result
   }
 }

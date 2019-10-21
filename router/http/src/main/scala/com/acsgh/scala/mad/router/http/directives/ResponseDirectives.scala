@@ -2,7 +2,7 @@ package com.acsgh.scala.mad.router.http.directives
 
 import com.acsgh.scala.mad.router.http.RequestContext
 import com.acsgh.scala.mad.router.http.convertions.{BodyWriter, DefaultFormats, DefaultParamHandling, ParamWriter}
-import com.acsgh.scala.mad.router.http.model.{ProtocolVersion, Response, ResponseStatus}
+import com.acsgh.scala.mad.router.http.model.{HttpCookie, ProtocolVersion, Response, ResponseStatus}
 
 trait ResponseDirectives extends DefaultParamHandling with DefaultFormats {
 
@@ -14,6 +14,10 @@ trait ResponseDirectives extends DefaultParamHandling with DefaultFormats {
   def responseStatus(input: ResponseStatus)(action: => Response)(implicit context: RequestContext): Response = {
     context.response.status(input)
     action
+  }
+
+  def responseCookie(input: HttpCookie)(action: => Response)(implicit context: RequestContext): Response = {
+    responseHeader("Set-Cookie", input.toValue)(action)
   }
 
   def responseVersion(input: ProtocolVersion)(action: => Response)(implicit context: RequestContext): Response = {

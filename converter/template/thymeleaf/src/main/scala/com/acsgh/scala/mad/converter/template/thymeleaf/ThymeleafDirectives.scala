@@ -1,15 +1,26 @@
 package com.acsgh.scala.mad.converter.template.thymeleaf
 
-import java.io.{ByteArrayOutputStream, PrintWriter}
-
-import com.acsgh.scala.mad.router.http.RequestContext
+import com.acsgh.scala.mad.ProductionInfo
+import com.acsgh.scala.mad.router.http.convertions.BodyWriter
 import com.acsgh.scala.mad.router.http.directives.Directives
-import com.acsgh.scala.mad.router.http.model.Response
+import com.googlecode.htmlcompressor.compressor.HtmlCompressor
 import org.thymeleaf.TemplateEngine
 import org.thymeleaf.context.Context
 
-trait ThymeleafDirectives {
+trait ThymeleafDirectives extends ProductionInfo {
   directives: Directives =>
+
+  protected val thymeleafEngine: TemplateEngine
+
+  private val htmlCompressorFilter: HtmlCompressor = {
+    val c = new HtmlCompressor()
+    c.setPreserveLineBreaks(false)
+    c.setRemoveComments(true)
+    c.setRemoveIntertagSpaces(true)
+    c.setRemoveHttpProtocol(true)
+    c.setRemoveHttpsProtocol(true)
+    c
+  }
 
   implicit protected def toContext(map: Map[String, Any]): Context = {
     val context = new Context
@@ -17,17 +28,13 @@ trait ThymeleafDirectives {
     context
   }
 
-  def thymeleafTemplate(templateName: String, params: Map[String, String])(implicit context: RequestContext, thymeleafEngine: TemplateEngine): Response = {
-    val out = new ByteArrayOutputStream
-    try {
-      val printStream = new PrintWriter(out)
-      thymeleafEngine.process(templateName, params, printStream)
-      responseBody(out.toByteArray)
-    } catch {
-      case e: Exception =>
-        throw new RuntimeException(e)
-    } finally {
-      if (out != null) out.close()
+  implicit object ThymeleafBodyWriter extends BodyWriter[ThymeleafTemplate] {
+    override val contentType: String = "text/html; charset=UTF-8"
+
+    override def write(input: ThymeleafTemplate): Array[Byte] = {
+      val body = thymeleafEngine.process(input.templateName, input.params)
+      val finalBody = if (productionMode) htmlCompressorFilter.compress(body) else body
+      finalBody.getBytes("UTF-8")
     }
   }
 }

@@ -2,6 +2,7 @@ dependencies {
     compile project(":router:http")
 
     compile 'org.thymeleaf:thymeleaf:3.0.11.RELEASE'
+    compile "com.googlecode.htmlcompressor:htmlcompressor:1.5.2"
 }
 
 apply plugin: 'acsgh-publish'

@@ -8,6 +8,7 @@ include ':converter:json:jackson'
 include ':converter:json:spray'
 include ':converter:template:freemarker'
 include ':converter:template:thymeleaf'
+include ':converter:template:twirl'
 
 include ':provider:servlet'
 include ':provider:netty'

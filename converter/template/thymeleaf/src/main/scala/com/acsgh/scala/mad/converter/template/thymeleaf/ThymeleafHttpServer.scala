@@ -14,7 +14,7 @@ trait ThymeleafHttpServer extends ThymeleafDirectives {
   protected val templateMode: TemplateMode = TemplateMode.HTML
   protected val encoding: String = "UTF-8"
 
-  protected implicit var thymeleafEngine: TemplateEngine = new TemplateEngine
+  protected implicit val thymeleafEngine: TemplateEngine = new TemplateEngine
 
   onConfigure {
     configureTemplateEngine()

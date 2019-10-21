@@ -26,6 +26,11 @@ trait URLSupport extends LogSupport {
     params
   }
 
+  protected def extractCookie(input: String): (String, String) = {
+    val parts = input.trim.split("=")
+    (parts(0), parts(1))
+  }
+
   protected def extractQueryParam(requestUri: URI): Map[String, List[String]] = {
     val query = requestUri.getQuery
     if (query == null) {

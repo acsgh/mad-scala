@@ -3,7 +3,7 @@ package com.acsgh.scala.mad.examples.jetty
 import java.util.concurrent.atomic.AtomicLong
 
 import com.acsgh.scala.mad.converter.json.jackson.JacksonHttpServer
-import com.acsgh.scala.mad.converter.template.thymeleaf.ThymeleafHttpServer
+import com.acsgh.scala.mad.converter.template.thymeleaf.{ThymeleafHttpServer, ThymeleafTemplate}
 import com.acsgh.scala.mad.provider.jetty.JettyServer
 import com.acsgh.scala.mad.router.http.model.ResponseStatus
 import com.acsgh.scala.mad.support.swagger.SwaggerRoutes
@@ -44,7 +44,7 @@ object JettyBoot extends JettyServer with ThymeleafHttpServer with JacksonHttpSe
 
   get("/") { implicit context =>
     requestQuery("name".default("Jonh Doe")) { name =>
-      thymeleafTemplate("index", Map("name" -> name))
+      responseBody(ThymeleafTemplate("index", Map("name" -> name)))
     }
   }
 
