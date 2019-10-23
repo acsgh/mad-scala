@@ -10,39 +10,41 @@ import acsgh.mad.scala.router.http.model.{RequestMethod, Response}
 
 trait Routes extends DefaultFormats with DefaultParamHandling with Directives {
 
-  def options(uri: String)(action: RequestContext => Response)(implicit httpRouter: HttpRouter): Unit = servlet(uri, OPTIONS)(action)
+  protected val httpRouter: HttpRouter
 
-  def get(uri: String)(action: RequestContext => Response)(implicit httpRouter: HttpRouter): Unit = servlet(uri, GET)(action)
+  def options(uri: String)(action: RequestContext => Response): Unit = servlet(uri, OPTIONS)(action)
 
-  def head(uri: String)(action: RequestContext => Response)(implicit httpRouter: HttpRouter): Unit = servlet(uri, HEAD)(action)
+  def get(uri: String)(action: RequestContext => Response): Unit = servlet(uri, GET)(action)
 
-  def post(uri: String)(action: RequestContext => Response)(implicit httpRouter: HttpRouter): Unit = servlet(uri, POST)(action)
+  def head(uri: String)(action: RequestContext => Response): Unit = servlet(uri, HEAD)(action)
 
-  def put(uri: String)(action: RequestContext => Response)(implicit httpRouter: HttpRouter): Unit = servlet(uri, PUT)(action)
+  def post(uri: String)(action: RequestContext => Response): Unit = servlet(uri, POST)(action)
 
-  def patch(uri: String)(action: RequestContext => Response)(implicit httpRouter: HttpRouter): Unit = servlet(uri, PATCH)(action)
+  def put(uri: String)(action: RequestContext => Response): Unit = servlet(uri, PUT)(action)
 
-  def delete(uri: String)(action: RequestContext => Response)(implicit httpRouter: HttpRouter): Unit = servlet(uri, DELETE)(action)
+  def patch(uri: String)(action: RequestContext => Response): Unit = servlet(uri, PATCH)(action)
 
-  def trace(uri: String)(action: RequestContext => Response)(implicit httpRouter: HttpRouter): Unit = servlet(uri, TRACE)(action)
+  def delete(uri: String)(action: RequestContext => Response): Unit = servlet(uri, DELETE)(action)
 
-  def filter(uri: String, methods: Set[RequestMethod] = Set())(action: RequestContext => (() => Response) => Response)(implicit httpRouter: HttpRouter): Unit = {
+  def trace(uri: String)(action: RequestContext => Response): Unit = servlet(uri, TRACE)(action)
+
+  def filter(uri: String, methods: Set[RequestMethod] = Set())(action: RequestContext => (() => Response) => Response): Unit = {
     httpRouter.filter(new HttpRoute[RequestFilter](uri, methods, new RequestFilter {
       override def handle(nextJump: () => Response)(implicit context: RequestContext): Response = action(context)(nextJump)
     }))
   }
 
-  def resourceFolder(uri: String, resourceFolderPath: String)(implicit httpRouter: HttpRouter): Unit = filterInt(uri, Set(RequestMethod.GET))(StaticClasspathFolderFilter(resourceFolderPath))
+  def resourceFolder(uri: String, resourceFolderPath: String): Unit = filterInt(uri, Set(RequestMethod.GET))(StaticClasspathFolderFilter(resourceFolderPath))
 
-  def filesystemFolder(uri: String, resourceFolderPath: String)(implicit httpRouter: HttpRouter): Unit = filterInt(uri, Set(RequestMethod.GET))(StaticFilesystemFolderFilter(new File(resourceFolderPath)))
+  def filesystemFolder(uri: String, resourceFolderPath: String): Unit = filterInt(uri, Set(RequestMethod.GET))(StaticFilesystemFolderFilter(new File(resourceFolderPath)))
 
-  def webjars()(implicit httpRouter: HttpRouter): Unit = resourceFolder("/webjars/{path+}", "META-INF/resources/webjars")
+  def webjars(): Unit = resourceFolder("/webjars/{path+}", "META-INF/resources/webjars")
 
-  protected def servlet(uri: String, method: RequestMethod)(action: RequestContext => Response)(implicit httpRouter: HttpRouter): Unit = {
+  protected def servlet(uri: String, method: RequestMethod)(action: RequestContext => Response): Unit = {
     httpRouter.servlet(new HttpRoute[RequestServlet](uri, Set(method), (context: RequestContext) => action(context)))
   }
 
-  protected def filterInt(uri: String, methods: Set[RequestMethod] = Set())(action: RequestFilter)(implicit httpRouter: HttpRouter): Unit = {
+  protected def filterInt(uri: String, methods: Set[RequestMethod] = Set())(action: RequestFilter): Unit = {
     httpRouter.filter(new HttpRoute[RequestFilter](uri, methods, action))
   }
 

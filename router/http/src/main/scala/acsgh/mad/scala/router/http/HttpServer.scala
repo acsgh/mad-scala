@@ -6,6 +6,6 @@ trait HttpServer extends MadServer with HttpRouter with Routes {
 
   protected val httpPort: Option[Int] = None
 
-  protected implicit val httpRouter: HttpRouter = this
+  protected override val httpRouter: HttpRouter = this
 
 }
