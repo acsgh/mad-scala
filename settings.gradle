@@ -1,4 +1,4 @@
-rootProject.name = 'mad-server'
+rootProject.name = 'mad-scala'
 
 include ':core'
 include ':router:http'
