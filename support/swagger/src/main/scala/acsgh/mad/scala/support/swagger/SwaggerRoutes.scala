@@ -2,14 +2,14 @@ package acsgh.mad.scala.support.swagger
 
 import acsgh.mad.scala.router.http.model.RequestMethod._
 import acsgh.mad.scala.router.http.model.{RequestMethod, Response}
-import acsgh.mad.scala.router.http.{HttpRouter, RequestContext, Routes}
+import acsgh.mad.scala.router.http.{RequestContext, Routes}
 import acsgh.mad.scala.support.swagger.dsl.OpenApiBuilder
 import io.swagger.v3.core.util.{Json, Yaml}
 import io.swagger.v3.oas.models.{OpenAPI, Operation, PathItem, Paths}
 
 trait SwaggerRoutes extends Routes with OpenApiBuilder {
 
-  def swaggerRoutes(docPath: String = "/api-docs")(implicit httpRouter: HttpRouter, openAPi: OpenAPI): Unit = {
+  def swaggerRoutes(docPath: String = "/api-docs")(implicit openAPi: OpenAPI): Unit = {
     webjars()
     resourceFolder("/{path+}", "swagger-ui")
 
@@ -26,23 +26,23 @@ trait SwaggerRoutes extends Routes with OpenApiBuilder {
     }
   }
 
-  def options(uri: String, operation: Operation)(action: RequestContext => Response)(implicit httpRouter: HttpRouter, openAPi: OpenAPI): Unit = servlet(uri, OPTIONS, operation)(action)
+  def options(uri: String, operation: Operation)(action: RequestContext => Response)(implicit openAPi: OpenAPI): Unit = servlet(uri, OPTIONS, operation)(action)
 
-  def get(uri: String, operation: Operation)(action: RequestContext => Response)(implicit httpRouter: HttpRouter, openAPi: OpenAPI): Unit = servlet(uri, GET, operation)(action)
+  def get(uri: String, operation: Operation)(action: RequestContext => Response)(implicit openAPi: OpenAPI): Unit = servlet(uri, GET, operation)(action)
 
-  def head(uri: String, operation: Operation)(action: RequestContext => Response)(implicit httpRouter: HttpRouter, openAPi: OpenAPI): Unit = servlet(uri, HEAD, operation)(action)
+  def head(uri: String, operation: Operation)(action: RequestContext => Response)(implicit openAPi: OpenAPI): Unit = servlet(uri, HEAD, operation)(action)
 
-  def post(uri: String, operation: Operation)(action: RequestContext => Response)(implicit httpRouter: HttpRouter, openAPi: OpenAPI): Unit = servlet(uri, POST, operation)(action)
+  def post(uri: String, operation: Operation)(action: RequestContext => Response)(implicit openAPi: OpenAPI): Unit = servlet(uri, POST, operation)(action)
 
-  def put(uri: String, operation: Operation)(action: RequestContext => Response)(implicit httpRouter: HttpRouter, openAPi: OpenAPI): Unit = servlet(uri, PUT, operation)(action)
+  def put(uri: String, operation: Operation)(action: RequestContext => Response)(implicit openAPi: OpenAPI): Unit = servlet(uri, PUT, operation)(action)
 
-  def patch(uri: String, operation: Operation)(action: RequestContext => Response)(implicit httpRouter: HttpRouter, openAPi: OpenAPI): Unit = servlet(uri, PATCH, operation)(action)
+  def patch(uri: String, operation: Operation)(action: RequestContext => Response)(implicit openAPi: OpenAPI): Unit = servlet(uri, PATCH, operation)(action)
 
-  def delete(uri: String, operation: Operation)(action: RequestContext => Response)(implicit httpRouter: HttpRouter, openAPi: OpenAPI): Unit = servlet(uri, DELETE, operation)(action)
+  def delete(uri: String, operation: Operation)(action: RequestContext => Response)(implicit openAPi: OpenAPI): Unit = servlet(uri, DELETE, operation)(action)
 
-  def trace(uri: String, operation: Operation)(action: RequestContext => Response)(implicit httpRouter: HttpRouter, openAPi: OpenAPI): Unit = servlet(uri, TRACE, operation)(action)
+  def trace(uri: String, operation: Operation)(action: RequestContext => Response)(implicit openAPi: OpenAPI): Unit = servlet(uri, TRACE, operation)(action)
 
-  protected def servlet(uri: String, method: RequestMethod, operation: Operation)(action: RequestContext => Response)(implicit httpRouter: HttpRouter, openAPi: OpenAPI): Unit = {
+  protected def servlet(uri: String, method: RequestMethod, operation: Operation)(action: RequestContext => Response)(implicit openAPi: OpenAPI): Unit = {
     if (openAPi.getPaths == null) {
       openAPi.setPaths(new Paths)
     }
