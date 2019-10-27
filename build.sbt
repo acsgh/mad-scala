@@ -61,7 +61,19 @@ lazy val root = (project in file("."))
     name := "mad-scala",
     commonSettings
   )
-  .aggregate(core, routerHttp, routerWebsocket, converterJsonJackson, converterJsonSpray, converterTemplateFreemarker, converterTemplateThymeleaf, converterTemplateTwirl)
+  .aggregate(
+    core,
+    routerHttp,
+    routerWebsocket,
+    converterJsonJackson,
+    converterJsonSpray,
+    converterTemplateFreemarker,
+    converterTemplateThymeleaf,
+    converterTemplateTwirl,
+    providerServlet,
+    providerJetty,
+    providerNetty
+  )
 
 lazy val core = (project in file("core"))
   .settings(
@@ -146,5 +158,43 @@ lazy val converterTemplateTwirl = (project in file("converter/template/twirl"))
     )
   )
   .dependsOn(routerHttp)
+
+lazy val providerServlet = (project in file("provider/servlet"))
+  .settings(
+    organization := "com.github.acsgh.mad.scala.provider",
+    name := "servlet",
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "javax.servlet" % "javax.servlet-api" % "4.0.1",
+    )
+  )
+  .dependsOn(routerHttp)
+
+lazy val providerJetty = (project in file("provider/jetty"))
+  .settings(
+    organization := "com.github.acsgh.mad.scala.provider",
+    name := "jetty",
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "org.eclipse.jetty" % "jetty-server" % "9.4.19.v20190610",
+      "org.eclipse.jetty" % "jetty-webapp" % "9.4.19.v20190610",
+      "org.eclipse.jetty.websocket" % "websocket-server" % "9.4.19.v20190610",
+      "org.eclipse.jetty.websocket" % "websocket-servlet" % "9.3.6.v20151106",
+    )
+  )
+  .dependsOn(routerWebsocket)
+  .dependsOn(providerServlet)
+
+lazy val providerNetty = (project in file("provider/netty"))
+  .settings(
+    organization := "com.github.acsgh.mad.scala.provider",
+    name := "netty",
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "io.netty" % "netty-all" % "4.1.37.Final",
+    )
+  )
+  .dependsOn(routerWebsocket)
+  .dependsOn(providerServlet)
 
 
