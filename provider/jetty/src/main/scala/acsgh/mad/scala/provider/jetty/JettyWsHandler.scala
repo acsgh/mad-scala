@@ -12,22 +12,23 @@ import org.eclipse.jetty.websocket.api.{Session, WebSocketAdapter}
 import org.eclipse.jetty.websocket.server.{NativeWebSocketConfiguration, WebSocketUpgradeFilter}
 import org.eclipse.jetty.websocket.servlet.{ServletUpgradeRequest, ServletUpgradeResponse, WebSocketCreator}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
-class JettyWsHandler(private var wsRouter: WSRouter, private var webSocketIdleTimeoutMillis: Option[Int]) extends ServletContextHandler(null, "/", true, false) {
+object JettyWsHandler  {
 
-  def init(): JettyWsHandler = {
-    val webSocketUpgradeFilter = WebSocketUpgradeFilter.configureContext(this)
+  def init(wsRouter: WSRouter, webSocketIdleTimeoutMillis: Option[Int]): ServletContextHandler = {
+    val result = new ServletContextHandler(null, "/", true, false)
+    val webSocketUpgradeFilter = WebSocketUpgradeFilter.configureContext(result)
     webSocketIdleTimeoutMillis.map(_.toLong).foreach(webSocketUpgradeFilter.getFactory.getPolicy.setIdleTimeout)
 
-    val webSocketConfiguration = getServletContext.getAttribute(classOf[NativeWebSocketConfiguration].getName).asInstanceOf[NativeWebSocketConfiguration]
+    val webSocketConfiguration = result.getServletContext.getAttribute(classOf[NativeWebSocketConfiguration].getName).asInstanceOf[NativeWebSocketConfiguration]
 
     wsRouter.wsRoutes.foreach { e =>
       val creator = new JettyWebSocketCreator(wsRouter, e._1, e._2)
       webSocketConfiguration.addMapping(new ServletPathSpec(e._1), creator)
     }
 
-    this
+    result
   }
 }
 

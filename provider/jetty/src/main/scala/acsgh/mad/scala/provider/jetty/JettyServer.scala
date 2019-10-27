@@ -55,7 +55,7 @@ trait JettyServer extends HttpServer with WSServer {
       handlers.setHandlers(
         List(
           new JettyHttpHandler(servlet, wsRouter),
-          new JettyWsHandler(wsRouter, webSocketIdleTimeoutMillis).init(),
+          JettyWsHandler.init(wsRouter, webSocketIdleTimeoutMillis),
         ).toArray
       )
       server.setHandler(handlers)

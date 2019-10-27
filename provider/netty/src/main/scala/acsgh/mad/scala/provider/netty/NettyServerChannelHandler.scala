@@ -12,7 +12,7 @@ import io.netty.handler.codec.http.HttpResponseStatus.CONTINUE
 import io.netty.handler.codec.http.HttpVersion.HTTP_1_1
 import io.netty.handler.codec.http._
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 class NettyServerChannelHandler(private val httpRouter: HttpRouter) extends ChannelInboundHandlerAdapter with LogSupport {
 
@@ -56,7 +56,9 @@ class NettyServerChannelHandler(private val httpRouter: HttpRouter) extends Chan
   private def getHeaders(request: HttpRequest): Map[String, List[String]] = {
     request.headers.asScala.map(e => (e.getKey, e.getValue))
       .groupBy(_._1)
+      .view
       .mapValues(_.map(_._2).toList)
+      .toMap
   }
 
   private def getNettyHttpVersion(protocolVersion: ProtocolVersion) = HttpVersion.valueOf(protocolVersion.entryName)

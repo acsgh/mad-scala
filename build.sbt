@@ -72,7 +72,10 @@ lazy val root = (project in file("."))
     converterTemplateTwirl,
     providerServlet,
     providerJetty,
-    providerNetty
+    providerNetty,
+    supportSwagger,
+    examplesJetty,
+    examplesNetty
   )
 
 lazy val core = (project in file("core"))
@@ -197,4 +200,47 @@ lazy val providerNetty = (project in file("provider/netty"))
   .dependsOn(routerWebsocket)
   .dependsOn(providerServlet)
 
+lazy val supportSwagger = (project in file("support/swagger"))
+  .settings(
+    organization := "com.github.acsgh.mad.scala.support",
+    name := "swagger",
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "io.swagger.core.v3" % "swagger-core" % "2.0.8",
+      "io.swagger.core.v3" % "swagger-annotations" % "2.0.8",
+      "io.swagger.core.v3" % "swagger-integration" % "2.0.8",
+      "com.github.swagger-akka-http" %% "swagger-scala-module" % "2.0.4",
+      "org.webjars" % "swagger-ui" % "3.23.0"
+    )
+  )
+  .dependsOn(routerHttp)
 
+lazy val examplesJetty = (project in file("examples/jetty"))
+  .settings(
+    organization := "com.github.acsgh.mad.scala.examples",
+    name := "jetty",
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "org.webjars" % "bootstrap" % "3.3.7-1",
+      "ch.qos.logback" % "logback-classic" % "1.1.7",
+    )
+  )
+  .dependsOn(converterTemplateThymeleaf)
+  .dependsOn(converterJsonJackson)
+  .dependsOn(providerJetty)
+  .dependsOn(supportSwagger)
+
+lazy val examplesNetty = (project in file("examples/netty"))
+  .settings(
+    organization := "com.github.acsgh.mad.scala.examples",
+    name := "netty",
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "org.webjars" % "bootstrap" % "3.3.7-1",
+      "ch.qos.logback" % "logback-classic" % "1.1.7",
+    )
+  )
+  .dependsOn(converterTemplateThymeleaf)
+  .dependsOn(converterJsonSpray)
+  .dependsOn(providerNetty)
+  .dependsOn(supportSwagger)

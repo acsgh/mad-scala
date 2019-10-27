@@ -4,10 +4,11 @@ import acsgh.mad.scala.router.http.model.RequestMethod._
 import acsgh.mad.scala.router.http.model.{RequestMethod, Response}
 import acsgh.mad.scala.router.http.{RequestContext, Routes}
 import acsgh.mad.scala.support.swagger.dsl.OpenApiBuilder
+import com.acsgh.common.scala.log.LogSupport
 import io.swagger.v3.core.util.{Json, Yaml}
 import io.swagger.v3.oas.models.{OpenAPI, Operation, PathItem, Paths}
 
-trait SwaggerRoutes extends Routes with OpenApiBuilder {
+trait SwaggerRoutes extends Routes with OpenApiBuilder with LogSupport{
 
   def swaggerRoutes(docPath: String = "/api-docs")(implicit openAPi: OpenAPI): Unit = {
     webjars()
@@ -68,6 +69,8 @@ trait SwaggerRoutes extends Routes with OpenApiBuilder {
         item.delete(operation)
       case RequestMethod.TRACE =>
         item.trace(operation)
+      case method =>
+        throw new Exception(s"Unknown Method: $method")
     }
 
     servlet(uri, method)(action)
