@@ -1,5 +1,0 @@
-dependencies {
-    compile "com.github.acsgh.common.scala:core_2.12:1.0.4"
-}
-
-apply plugin: 'acsgh-publish'
