@@ -3,6 +3,8 @@ package acsgh.mad.scala.router.http.convertions
 import acsgh.mad.scala.router.http.RequestContext
 import acsgh.mad.scala.router.http.directives._
 
+import scala.language.implicitConversions
+
 trait DefaultParamHandling {
 
   implicit object StringWriter extends ParamWriter[String] {

@@ -7,6 +7,8 @@ import com.googlecode.htmlcompressor.compressor.HtmlCompressor
 import org.thymeleaf.TemplateEngine
 import org.thymeleaf.context.Context
 
+import scala.language.implicitConversions
+
 trait ThymeleafDirectives extends ProductionInfo {
   directives: Directives =>
 

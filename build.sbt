@@ -1,7 +1,27 @@
-ThisBuild / organization := "com.github.acsgh.common.scala"
+ThisBuild / organization := "com.github.acsgh.mad.scala"
 ThisBuild / scalaVersion := "2.13.1"
 
+import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
+
 lazy val commonSettings = Seq(
+  scalacOptions += "-feature",
+  scalacOptions += "-deprecation",
+  sonatypeProfileName := "com.github.acsgh",
+  releaseProcess := Seq[ReleaseStep](
+    checkSnapshotDependencies,
+    inquireVersions,
+    runClean,
+    runTest,
+    setReleaseVersion,
+    commitReleaseVersion,
+    tagRelease,
+    releaseStepCommandAndRemaining("+publishSigned"),
+    releaseStepCommand("sonatypeBundleRelease"),
+    setNextVersion,
+    commitNextVersion,
+    pushChanges
+  ),
+  releasePublishArtifactsAction := PgpKeys.publishSigned.value,
   libraryDependencies ++= Seq(
     "com.beachape" %% "enumeratum" % "1.5.13",
     "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
@@ -41,6 +61,7 @@ lazy val root = (project in file("."))
     name := "mad-scala",
     commonSettings
   )
+  .aggregate(core, routerHttp, routerWebsocket, converterJsonJackson, converterJsonSpray, converterTemplateFreemarker, converterTemplateThymeleaf, converterTemplateTwirl)
 
 lazy val core = (project in file("core"))
   .settings(
@@ -50,5 +71,80 @@ lazy val core = (project in file("core"))
       "com.github.acsgh.common.scala" %% "core" % "1.0.6"
     )
   )
+
+lazy val routerHttp = (project in file("router/http"))
+  .settings(
+    organization := "com.github.acsgh.mad.scala.router",
+    name := "http",
+    commonSettings
+  )
+  .dependsOn(core)
+
+lazy val routerWebsocket = (project in file("router/websocket"))
+  .settings(
+    organization := "com.github.acsgh.mad.scala.router",
+    name := "websocket",
+    commonSettings
+  )
+  .dependsOn(routerHttp)
+
+lazy val converterJsonJackson = (project in file("converter/json/jackson"))
+  .settings(
+    organization := "com.github.acsgh.mad.scala.converter.json",
+    name := "jackson",
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "com.fasterxml.jackson.core" % "jackson-databind" % "2.9.9",
+      "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.9.9"
+    )
+  )
+  .dependsOn(routerHttp)
+
+lazy val converterJsonSpray = (project in file("converter/json/spray"))
+  .settings(
+    organization := "com.github.acsgh.mad.scala.converter.json",
+    name := "spray",
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "io.spray" %% "spray-json" % "1.3.5"
+    )
+  )
+  .dependsOn(routerHttp)
+
+lazy val converterTemplateFreemarker = (project in file("converter/template/freemarker"))
+  .settings(
+    organization := "com.github.acsgh.mad.scala.converter.template",
+    name := "freemarker",
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "org.freemarker" % "freemarker" % "2.3.28",
+      "com.googlecode.htmlcompressor" % "htmlcompressor" % "1.5.2"
+    )
+  )
+  .dependsOn(routerHttp)
+
+lazy val converterTemplateThymeleaf = (project in file("converter/template/thymeleaf"))
+  .settings(
+    organization := "com.github.acsgh.mad.scala.converter.template",
+    name := "thymeleaf",
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "org.thymeleaf" % "thymeleaf" % "3.0.11.RELEASE",
+      "com.googlecode.htmlcompressor" % "htmlcompressor" % "1.5.2"
+    )
+  )
+  .dependsOn(routerHttp)
+
+lazy val converterTemplateTwirl = (project in file("converter/template/twirl"))
+  .settings(
+    organization := "com.github.acsgh.mad.scala.converter.template",
+    name := "twirl",
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "com.typesafe.play" %% "twirl-api" % "1.4.2",
+      "com.googlecode.htmlcompressor" % "htmlcompressor" % "1.5.2"
+    )
+  )
+  .dependsOn(routerHttp)
 
 

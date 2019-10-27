@@ -2,6 +2,8 @@ package acsgh.mad.scala.router.http.convertions
 
 import acsgh.mad.scala.router.http.model.{Response, ResponseBuilder}
 
+import scala.language.implicitConversions
+
 trait DefaultFormats {
 
   implicit def builderToResponse(builder: ResponseBuilder): Response = builder.build

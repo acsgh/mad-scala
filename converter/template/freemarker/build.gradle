@@ -1,8 +1,0 @@
-dependencies {
-    compile project(":router:http")
-
-    compile 'org.freemarker:freemarker:2.3.28'
-    compile "com.googlecode.htmlcompressor:htmlcompressor:1.5.2"
-}
-
-apply plugin: 'acsgh-publish'
