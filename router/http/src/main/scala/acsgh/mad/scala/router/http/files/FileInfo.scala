@@ -26,7 +26,7 @@ case class FileInfo
       }
     }.orElse({
       ifNoneMatchHeader.map { header =>
-        header.equalsIgnoreCase(etag)
+        !header.equalsIgnoreCase(etag)
       }
     }).getOrElse(true)
 
