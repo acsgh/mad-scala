@@ -70,7 +70,7 @@ trait HttpRouter extends LogSupport with ProductionInfo {
   }
 
   private def containsRoute(routesList: List[HttpRoute[_]], uri: String, methods: Set[RequestMethod]): Boolean = {
-    val routes = routesList.map(e => (e.uri, e.methods)).groupBy(_._1).mapValues(_.flatMap(_._2).toSet)
+    val routes = routesList.map(e => (e.uri, e.methods)).groupBy(_._1).mapValues(_.flatMap(_._2).toSet).toMap
 
     routes.get(uri).exists { r =>
       (r.isEmpty && methods.isEmpty) || r.intersect(methods).nonEmpty
