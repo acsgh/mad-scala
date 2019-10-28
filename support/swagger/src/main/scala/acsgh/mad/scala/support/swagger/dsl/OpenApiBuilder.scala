@@ -180,7 +180,7 @@ trait OpenApiBuilder {
     values: Map[String, List[String]] = null,
   ): SecurityRequirement = {
     val result = new SecurityRequirement()
-    result.putAll(values.view.mapValues(_.asJava).toMap.asJava)
+    result.putAll(values.mapValues(_.asJava).asJava)
     result
   }
 

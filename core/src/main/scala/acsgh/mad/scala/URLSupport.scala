@@ -36,7 +36,7 @@ trait URLSupport extends LogSupport {
     if (query == null) {
       Map()
     } else {
-      query.split("&").flatMap(toMapEntry _).groupBy(_._1).view.mapValues(_.map(_._2).toList).toMap
+      query.split("&").flatMap(toMapEntry _).groupBy(_._1).mapValues(_.map(_._2).toList)
     }
   }
 
