@@ -6,6 +6,8 @@ import acsgh.mad.scala.router.http.exception.BadRequestException
 import acsgh.mad.scala.router.http.model.{ProtocolVersion, Request, RequestMethod, ResponseStatus}
 import org.scalatest._
 
+import scala.language.reflectiveCalls
+
 class HttpRouterTest extends FlatSpec with Matchers {
 
   def f =
@@ -17,7 +19,7 @@ class HttpRouterTest extends FlatSpec with Matchers {
 
   "HttpRouter" should "return 404 if no route" in {
     val router = f.router
-    val request = new Request(
+    val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
       URI.create("/"),
@@ -34,7 +36,7 @@ class HttpRouterTest extends FlatSpec with Matchers {
 
   it should "return 500 if error" in {
     val router = f.router
-    val request = new Request(
+    val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
       URI.create("/"),
@@ -43,7 +45,7 @@ class HttpRouterTest extends FlatSpec with Matchers {
       new Array[Byte](0)
     )
 
-    router.get("/"){implicit ctx =>
+    router.get("/") { implicit ctx =>
       throw new RuntimeException("aaaaaa")
     }
 
@@ -55,7 +57,7 @@ class HttpRouterTest extends FlatSpec with Matchers {
 
   it should "return 400 if bad request" in {
     val router = f.router
-    val request = new Request(
+    val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
       URI.create("/"),
@@ -64,7 +66,7 @@ class HttpRouterTest extends FlatSpec with Matchers {
       new Array[Byte](0)
     )
 
-    router.get("/"){implicit ctx =>
+    router.get("/") { implicit ctx =>
       throw new BadRequestException("aaaaaa")
     }
 
@@ -72,5 +74,105 @@ class HttpRouterTest extends FlatSpec with Matchers {
 
     response.protocolVersion should be(request.protocolVersion)
     response.responseStatus should be(ResponseStatus.BAD_REQUEST)
+  }
+
+  it should "handle a fix request" in {
+    val router = f.router
+    val request = Request(
+      RequestMethod.GET,
+      "1.2.3.4",
+      URI.create("/hello"),
+      ProtocolVersion.HTTP_1_1,
+      Map(),
+      new Array[Byte](0)
+    )
+
+    val body = "Hello there"
+    router.get("/hello") { implicit ctx =>
+      ctx.response.body(body.getBytes("UTF-8")).build
+    }
+
+    val response = router.process(request)
+
+    response.protocolVersion should be(request.protocolVersion)
+    response.responseStatus should be(ResponseStatus.OK)
+    new String(response.bodyBytes, "UTF-8") should be(body)
+  }
+
+  it should "handle a param request" in {
+    val router = f.router
+    val request = Request(
+      RequestMethod.GET,
+      "1.2.3.4",
+      URI.create("/persons/1/name"),
+      ProtocolVersion.HTTP_1_1,
+      Map(),
+      new Array[Byte](0)
+    )
+
+    val body = "1"
+    router.get("/persons/{id}/name") { implicit ctx =>
+      val id = ctx.pathParams("id")
+      ctx.response.body(id.getBytes("UTF-8")).build
+    }
+
+    val response = router.process(request)
+
+    response.protocolVersion should be(request.protocolVersion)
+    response.responseStatus should be(ResponseStatus.OK)
+    new String(response.bodyBytes, "UTF-8") should be(body)
+  }
+
+  it should "handle a filter" in {
+    val router = f.router
+    val request = Request(
+      RequestMethod.GET,
+      "1.2.3.4",
+      URI.create("/persons/1"),
+      ProtocolVersion.HTTP_1_1,
+      Map(),
+      new Array[Byte](0)
+    )
+
+
+    router.filter("/*") { implicit ctx =>
+      nextJump =>
+        ctx.response.status(ResponseStatus.CREATED)
+        nextJump()
+    }
+
+    val body = "Hi there"
+    router.get("/persons/*") { implicit ctx =>
+      ctx.response.body(body.getBytes("UTF-8")).build
+    }
+
+    val response = router.process(request)
+
+    response.protocolVersion should be(request.protocolVersion)
+    response.responseStatus should be(ResponseStatus.CREATED)
+    new String(response.bodyBytes, "UTF-8") should be(body)
+  }
+
+  it should "handle a wildcard request" in {
+    val router = f.router
+    val request = Request(
+      RequestMethod.GET,
+      "1.2.3.4",
+      URI.create("/persons/1"),
+      ProtocolVersion.HTTP_1_1,
+      Map(),
+      new Array[Byte](0)
+    )
+
+    val body = "Hi there"
+    router.get("/persons/*") { implicit ctx =>
+      ctx.response.body(body.getBytes("UTF-8")).build
+    }
+
+    val response = router.process(request)
+
+    response.protocolVersion should be(request.protocolVersion)
+    response.responseStatus should be(ResponseStatus.OK)
+    new String(response.bodyBytes, "UTF-8") should be(body)
   }
 }
