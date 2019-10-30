@@ -21,6 +21,8 @@ lazy val commonSettings = Seq(
     commitNextVersion,
     pushChanges
   ),
+  crossScalaVersions := List("2.12.10", "2.13.1"),
+  releaseCrossBuild := true,
   releasePublishArtifactsAction := PgpKeys.publishSigned.value,
   libraryDependencies ++= Seq(
     "com.beachape" %% "enumeratum" % "1.5.13",
@@ -37,13 +39,7 @@ lazy val commonSettings = Seq(
   publishMavenStyle := true,
   publishArtifact in Test := false,
   pomIncludeRepository := { _ => false },
-  publishTo in ThisBuild := {
-    val nexus = "https://oss.sonatype.org/"
-    if (isSnapshot.value)
-      Some("snapshots" at nexus + "content/repositories/snapshots")
-    else
-      Some("releases" at nexus + "service/local/staging/deploy/maven2")
-  },
+  publishTo := sonatypePublishToBundle.value,
   scmInfo := Some(
     ScmInfo(
       url("https://github.com/acsgh/mad-scala"),
@@ -59,7 +55,9 @@ lazy val commonSettings = Seq(
 lazy val root = (project in file("."))
   .settings(
     name := "mad-scala",
-    commonSettings
+    commonSettings,
+    crossScalaVersions := Nil,
+    publish / skip := true
   )
   .aggregate(
     core,

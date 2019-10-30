@@ -6,7 +6,7 @@ import acsgh.mad.scala.router.http.convertions.{DefaultFormats, DefaultParamHand
 import acsgh.mad.scala.router.http.directives.Directives
 import acsgh.mad.scala.router.http.files.{StaticClasspathFolderFilter, StaticFilesystemFolderFilter}
 import acsgh.mad.scala.router.http.model.RequestMethod._
-import acsgh.mad.scala.router.http.model.{RequestMethod, Response}
+import acsgh.mad.scala.router.http.model.{RequestMethod, Response, Route}
 
 trait Routes extends DefaultFormats with DefaultParamHandling with Directives {
 
@@ -39,6 +39,10 @@ trait Routes extends DefaultFormats with DefaultParamHandling with Directives {
   def filesystemFolder(uri: String, resourceFolderPath: String): Unit = filterInt(uri, Set(RequestMethod.GET))(StaticFilesystemFolderFilter(new File(resourceFolderPath)))
 
   def webjars(): Unit = resourceFolder("/webjars/{path+}", "META-INF/resources/webjars")
+
+  def before[T](uri:String, methods: Set[RequestMethod] = Set())(route:Route[T]):Unit = {
+
+  }
 
   protected def servlet(uri: String, method: RequestMethod)(action: RequestContext => Response): Unit = {
     httpRouter.servlet(new HttpRoute[RequestServlet](uri, Set(method), (context: RequestContext) => action(context)))

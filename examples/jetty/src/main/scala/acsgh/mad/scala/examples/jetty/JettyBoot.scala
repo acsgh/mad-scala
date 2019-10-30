@@ -162,6 +162,10 @@ object JettyBoot extends JettyServer with ThymeleafHttpServer with JacksonHttpSe
     }
   }
 
+  before("/*"){implicit ctx =>
+    ctx.response
+  }
+
 
   filter("/*") { implicit context =>
     nextJump =>
