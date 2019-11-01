@@ -2,13 +2,14 @@ package acsgh.mad.scala.router.http
 
 import java.net.URI
 
+import acsgh.mad.scala.router.http.convertions.DefaultFormats
 import acsgh.mad.scala.router.http.exception.BadRequestException
 import acsgh.mad.scala.router.http.model.{ProtocolVersion, Request, RequestMethod, ResponseStatus}
 import org.scalatest._
 
 import scala.language.reflectiveCalls
 
-class HttpRouterTest extends FlatSpec with Matchers {
+class HttpRouterTest extends FlatSpec with Matchers with DefaultFormats {
 
   def f =
     new {
@@ -97,7 +98,7 @@ class HttpRouterTest extends FlatSpec with Matchers {
 
     val body = "Hello there"
     routes.get("/hello") { implicit ctx =>
-      ctx.response.body(body.getBytes("UTF-8")).build
+      ctx.response.body(body.getBytes("UTF-8"))
     }
 
     val response = router.process(request)
@@ -123,7 +124,7 @@ class HttpRouterTest extends FlatSpec with Matchers {
     val body = "1"
     routes.get("/persons/{id}/name") { implicit ctx =>
       val id = ctx.pathParams("id")
-      ctx.response.body(id.getBytes("UTF-8")).build
+      ctx.response.body(id.getBytes("UTF-8"))
     }
 
     val response = router.process(request)
@@ -155,7 +156,7 @@ class HttpRouterTest extends FlatSpec with Matchers {
 
     val body = "Hi there"
     routes.get("/persons/*") { implicit ctx =>
-      ctx.response.body(body.getBytes("UTF-8")).build
+      ctx.response.body(body.getBytes("UTF-8"))
     }
 
     val response = router.process(request)
@@ -180,7 +181,7 @@ class HttpRouterTest extends FlatSpec with Matchers {
 
     val body = "Hi there"
     routes.get("/persons/*") { implicit ctx =>
-      ctx.response.body(body.getBytes("UTF-8")).build
+      ctx.response.body(body.getBytes("UTF-8"))
     }
 
     val response = router.process(request)

@@ -4,7 +4,7 @@ import acsgh.mad.scala.router.http.RequestContext
 import acsgh.mad.scala.router.http.convertions.{BodyReader, BodyWriter}
 import acsgh.mad.scala.router.http.directives.Directives
 import acsgh.mad.scala.router.http.exception.BadRequestException
-import acsgh.mad.scala.router.http.model.Response
+import acsgh.mad.scala.router.http.model.{Response, RouteResult}
 import spray.json._
 
 trait SprayDirectives {
@@ -40,8 +40,8 @@ trait SprayDirectives {
     }
   }
 
-  def requestJson[T](clazz: Class[T])(action: T => Response)(implicit context: RequestContext, jsonReader: JsonReader[T]): Response = requestBody(action)(context, reader(clazz))
+  def requestJson[T](clazz: Class[T])(action: T => RouteResult)(implicit context: RequestContext, jsonReader: JsonReader[T]): RouteResult = requestBody(action)(context, reader(clazz))
 
-  def responseJson[T](value: T)(implicit context: RequestContext, jsonWriter: JsonWriter[T]): Response = responseBody(value)(context, writer())
+  def responseJson[T](value: T)(implicit context: RequestContext, jsonWriter: JsonWriter[T]): RouteResult = responseBody(value)(context, writer())
 
 }

@@ -16,6 +16,6 @@ package object model {
 
   type RouteResult = Either[RouteError, Response]
 
-  type Route = RequestContext => Future[RouteResult]
+  type Route = RequestContext => RouteResult
 
 }

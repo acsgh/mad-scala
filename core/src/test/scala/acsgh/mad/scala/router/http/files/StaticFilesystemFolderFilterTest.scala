@@ -2,13 +2,14 @@ package acsgh.mad.scala.router.http.files
 
 import java.net.URI
 
+import acsgh.mad.scala.router.http.convertions.DefaultFormats
 import acsgh.mad.scala.router.http.model.{ProtocolVersion, Request, RequestMethod, ResponseStatus}
 import acsgh.mad.scala.router.http.{HttpRouter, Routes}
 import org.scalatest._
 
 import scala.language.reflectiveCalls
 
-class StaticFilesystemFolderFilterTest extends FlatSpec with Matchers {
+class StaticFilesystemFolderFilterTest extends FlatSpec with Matchers with DefaultFormats {
 
   def f =
     new {

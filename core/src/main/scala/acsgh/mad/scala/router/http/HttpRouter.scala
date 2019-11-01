@@ -21,24 +21,20 @@ case class RequestContext
 }
 
 trait RequestFilter extends LogSupport with Directives {
-  def handle(nextJump: () => Response)(implicit requestContext: RequestContext): Response
+  def handle(nextJump: () => RouteResult)(implicit requestContext: RequestContext): RouteResult
 }
 
-trait RequestServlet extends LogSupport with Directives {
-  def handle(implicit requestContext: RequestContext): Response
-}
+final class HttpRouter(serverName: => String, _productionMode: => Boolean) extends LogSupport {
 
-final class HttpRouter(serverName:String, _productionMode: => Boolean) extends LogSupport {
-
-  protected var filters: List[HttpRoute[RequestFilter]] = List()
-  protected var servlet: List[HttpRoute[RequestServlet]] = List()
+  //  protected var filters: List[HttpRoute[RequestFilter]] = List()
+  protected var servlet: List[HttpRoute[Route]] = List()
   protected val errorCodeHandlers: Map[ResponseStatus, ErrorCodeHandler] = Map()
   protected val defaultErrorCodeHandler: ErrorCodeHandler = new DefaultErrorCodeHandler()
   protected val exceptionHandler: ExceptionHandler = new DefaultExceptionHandler(_productionMode)
 
   def productionMode: Boolean = _productionMode
 
-  private[http] def servlet(route: HttpRoute[RequestServlet]): Unit = {
+  private[http] def servlet(route: HttpRoute[Route]): Unit = {
     if (containsRoute(servlet, route.uri, route.methods)) {
       log.debug("The servlet method {} - {} has been already defined", Some(route.methods).filter(_.nonEmpty).map(_.mkString(", ")).getOrElse("All"), route.uri)
     } else {
@@ -46,7 +42,7 @@ final class HttpRouter(serverName:String, _productionMode: => Boolean) extends L
     }
   }
 
-  private[http] def filter(route: HttpRoute[RequestFilter]): Unit = filters = filters ++ List(route)
+  //  private[http] def filter(route: HttpRoute[RequestFilter]): Unit = filters = filters ++ List(route)
 
   def process(httpRequest: Request): Response = {
     val ctx: RequestContext = RequestContext(httpRequest, ResponseBuilder(httpRequest), this)
@@ -54,21 +50,21 @@ final class HttpRouter(serverName:String, _productionMode: => Boolean) extends L
     ctx.response.header("Server", serverName)
     val stopWatch = StopWatch.createStarted()
     try {
-      runSafe(ctx)(processFilters)
+      runServlet(ctx)
     } finally {
       stopWatch.printElapseTime(s"Response: ${ctx.request.method} ${ctx.request.uri} with ${ctx.response.status.code}", log, LogLevel.INFO)
     }
   }
 
-  private[http] def getErrorResponse(responseStatus: ResponseStatus, message: Option[String] = None)(implicit context: RequestContext): Response = {
+  private[http] def getErrorResponse(responseStatus: ResponseStatus, message: Option[String] = None)(implicit context: RequestContext): RouteResult = {
     val errorCodeHandler = errorCodeHandlers.getOrElse(responseStatus, defaultErrorCodeHandler)
     errorCodeHandler.handle(responseStatus, message)
   }
 
-  private def processFilters(context: RequestContext): Response = {
-    val httpRoutes = filters.filter(_.canApply(context.request))
-    runFilter(context, httpRoutes)()
-  }
+  //  private def processFilters(context: RequestContext): Response = {
+  //    val httpRoutes = filters.filter(_.canApply(context.request))
+  //    runFilter(context, httpRoutes)()
+  //  }
 
   private def containsRoute(routesList: List[HttpRoute[_]], uri: String, methods: Set[RequestMethod]): Boolean = {
     val routes = routesList.map(e => (e.uri, e.methods)).groupBy(_._1).view.mapValues(_.flatMap(_._2).toSet).toMap
@@ -78,22 +74,22 @@ final class HttpRouter(serverName:String, _productionMode: => Boolean) extends L
     }
   }
 
-  private def runFilter(context: RequestContext, nextFilters: List[HttpRoute[RequestFilter]]): () => Response = () => {
-    runSafe(context) { c1 =>
-      if (nextFilters.nonEmpty) {
-        val currentFilter = nextFilters.head
-        log.trace("Filter {} {}", Array(currentFilter.methods, currentFilter.uri): _*)
-        val stopWatch = StopWatch.createStarted()
-        try {
-          currentFilter.handler.handle(runFilter(c1, nextFilters.tail))(c1.ofRoute(currentFilter))
-        } finally {
-          stopWatch.printElapseTime("Filter " + currentFilter.methods + " " + currentFilter.uri, log, LogLevel.TRACE)
-        }
-      } else {
-        runSafe(c1)(runServlet)
-      }
-    }
-  }
+  //  private def runFilter(context: RequestContext, nextFilters: List[HttpRoute[RequestFilter]]): () => Response = () => {
+  //    runSafe(context) { c1 =>
+  //      if (nextFilters.nonEmpty) {
+  //        val currentFilter = nextFilters.head
+  //        log.trace("Filter {} {}", Array(currentFilter.methods, currentFilter.uri): _*)
+  //        val stopWatch = StopWatch.createStarted()
+  //        try {
+  //          currentFilter.handler.handle(runFilter(c1, nextFilters.tail))(c1.ofRoute(currentFilter))
+  //        } finally {
+  //          stopWatch.printElapseTime("Filter " + currentFilter.methods + " " + currentFilter.uri, log, LogLevel.TRACE)
+  //        }
+  //      } else {
+  //        runSafe(c1)(runServlet)
+  //      }
+  //    }
+  //  }
 
   private def runServlet(context: RequestContext): Response = {
     servlet
@@ -101,17 +97,20 @@ final class HttpRouter(serverName:String, _productionMode: => Boolean) extends L
       .map { httpRoute =>
         val stopWatch = StopWatch.createStarted()
         try {
-          httpRoute.handler.handle(context.ofRoute(httpRoute))
+          httpRoute.handler.apply(context.ofRoute(httpRoute))
         } finally {
           stopWatch.printElapseTime("Servlet " + httpRoute.methods + " " + httpRoute.uri, log, LogLevel.TRACE)
         }
       }
       .getOrElse({
         getErrorResponse(ResponseStatus.NOT_FOUND)(context)
-      })
+      }) match {
+      case Left(e) => context.response.build
+      case Right(e) => e.asInstanceOf[Response]
+    }
   }
 
-  private def runSafe(ctx: RequestContext)(action: (RequestContext) => Response): Response = {
+  private def runSafe(ctx: RequestContext)(action: (RequestContext) => RouteResult): RouteResult = {
     try {
       action(ctx)
     } catch {

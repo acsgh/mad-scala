@@ -17,11 +17,15 @@ abstract class Server extends App with Routes with WSRoutes {
   private var httpServer: Option[NettyServerChannel] = None
   private var httpsServer: Option[NettyServerChannel] = None
 
-  protected override val httpRouter: HttpRouter = new HttpRouter(name, {
+  protected override val httpRouter: HttpRouter = new HttpRouter({
+    name
+  }, {
     _productionMode
   })
 
-  protected val wsRouter: WSRouter = new WSRouter(name, {
+  protected val wsRouter: WSRouter = new WSRouter({
+    name
+  }, {
     _productionMode
   })
 

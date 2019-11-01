@@ -6,7 +6,7 @@ import java.net.URLConnection
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 
-import acsgh.mad.scala.router.http.model.Response
+import acsgh.mad.scala.router.http.model.{Response, RouteResult}
 import acsgh.mad.scala.router.http.model.ResponseStatus.NOT_MODIFIED
 import acsgh.mad.scala.router.http.{RequestContext, RequestFilter}
 
@@ -17,7 +17,7 @@ object FileFilter {
 
 abstract class FileFilter extends RequestFilter {
 
-  override def handle(nextJump: () => Response)(implicit context: RequestContext): Response = {
+  override def handle(nextJump: () => RouteResult)(implicit context: RequestContext): RouteResult = {
     val requestUri = uri(context)
     log.trace("Requesting file: {}", requestUri)
 

@@ -18,7 +18,7 @@ case class WSRequestContext
   route: Option[WSRoute] = None
 )
 
-final class WSRouter(serverName:String, _productionMode: => Boolean) extends LogSupport {
+final class WSRouter(serverName: => String, _productionMode: => Boolean) extends LogSupport {
 
   private[scala] var wsRoutes: Map[String, WSRoute] = Map()
   protected val defaultHandler: WSHandler = new DefaultHandler()
