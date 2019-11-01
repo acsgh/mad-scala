@@ -56,7 +56,7 @@ class NettyServerChannelHandler(private val httpRouter: HttpRouter) extends Chan
   private def getHeaders(request: HttpRequest): Map[String, List[String]] = {
     request.headers.asScala.map(e => (e.getKey, e.getValue))
       .groupBy(_._1)
-      .view.mapValues(_.map(_._2).toList)
+      .mapValues(_.map(_._2).toList)
       .toMap
   }
 
