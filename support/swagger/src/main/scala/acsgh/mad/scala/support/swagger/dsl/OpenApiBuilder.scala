@@ -17,7 +17,7 @@ import io.swagger.v3.oas.models.security.SecurityRequirement
 import io.swagger.v3.oas.models.servers.{Server, ServerVariable, ServerVariables}
 import io.swagger.v3.oas.models.tags.Tag
 
-import scala.jdk.CollectionConverters._
+import scala.collection.JavaConverters._
 
 object OpenApiBuilderDefault extends OpenApiBuilder {
 

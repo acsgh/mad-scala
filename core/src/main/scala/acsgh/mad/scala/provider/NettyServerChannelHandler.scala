@@ -12,7 +12,7 @@ import io.netty.handler.codec.http.HttpResponseStatus.CONTINUE
 import io.netty.handler.codec.http.HttpVersion.HTTP_1_1
 import io.netty.handler.codec.http._
 
-import scala.jdk.CollectionConverters._
+import scala.collection.JavaConverters._
 
 class NettyServerChannelHandler(private val httpRouter: HttpRouter) extends ChannelInboundHandlerAdapter with LogSupport {
 
