@@ -10,7 +10,7 @@ import acsgh.mad.scala.support.swagger.SwaggerRoutes
 import com.acsgh.common.scala.App
 import io.swagger.v3.oas.models.OpenAPI
 
-object NettyBoot extends Server with App with ThymeleafHttpServer with JsonProtocol with SprayDirectives with SwaggerRoutes {
+object Boot extends Server with App with ThymeleafHttpServer with JsonProtocol with SprayDirectives with SwaggerRoutes {
   override val name: String = "Netty Boot Example"
 
   override protected val prefix: String = "/templates/"
@@ -39,7 +39,7 @@ object NettyBoot extends Server with App with ThymeleafHttpServer with JsonProto
   }
 
 
-  resourceFolder("/*", "public")
+  resourceFolder("/", "public")
   webjars()
 
   get("/") { implicit context =>

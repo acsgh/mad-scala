@@ -30,11 +30,18 @@ trait Routes extends DefaultFormats with DefaultParamHandling with Directives {
 
   def filter(uri: String, methods: Set[RequestMethod] = Set())(action: FilterAction): Unit = httpRouter.filter(HttpRoute[FilterAction](uri, methods, action))
 
-  def resourceFolder(uri: String, resourceFolderPath: String): Unit = httpRouter.servlet(StaticClasspathFolderFilter(s"$uri/{path+}", resourceFolderPath))
+  def resourceFolder(uri: String, resourceFolderPath: String): Unit = httpRouter.servlet(StaticClasspathFolderFilter(assetsUri(uri), resourceFolderPath))
 
-  def filesystemFolder(uri: String, resourceFolderPath: String): Unit = httpRouter.servlet(StaticFilesystemFolderFilter(s"$uri/{path+}", new File(resourceFolderPath)))
+  def filesystemFolder(uri: String, resourceFolderPath: String): Unit = httpRouter.servlet(StaticFilesystemFolderFilter(assetsUri(uri), new File(resourceFolderPath)))
 
   def webjars(): Unit = resourceFolder("/webjars", "META-INF/resources/webjars")
 
   protected def servlet(uri: String, method: RequestMethod)(action: RouteAction): Unit = httpRouter.servlet(HttpRoute[RouteAction](uri, Set(method), action))
+
+  protected def assetsUri(uri: String): String = {
+    if (uri.contains("*")) {
+      throw new IllegalArgumentException("Assets folder cannot contains *")
+    }
+    s"$uri/{path+}".replace("//", "/")
+  }
 }

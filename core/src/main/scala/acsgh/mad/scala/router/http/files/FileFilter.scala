@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat
 
 import acsgh.mad.scala.router.http.directives.Directives
 import acsgh.mad.scala.router.http.model.ResponseStatus.{NOT_FOUND, NOT_MODIFIED}
-import acsgh.mad.scala.router.http.model.{RequestContext, _}
+import acsgh.mad.scala.router.http.model._
 
 object FileFilter {
   val DATE_FORMATTER = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz")
@@ -89,7 +89,7 @@ abstract class FileFilter(val uri: String) extends Route[RouteAction] with Direc
   }
 
   private def uri(request: Request): String = {
-    val params= extractPathParams(uri, request.uri)
+    val params = extractPathParams(uri, request.uri)
     params.get("path").map(addTradingSlash).map(removeEndingSlash).getOrElse(request.path)
   }
 }

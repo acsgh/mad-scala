@@ -43,7 +43,7 @@ class StaticFilesystemFolderFilterTest extends FlatSpec with Matchers with Defau
     val fixture = f
     val router = fixture.router
     val routes = fixture.routes
-    routes.filesystemFolder("/*", f.baseFolder)
+    routes.filesystemFolder("/", f.baseFolder)
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -65,7 +65,7 @@ class StaticFilesystemFolderFilterTest extends FlatSpec with Matchers with Defau
     val fixture = f
     val router = fixture.router
     val routes = fixture.routes
-    routes.filesystemFolder("/*", f.baseFolder)
+    routes.filesystemFolder("/", f.baseFolder)
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -86,7 +86,7 @@ class StaticFilesystemFolderFilterTest extends FlatSpec with Matchers with Defau
     val fixture = f
     val router = fixture.router
     val routes = fixture.routes
-    routes.filesystemFolder("/*", f.baseFolder)
+    routes.filesystemFolder("/", f.baseFolder)
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",

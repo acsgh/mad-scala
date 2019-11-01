@@ -12,7 +12,7 @@ trait SwaggerRoutes extends Routes with OpenApiBuilder with LogSupport{
 
   def swaggerRoutes(docPath: String = "/api-docs")(implicit openAPi: OpenAPI): Unit = {
     webjars()
-    resourceFolder("/{path+}", "swagger-ui")
+    resourceFolder("/", "swagger-ui")
 
     get(s"$docPath.json") { implicit context =>
       responseHeader("Content-Type", "application/json") {
