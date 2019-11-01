@@ -1,4 +1,4 @@
-package acsgh.mad.scala.provider.netty
+package acsgh.mad.scala.provider
 
 import java.net.{InetSocketAddress, SocketAddress, URI}
 

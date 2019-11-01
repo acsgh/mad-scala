@@ -1,6 +1,5 @@
 package acsgh.mad.scala.converter.json.spray
 
-import acsgh.mad.scala.ProductionInfo
 import acsgh.mad.scala.router.http.RequestContext
 import acsgh.mad.scala.router.http.convertions.{BodyReader, BodyWriter}
 import acsgh.mad.scala.router.http.directives.Directives
@@ -8,13 +7,13 @@ import acsgh.mad.scala.router.http.exception.BadRequestException
 import acsgh.mad.scala.router.http.model.Response
 import spray.json._
 
-trait SprayDirectives extends ProductionInfo {
+trait SprayDirectives {
   directives: Directives =>
 
   protected def reader[T](clazz: Class[T])(implicit jsonReader: JsonReader[T]): BodyReader[T] = new BodyReader[T] {
     override val contentTypes: Set[String] = Set("application/json")
 
-    override def read(body: Array[Byte]): T = {
+    override def read(body: Array[Byte])(implicit context: RequestContext): T = {
       try {
         new String(body, "UTF_8").parseJson.convertTo[T]
       } catch {
@@ -27,9 +26,9 @@ trait SprayDirectives extends ProductionInfo {
 
     override val contentType: String = "application/json; charset=UTF-8"
 
-    override def write(body: T): Array[Byte] = {
+    override def write(body: T)(implicit context: RequestContext): Array[Byte] = {
       try {
-        val json = if (productionMode) {
+        val json = if (context.router.productionMode) {
           body.toJson.compactPrint
         } else {
           body.toJson.prettyPrint

@@ -1,6 +1,6 @@
 package acsgh.mad.scala.converter.template.twirl
 
-import acsgh.mad.scala.ProductionInfo
+import acsgh.mad.scala.router.http.RequestContext
 import acsgh.mad.scala.router.http.convertions.BodyWriter
 import acsgh.mad.scala.router.http.directives.Directives
 import com.googlecode.htmlcompressor.compressor.HtmlCompressor
@@ -22,8 +22,8 @@ trait TwirlSupport extends Directives with ProductionInfo {
   implicit object TwirlBodyWriter extends BodyWriter[HtmlFormat.Appendable] {
     override val contentType: String = "text/html; charset=UTF-8"
 
-    override def write(input: HtmlFormat.Appendable): Array[Byte] = {
-      val body = if (productionMode) htmlCompressorFilter.compress(input.body) else input.body
+    override def write(input: HtmlFormat.Appendable)(implicit context: RequestContext): Array[Byte] = {
+      val body = if (context.router.productionMode) htmlCompressorFilter.compress(input.body) else input.body
       body.getBytes("UTF-8")
     }
   }

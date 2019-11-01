@@ -2,21 +2,17 @@ package acsgh.mad.scala.examples.netty
 
 import java.util.concurrent.atomic.AtomicLong
 
+import acsgh.mad.scala.Server
 import acsgh.mad.scala.converter.json.spray.SprayDirectives
 import acsgh.mad.scala.converter.template.thymeleaf.{ThymeleafHttpServer, ThymeleafTemplate}
-import acsgh.mad.scala.provider.netty.NettyServer
-import acsgh.mad.scala.router.http.RequestContext
 import acsgh.mad.scala.router.http.model.ResponseStatus._
-import acsgh.mad.scala.router.http.model.{ResponseStatus, Route, RouteMessage, RouteResult}
 import acsgh.mad.scala.support.swagger.SwaggerRoutes
+import com.acsgh.common.scala.App
 import io.swagger.v3.oas.models.OpenAPI
 
-import scala.concurrent.Future
-
-object NettyBoot extends NettyServer with ThymeleafHttpServer with JsonProtocol with SprayDirectives with SwaggerRoutes {
+object NettyBoot extends Server with App with ThymeleafHttpServer with JsonProtocol with SprayDirectives with SwaggerRoutes {
   override val name: String = "Netty Boot Example"
 
-  override protected val httpPort: Option[Int] = Some(7654)
   override protected val prefix: String = "/templates/"
 
   implicit protected val openApi: OpenAPI = OpenAPI(
@@ -166,20 +162,19 @@ object NettyBoot extends NettyServer with ThymeleafHttpServer with JsonProtocol 
     }
   }
 
-//  implicit class FutureRoute(val a: Future[RouteResult]) extends Route[Future] {
-//    override def run(ctx: RequestContext): RouteResult = RouteMessage(ResponseStatus.OK, Some("asd"))
-//  }
-//
-//  before("/*"){implicit ctx =>
-//    ctx.response
-//  }
+  //  implicit class FutureRoute(val a: Future[RouteResult]) extends Route[Future] {
+  //    override def run(ctx: RequestContext): RouteResult = RouteMessage(ResponseStatus.OK, Some("asd"))
+  //  }
+  //
+  //  before("/*"){implicit ctx =>
+  //    ctx.response
+  //  }
 
-//  before("/*"){implicit ctx =>
-//    Future{
-//      ctx.response
-//    }
-//  }
-
+  //  before("/*"){implicit ctx =>
+  //    Future{
+  //      ctx.response
+  //    }
+  //  }
 
 
   filter("/*") { implicit context =>

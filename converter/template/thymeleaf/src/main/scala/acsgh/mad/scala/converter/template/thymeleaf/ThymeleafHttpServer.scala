@@ -1,12 +1,12 @@
 package acsgh.mad.scala.converter.template.thymeleaf
 
-import acsgh.mad.scala.router.http.HttpServer
+import acsgh.mad.scala.Server
 import org.thymeleaf.TemplateEngine
 import org.thymeleaf.templatemode.TemplateMode
 import org.thymeleaf.templateresolver.{ClassLoaderTemplateResolver, FileTemplateResolver}
 
 trait ThymeleafHttpServer extends ThymeleafDirectives {
-  server: HttpServer =>
+  server: Server =>
 
   protected val source: ThymeleafSource = ThymeleafSource.Classpath
   protected val prefix: String

@@ -12,13 +12,15 @@ class HttpRouterTest extends FlatSpec with Matchers {
 
   def f =
     new {
-      val router = new HttpRouter with Routes {
-        override protected val httpRouter: HttpRouter = this
+      val router = new HttpRouter(false)
+      val routes = new Routes {
+        override protected val httpRouter: HttpRouter = router
       }
     }
 
   "HttpRouter" should "return 404 if no route" in {
-    val router = f.router
+    val fixture = f
+    val router = fixture.router
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -35,7 +37,9 @@ class HttpRouterTest extends FlatSpec with Matchers {
   }
 
   it should "return 500 if error" in {
-    val router = f.router
+    val fixture = f
+    val router = fixture.router
+    val routes = fixture.routes
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -45,7 +49,7 @@ class HttpRouterTest extends FlatSpec with Matchers {
       new Array[Byte](0)
     )
 
-    router.get("/") { implicit ctx =>
+    routes.get("/") { implicit ctx =>
       throw new RuntimeException("aaaaaa")
     }
 
@@ -56,7 +60,9 @@ class HttpRouterTest extends FlatSpec with Matchers {
   }
 
   it should "return 400 if bad request" in {
-    val router = f.router
+    val fixture = f
+    val router = fixture.router
+    val routes = fixture.routes
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -66,7 +72,7 @@ class HttpRouterTest extends FlatSpec with Matchers {
       new Array[Byte](0)
     )
 
-    router.get("/") { implicit ctx =>
+    routes.get("/") { implicit ctx =>
       throw new BadRequestException("aaaaaa")
     }
 
@@ -77,7 +83,9 @@ class HttpRouterTest extends FlatSpec with Matchers {
   }
 
   it should "handle a fix request" in {
-    val router = f.router
+    val fixture = f
+    val router = fixture.router
+    val routes = fixture.routes
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -88,7 +96,7 @@ class HttpRouterTest extends FlatSpec with Matchers {
     )
 
     val body = "Hello there"
-    router.get("/hello") { implicit ctx =>
+    routes.get("/hello") { implicit ctx =>
       ctx.response.body(body.getBytes("UTF-8")).build
     }
 
@@ -100,7 +108,9 @@ class HttpRouterTest extends FlatSpec with Matchers {
   }
 
   it should "handle a param request" in {
-    val router = f.router
+    val fixture = f
+    val router = fixture.router
+    val routes = fixture.routes
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -111,7 +121,7 @@ class HttpRouterTest extends FlatSpec with Matchers {
     )
 
     val body = "1"
-    router.get("/persons/{id}/name") { implicit ctx =>
+    routes.get("/persons/{id}/name") { implicit ctx =>
       val id = ctx.pathParams("id")
       ctx.response.body(id.getBytes("UTF-8")).build
     }
@@ -124,7 +134,9 @@ class HttpRouterTest extends FlatSpec with Matchers {
   }
 
   it should "handle a filter" in {
-    val router = f.router
+    val fixture = f
+    val router = fixture.router
+    val routes = fixture.routes
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -135,14 +147,14 @@ class HttpRouterTest extends FlatSpec with Matchers {
     )
 
 
-    router.filter("/*") { implicit ctx =>
+    routes.filter("/*") { implicit ctx =>
       nextJump =>
         ctx.response.status(ResponseStatus.CREATED)
         nextJump()
     }
 
     val body = "Hi there"
-    router.get("/persons/*") { implicit ctx =>
+    routes.get("/persons/*") { implicit ctx =>
       ctx.response.body(body.getBytes("UTF-8")).build
     }
 
@@ -154,7 +166,9 @@ class HttpRouterTest extends FlatSpec with Matchers {
   }
 
   it should "handle a wildcard request" in {
-    val router = f.router
+    val fixture = f
+    val router = fixture.router
+    val routes = fixture.routes
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -165,7 +179,7 @@ class HttpRouterTest extends FlatSpec with Matchers {
     )
 
     val body = "Hi there"
-    router.get("/persons/*") { implicit ctx =>
+    routes.get("/persons/*") { implicit ctx =>
       ctx.response.body(body.getBytes("UTF-8")).build
     }
 

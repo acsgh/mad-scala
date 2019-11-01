@@ -18,10 +18,12 @@ case class WSRequestContext
   route: Option[WSRoute] = None
 )
 
-trait WSRouter extends LogSupport {
+final class WSRouter(_productionMode: => Boolean) extends LogSupport {
 
   private[mad] var wsRoutes: Map[String, WSRoute] = Map()
   protected val defaultHandler: WSHandler = new DefaultHandler()
+
+  def productionMode: Boolean = _productionMode
 
   private[ws] def route(uri: String, subprotocols: Set[String] = Set())(handler: WSHandler): Unit = wsRoutes = wsRoutes + (uri -> WSRoute(subprotocols, handler))
 

@@ -15,7 +15,7 @@ trait JacksonDirectives {
   protected def reader[T](clazz: Class[T])(implicit objectMapper: ObjectMapper): BodyReader[T] = new BodyReader[T] {
     override val contentTypes: Set[String] = Set("application/json")
 
-    override def read(body: Array[Byte]): T = {
+    override def read(body: Array[Byte])(implicit context: RequestContext): T = {
       try {
         objectMapper.readValue(body, clazz)
       } catch {
@@ -28,7 +28,7 @@ trait JacksonDirectives {
 
     override val contentType: String = "application/json; charset=UTF-8"
 
-    override def write(body: T): Array[Byte] = {
+    override def write(body: T)(implicit context: RequestContext): Array[Byte] = {
       try {
         val out = new ByteArrayOutputStream
         objectMapper.writeValue(out, body)

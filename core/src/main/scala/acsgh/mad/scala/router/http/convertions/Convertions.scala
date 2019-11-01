@@ -1,5 +1,7 @@
 package acsgh.mad.scala.router.http.convertions
 
+import acsgh.mad.scala.router.http.RequestContext
+
 trait ParamReader[T] {
   def read(input: String): T
 }
@@ -13,11 +15,11 @@ trait BodyReader[T] {
 
   val strictContentTypes: Boolean = false
 
-  def read(body: Array[Byte]): T
+  def read(body: Array[Byte])(implicit context: RequestContext): T
 }
 
 trait BodyWriter[T] {
   val contentType: String = "text/html"
 
-  def write(body: T): Array[Byte]
+  def write(body: T)(implicit context: RequestContext): Array[Byte]
 }

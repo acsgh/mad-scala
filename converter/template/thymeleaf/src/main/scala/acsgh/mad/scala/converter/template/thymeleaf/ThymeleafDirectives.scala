@@ -1,6 +1,6 @@
 package acsgh.mad.scala.converter.template.thymeleaf
 
-import acsgh.mad.scala.ProductionInfo
+import acsgh.mad.scala.router.http.RequestContext
 import acsgh.mad.scala.router.http.convertions.BodyWriter
 import acsgh.mad.scala.router.http.directives.Directives
 import com.googlecode.htmlcompressor.compressor.HtmlCompressor
@@ -9,7 +9,7 @@ import org.thymeleaf.context.Context
 
 import scala.language.implicitConversions
 
-trait ThymeleafDirectives extends ProductionInfo {
+trait ThymeleafDirectives {
   directives: Directives =>
 
   protected val thymeleafEngine: TemplateEngine
@@ -33,9 +33,9 @@ trait ThymeleafDirectives extends ProductionInfo {
   implicit object ThymeleafBodyWriter extends BodyWriter[ThymeleafTemplate] {
     override val contentType: String = "text/html; charset=UTF-8"
 
-    override def write(input: ThymeleafTemplate): Array[Byte] = {
+    override def write(input: ThymeleafTemplate)(implicit context: RequestContext): Array[Byte] = {
       val body = thymeleafEngine.process(input.templateName, input.params)
-      val finalBody = if (productionMode) htmlCompressorFilter.compress(body) else body
+      val finalBody = if (context.router.productionMode) htmlCompressorFilter.compress(body) else body
       finalBody.getBytes("UTF-8")
     }
   }

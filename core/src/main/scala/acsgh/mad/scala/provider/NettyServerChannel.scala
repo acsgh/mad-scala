@@ -1,4 +1,4 @@
-package acsgh.mad.scala.provider.netty
+package acsgh.mad.scala.provider
 
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -25,7 +25,7 @@ class NettyServerChannel
   private var workerGroup: EventLoopGroup = _
   private var channel: Channel = _
 
-  private[netty] def start(): Unit = {
+  private[scala] def start(): Unit = {
     if (started.compareAndSet(false, true)) {
       bossGroup = new NioEventLoopGroup(1)
       workerGroup = new NioEventLoopGroup
@@ -41,7 +41,7 @@ class NettyServerChannel
     }
   }
 
-  private[netty] def stop(): Unit = {
+  private[scala] def stop(): Unit = {
     if (started.compareAndSet(false, true)) {
       channel.close.sync
       close(bossGroup)

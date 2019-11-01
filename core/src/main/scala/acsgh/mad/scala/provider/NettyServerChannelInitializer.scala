@@ -1,4 +1,4 @@
-package acsgh.mad.scala.provider.netty
+package acsgh.mad.scala.provider
 
 import acsgh.mad.scala.router.http.HttpRouter
 import acsgh.mad.scala.router.ws.WSRouter

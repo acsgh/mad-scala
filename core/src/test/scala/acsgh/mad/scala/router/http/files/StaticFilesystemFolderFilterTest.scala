@@ -12,15 +12,18 @@ class StaticFilesystemFolderFilterTest extends FlatSpec with Matchers {
 
   def f =
     new {
-      val router = new HttpRouter with Routes {
-        override protected val httpRouter: HttpRouter = this
-      }
       val baseFolder = "router/http/src/test/resources/assets"
+      val router = new HttpRouter(false)
+      val routes = new Routes {
+        override protected val httpRouter: HttpRouter = router
+      }
     }
 
   "StaticFilesystemFolderFilter" should "return 404 if no file" in {
-    val router = f.router
-    router.filesystemFolder("/assets2", f.baseFolder)
+    val fixture = f
+    val router = fixture.router
+    val routes = fixture.routes
+    routes.filesystemFolder("/assets2", f.baseFolder)
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -36,8 +39,10 @@ class StaticFilesystemFolderFilterTest extends FlatSpec with Matchers {
   }
 
   it should "return 200 if file" in {
-    val router = f.router
-    router.filesystemFolder("/*", f.baseFolder)
+    val fixture = f
+    val router = fixture.router
+    val routes = fixture.routes
+    routes.filesystemFolder("/*", f.baseFolder)
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -56,8 +61,10 @@ class StaticFilesystemFolderFilterTest extends FlatSpec with Matchers {
   }
 
   it should "return 304 if file not modifier, etag" in {
-    val router = f.router
-    router.filesystemFolder("/*", f.baseFolder)
+    val fixture = f
+    val router = fixture.router
+    val routes = fixture.routes
+    routes.filesystemFolder("/*", f.baseFolder)
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -75,8 +82,10 @@ class StaticFilesystemFolderFilterTest extends FlatSpec with Matchers {
   }
 
   it should "return 304 if file not modifier, date" in {
-    val router = f.router
-    router.filesystemFolder("/*", f.baseFolder)
+    val fixture = f
+    val router = fixture.router
+    val routes = fixture.routes
+    routes.filesystemFolder("/*", f.baseFolder)
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",

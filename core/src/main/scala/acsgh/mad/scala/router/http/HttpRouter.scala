@@ -1,10 +1,10 @@
 package acsgh.mad.scala.router.http
 
+import acsgh.mad.scala.URLSupport
 import acsgh.mad.scala.router.http.directives.Directives
 import acsgh.mad.scala.router.http.exception.BadRequestException
 import acsgh.mad.scala.router.http.handler.{DefaultErrorCodeHandler, DefaultExceptionHandler, ErrorCodeHandler, ExceptionHandler}
 import acsgh.mad.scala.router.http.model._
-import acsgh.mad.scala.{ProductionInfo, URLSupport}
 import com.acsgh.common.scala.log.{LogLevel, LogSupport}
 import com.acsgh.common.scala.time.StopWatch
 
@@ -28,15 +28,15 @@ trait RequestServlet extends LogSupport with Directives {
   def handle(implicit requestContext: RequestContext): Response
 }
 
-trait HttpRouter extends LogSupport with ProductionInfo {
+final class HttpRouter(_productionMode:  => Boolean) extends LogSupport {
 
   protected var filters: List[HttpRoute[RequestFilter]] = List()
   protected var servlet: List[HttpRoute[RequestServlet]] = List()
   protected val errorCodeHandlers: Map[ResponseStatus, ErrorCodeHandler] = Map()
   protected val defaultErrorCodeHandler: ErrorCodeHandler = new DefaultErrorCodeHandler()
-  protected val exceptionHandler: ExceptionHandler = new DefaultExceptionHandler({
-    productionMode
-  })
+  protected val exceptionHandler: ExceptionHandler = new DefaultExceptionHandler(_productionMode)
+
+  def productionMode:Boolean = _productionMode
 
   private[http] def servlet(route: HttpRoute[RequestServlet]): Unit = {
     if (containsRoute(servlet, route.uri, route.methods)) {
