@@ -1,8 +1,8 @@
 package acsgh.mad.scala.converter.template.thymeleaf
 
-import acsgh.mad.scala.router.http.RequestContext
 import acsgh.mad.scala.router.http.convertions.BodyWriter
 import acsgh.mad.scala.router.http.directives.Directives
+import acsgh.mad.scala.router.http.model.RequestContext
 import com.googlecode.htmlcompressor.compressor.HtmlCompressor
 import org.thymeleaf.TemplateEngine
 import org.thymeleaf.context.Context

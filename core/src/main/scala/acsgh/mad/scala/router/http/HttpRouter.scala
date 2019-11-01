@@ -1,28 +1,16 @@
 package acsgh.mad.scala.router.http
 
-import acsgh.mad.scala.URLSupport
 import acsgh.mad.scala.router.http.exception.BadRequestException
 import acsgh.mad.scala.router.http.handler.{DefaultErrorCodeHandler, DefaultExceptionHandler, ErrorCodeHandler, ExceptionHandler}
-import acsgh.mad.scala.router.http.model.{HttpRoute, _}
+import acsgh.mad.scala.router.http.model.{Route, _}
 import com.acsgh.common.scala.log.{LogLevel, LogSupport}
 import com.acsgh.common.scala.time.StopWatch
 
-case class RequestContext
-(
-  request: Request,
-  response: ResponseBuilder,
-  private[scala] val router: HttpRouter,
-  route: Option[HttpRoute[_]] = None
-) extends URLSupport {
-  def ofRoute(newRoute: HttpRoute[_]): RequestContext = copy(route = Some(newRoute))
-
-  val pathParams: Map[String, String] = route.map(r => extractPathParams(r.uri, request.uri)).getOrElse(Map())
-}
 
 final class HttpRouter(serverName: => String, _productionMode: => Boolean) extends LogSupport {
 
-  protected var filters: List[HttpRoute[FilterAction]] = List()
-  protected var servlet: List[HttpRoute[RouteAction]] = List()
+  protected var filters: List[Route[FilterAction]] = List()
+  protected var servlet: List[Route[RouteAction]] = List()
   protected val errorCodeHandlers: Map[ResponseStatus, ErrorCodeHandler] = Map()
   protected val defaultErrorCodeHandler: ErrorCodeHandler = new DefaultErrorCodeHandler()
   protected val exceptionHandler: ExceptionHandler = new DefaultExceptionHandler(_productionMode)
@@ -30,7 +18,7 @@ final class HttpRouter(serverName: => String, _productionMode: => Boolean) exten
   def productionMode: Boolean = _productionMode
 
   def process(httpRequest: Request): Response = {
-    implicit val ctx: RequestContext = RequestContext(httpRequest, ResponseBuilder(httpRequest), this)
+    implicit val ctx: RequestContext = model.RequestContext(httpRequest, ResponseBuilder(httpRequest), this)
     log.debug(s"Request:  ${ctx.request.method} ${ctx.request.uri}")
     ctx.response.header("Server", serverName)
     val stopWatch = StopWatch.createStarted()
@@ -41,7 +29,7 @@ final class HttpRouter(serverName: => String, _productionMode: => Boolean) exten
     }
   }
 
-  private[http] def servlet(route: HttpRoute[RouteAction]): Unit = {
+  private[http] def servlet(route: Route[RouteAction]): Unit = {
     if (containsRoute(servlet, route.uri, route.methods)) {
       log.debug("The servlet method {} - {} has been already defined", Some(route.methods).filter(_.nonEmpty).map(_.mkString(", ")).getOrElse("All"), route.uri)
     } else {
@@ -49,14 +37,14 @@ final class HttpRouter(serverName: => String, _productionMode: => Boolean) exten
     }
   }
 
-  private[http] def filter(route: HttpRoute[FilterAction]): Unit = filters = filters ++ List(route)
+  private[http] def filter(route: Route[FilterAction]): Unit = filters = filters ++ List(route)
 
   private[http] def getErrorResponse(responseStatus: ResponseStatus, message: Option[String] = None)(implicit context: RequestContext): Response = {
     val errorCodeHandler = errorCodeHandlers.getOrElse(responseStatus, defaultErrorCodeHandler)
     errorCodeHandler.handle(responseStatus, message)
   }
 
-  private def containsRoute(routesList: List[HttpRoute[_]], uri: String, methods: Set[RequestMethod]): Boolean = {
+  private def containsRoute(routesList: List[Route[_]], uri: String, methods: Set[RequestMethod]): Boolean = {
     val routes = routesList.map(e => (e.uri, e.methods)).groupBy(_._1).view.mapValues(_.flatMap(_._2).toSet).toMap
 
     routes.get(uri).exists { r =>
@@ -73,7 +61,7 @@ final class HttpRouter(serverName: => String, _productionMode: => Boolean) exten
       })
   }
 
-  private def runRoute(route: HttpRoute[RouteAction], context: RequestContext): Response = {
+  private def runRoute(route: Route[RouteAction], context: RequestContext): Response = {
     val stopWatch = StopWatch.createStarted()
     try {
       implicit val ctx: RequestContext = context.ofRoute(route)
@@ -85,7 +73,7 @@ final class HttpRouter(serverName: => String, _productionMode: => Boolean) exten
     }
   }
 
-  private def runFilters(route: HttpRoute[RouteAction], nextFilters: List[HttpRoute[FilterAction]])(implicit context: RequestContext): Response = {
+  private def runFilters(route: Route[RouteAction], nextFilters: List[Route[FilterAction]])(implicit context: RequestContext): Response = {
     runSafe { c1 =>
       if (nextFilters.nonEmpty) {
         val currentFilter = nextFilters.head
@@ -103,7 +91,7 @@ final class HttpRouter(serverName: => String, _productionMode: => Boolean) exten
   }
 
 
-  private def runSafe(action: RouteAction)(implicit ctx: RequestContext): Response = {
+  private def runSafe(action: RequestContext => Response)(implicit ctx: RequestContext): Response = {
     try {
       action(ctx)
     } catch {

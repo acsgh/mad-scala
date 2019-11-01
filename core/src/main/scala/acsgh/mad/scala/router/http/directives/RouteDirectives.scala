@@ -2,8 +2,7 @@ package acsgh.mad.scala.router.http.directives
 
 import java.net.URI
 
-import acsgh.mad.scala.router.http.RequestContext
-import acsgh.mad.scala.router.http.model._
+import acsgh.mad.scala.router.http.model.{RequestContext, _}
 
 trait RouteDirectives extends ResponseDirectives {
 

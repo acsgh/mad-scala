@@ -1,8 +1,7 @@
 package acsgh.mad.scala.router.http.directives
 
-import acsgh.mad.scala.router.http.RequestContext
 import acsgh.mad.scala.router.http.convertions.{DefaultFormats, DefaultParamHandling}
-import acsgh.mad.scala.router.http.model.Response
+import acsgh.mad.scala.router.http.model.{RequestContext, Response}
 
 trait RequestParamsDirectives extends DefaultParamHandling with DefaultFormats {
 

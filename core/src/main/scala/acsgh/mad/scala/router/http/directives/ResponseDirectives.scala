@@ -1,8 +1,7 @@
 package acsgh.mad.scala.router.http.directives
 
-import acsgh.mad.scala.router.http.RequestContext
 import acsgh.mad.scala.router.http.convertions.{BodyWriter, DefaultFormats, DefaultParamHandling, ParamWriter}
-import acsgh.mad.scala.router.http.model.{HttpCookie, ProtocolVersion, Response, ResponseStatus}
+import acsgh.mad.scala.router.http.model.{HttpCookie, ProtocolVersion, RequestContext, Response, ResponseStatus}
 
 trait ResponseDirectives extends DefaultParamHandling with DefaultFormats {
 

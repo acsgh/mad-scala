@@ -2,11 +2,10 @@ package acsgh.mad.scala.converter.json.jackson
 
 import java.io.ByteArrayOutputStream
 
-import acsgh.mad.scala.router.http.RequestContext
 import acsgh.mad.scala.router.http.convertions.{BodyReader, BodyWriter}
 import acsgh.mad.scala.router.http.directives.Directives
 import acsgh.mad.scala.router.http.exception.BadRequestException
-import acsgh.mad.scala.router.http.model.Response
+import acsgh.mad.scala.router.http.model.{RequestContext, Response}
 import com.fasterxml.jackson.databind.ObjectMapper
 
 trait JacksonDirectives {

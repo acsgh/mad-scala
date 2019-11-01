@@ -1,9 +1,8 @@
 package acsgh.mad.scala.router.http.handler
 
-import acsgh.mad.scala.router.http.RequestContext
 import acsgh.mad.scala.router.http.exception.BadRequestException
 import acsgh.mad.scala.router.http.model.ResponseStatus.{BAD_REQUEST, INTERNAL_SERVER_ERROR}
-import acsgh.mad.scala.router.http.model.{Response, ResponseStatus}
+import acsgh.mad.scala.router.http.model.{RequestContext, Response, ResponseStatus}
 
 object DefaultExceptionHandler {
 

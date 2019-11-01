@@ -1,6 +1,6 @@
 package acsgh.mad.scala.router.http.convertions
 
-import acsgh.mad.scala.router.http.RequestContext
+import acsgh.mad.scala.router.http.model.RequestContext
 
 trait ParamReader[T] {
   def read(input: String): T

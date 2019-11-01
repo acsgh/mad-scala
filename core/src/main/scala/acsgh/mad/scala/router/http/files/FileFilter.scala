@@ -6,39 +6,42 @@ import java.net.URLConnection
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 
-import acsgh.mad.scala.router.http.RequestContext
-import acsgh.mad.scala.router.http.model.ResponseStatus.NOT_MODIFIED
-import acsgh.mad.scala.router.http.model._
 import acsgh.mad.scala.router.http.directives.Directives
-
+import acsgh.mad.scala.router.http.model.ResponseStatus.{NOT_FOUND, NOT_MODIFIED}
+import acsgh.mad.scala.router.http.model.{RequestContext, _}
 
 object FileFilter {
   val DATE_FORMATTER = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz")
 }
 
-abstract class FileFilter extends Directives {
+abstract class FileFilter(val uri: String) extends Route[RouteAction] with Directives {
 
-  def handle(context: RequestContext): Response = {
-    implicit val ctx = context
-    val requestUri = uri(context)
+  validUrl(uri)
+
+  override val methods: Set[RequestMethod] = Set(RequestMethod.GET)
+
+  override private[http] def canApply(request: Request): Boolean = super.canApply(request) && getFileInfo(uri(request)).isDefined
+
+  override val action: RouteAction = { implicit ctx =>
+    val requestUri = uri(ctx.request)
     log.trace("Requesting file: {}", requestUri)
-    error(NOT_MODIFIED)
-//    getFileInfo(requestUri).fold(Left[NotHandled]) { fileInfo =>
-//      responseHeader("Content-Type", fileInfo.contentType) {
-//        responseHeader("ETag", fileInfo.etag) {
-//          responseHeader("Last-Modified", FileFilter.DATE_FORMATTER.format(fileInfo.lastModified)) {
-//
-//            requestHeader("If-None-Match".opt, "If-Modified-Since".opt) { (ifNoneMatchHeader, ifModifiedSinceHeader) =>
-//              if (fileInfo.isModified(ifNoneMatchHeader, ifModifiedSinceHeader)) {
-//                responseBody(fileInfo.content)
-//              } else {
-//                error(NOT_MODIFIED)
-//              }
-//            }
-//          }
-//        }
-//      }
-//    }
+
+    getFileInfo(requestUri).fold(error(NOT_FOUND)) { fileInfo =>
+      responseHeader("Content-Type", fileInfo.contentType) {
+        responseHeader("ETag", fileInfo.etag) {
+          responseHeader("Last-Modified", FileFilter.DATE_FORMATTER.format(fileInfo.lastModified)) {
+
+            requestHeader("If-None-Match".opt, "If-Modified-Since".opt) { (ifNoneMatchHeader, ifModifiedSinceHeader) =>
+              if (fileInfo.isModified(ifNoneMatchHeader, ifModifiedSinceHeader)) {
+                responseBody(fileInfo.content)
+              } else {
+                error(NOT_MODIFIED)
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   protected def getFileInfo(uri: String): Option[FileInfo]
@@ -85,6 +88,8 @@ abstract class FileFilter extends Directives {
     }
   }
 
-
-  private def uri(context: RequestContext) = context.pathParams.get("path").map(addTradingSlash).map(removeEndingSlash).getOrElse(context.request.path)
+  private def uri(request: Request): String = {
+    val params= extractPathParams(uri, request.uri)
+    params.get("path").map(addTradingSlash).map(removeEndingSlash).getOrElse(request.path)
+  }
 }

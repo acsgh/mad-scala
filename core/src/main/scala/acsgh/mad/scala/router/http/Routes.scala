@@ -28,17 +28,13 @@ trait Routes extends DefaultFormats with DefaultParamHandling with Directives {
 
   def trace(uri: String)(action: RouteAction): Unit = servlet(uri, TRACE)(action)
 
-  def filter(uri: String, methods: Set[RequestMethod] = Set())(action: FilterAction): Unit = {
-    httpRouter.filter(new HttpRoute[FilterAction](uri, methods, action))
-  }
+  def filter(uri: String, methods: Set[RequestMethod] = Set())(action: FilterAction): Unit = httpRouter.filter(HttpRoute[FilterAction](uri, methods, action))
 
-  def resourceFolder(uri: String, resourceFolderPath: String): Unit = 8//servlet(uri, Set(RequestMethod.GET))(StaticClasspathFolderFilter(resourceFolderPath).handle)
+  def resourceFolder(uri: String, resourceFolderPath: String): Unit = httpRouter.servlet(StaticClasspathFolderFilter(s"$uri/{path+}", resourceFolderPath))
 
-  def filesystemFolder(uri: String, resourceFolderPath: String): Unit = 8//servlet(uri, Set(RequestMethod.GET))(StaticFilesystemFolderFilter(new File(resourceFolderPath)).handle)
+  def filesystemFolder(uri: String, resourceFolderPath: String): Unit = httpRouter.servlet(StaticFilesystemFolderFilter(s"$uri/{path+}", new File(resourceFolderPath)))
 
-  def webjars(): Unit = resourceFolder("/webjars/{path+}", "META-INF/resources/webjars")
+  def webjars(): Unit = resourceFolder("/webjars", "META-INF/resources/webjars")
 
-  protected def servlet(uri: String, method: RequestMethod)(action: RouteAction): Unit = {
-    httpRouter.servlet(new HttpRoute[RouteAction](uri, Set(method), action))
-  }
+  protected def servlet(uri: String, method: RequestMethod)(action: RouteAction): Unit = httpRouter.servlet(HttpRoute[RouteAction](uri, Set(method), action))
 }
