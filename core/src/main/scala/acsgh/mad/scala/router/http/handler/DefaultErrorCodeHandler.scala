@@ -1,10 +1,10 @@
 package acsgh.mad.scala.router.http.handler
 
 import acsgh.mad.scala.router.http.RequestContext
-import acsgh.mad.scala.router.http.model.{Response, ResponseStatus, RouteResult}
+import acsgh.mad.scala.router.http.model.{Response, ResponseStatus}
 
 class DefaultErrorCodeHandler extends ErrorCodeHandler {
-  override def handle(status: ResponseStatus, message: Option[String])(implicit requestContext: RequestContext): RouteResult = {
+  override def handle(status: ResponseStatus, message: Option[String])(implicit requestContext: RequestContext): Response = {
     responseStatus(status) {
       responseBody(getStatusBody(status, message))
     }

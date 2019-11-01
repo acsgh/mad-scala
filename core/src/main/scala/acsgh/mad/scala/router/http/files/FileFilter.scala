@@ -6,37 +6,39 @@ import java.net.URLConnection
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 
-import acsgh.mad.scala.router.http.model.{Response, RouteResult}
+import acsgh.mad.scala.router.http.RequestContext
 import acsgh.mad.scala.router.http.model.ResponseStatus.NOT_MODIFIED
-import acsgh.mad.scala.router.http.{RequestContext, RequestFilter}
+import acsgh.mad.scala.router.http.model._
+import acsgh.mad.scala.router.http.directives.Directives
 
 
 object FileFilter {
   val DATE_FORMATTER = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz")
 }
 
-abstract class FileFilter extends RequestFilter {
+abstract class FileFilter extends Directives {
 
-  override def handle(nextJump: () => RouteResult)(implicit context: RequestContext): RouteResult = {
+  def handle(context: RequestContext): Response = {
+    implicit val ctx = context
     val requestUri = uri(context)
     log.trace("Requesting file: {}", requestUri)
-
-    getFileInfo(requestUri).fold(nextJump()) { fileInfo =>
-      responseHeader("Content-Type", fileInfo.contentType) {
-        responseHeader("ETag", fileInfo.etag) {
-          responseHeader("Last-Modified", FileFilter.DATE_FORMATTER.format(fileInfo.lastModified)) {
-
-            requestHeader("If-None-Match".opt, "If-Modified-Since".opt) { (ifNoneMatchHeader, ifModifiedSinceHeader) =>
-              if (fileInfo.isModified(ifNoneMatchHeader, ifModifiedSinceHeader)) {
-                responseBody(fileInfo.content)
-              } else {
-                error(NOT_MODIFIED)
-              }
-            }
-          }
-        }
-      }
-    }
+    error(NOT_MODIFIED)
+//    getFileInfo(requestUri).fold(Left[NotHandled]) { fileInfo =>
+//      responseHeader("Content-Type", fileInfo.contentType) {
+//        responseHeader("ETag", fileInfo.etag) {
+//          responseHeader("Last-Modified", FileFilter.DATE_FORMATTER.format(fileInfo.lastModified)) {
+//
+//            requestHeader("If-None-Match".opt, "If-Modified-Since".opt) { (ifNoneMatchHeader, ifModifiedSinceHeader) =>
+//              if (fileInfo.isModified(ifNoneMatchHeader, ifModifiedSinceHeader)) {
+//                responseBody(fileInfo.content)
+//              } else {
+//                error(NOT_MODIFIED)
+//              }
+//            }
+//          }
+//        }
+//      }
+//    }
   }
 
   protected def getFileInfo(uri: String): Option[FileInfo]

@@ -2,12 +2,12 @@ package acsgh.mad.scala.converter.template.freemarker
 
 import java.io.File
 
-import acsgh.mad.scala.router.http.HttpServer
+import acsgh.mad.scala.Server
 import freemarker.cache.ClassTemplateLoader
 import freemarker.template.{Configuration, TemplateExceptionHandler}
 
 trait FreemarkerHttpServer extends FreemarkerDirectives {
-  server: HttpServer =>
+  server: Server =>
 
   protected val templateFolder: File
   protected val classpathFolder: String

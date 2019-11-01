@@ -151,7 +151,7 @@ class HttpRouterTest extends FlatSpec with Matchers with DefaultFormats {
     routes.filter("/*") { implicit ctx =>
       nextJump =>
         ctx.response.status(ResponseStatus.CREATED)
-        nextJump()
+        nextJump(ctx)
     }
 
     val body = "Hi there"

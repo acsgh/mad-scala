@@ -1,9 +1,8 @@
-package acsgh.mad.scala.router.http
+package acsgh.mad.scala.router.http.model
 
 import acsgh.mad.scala.URLSupport
-import acsgh.mad.scala.router.http.model.{Request, RequestMethod}
 
-private[http] case class HttpRoute[T](uri: String, methods: Set[RequestMethod], handler: T) extends URLSupport {
+private[http] case class HttpRoute[T](uri: String, methods: Set[RequestMethod], action: T) extends URLSupport {
 
   private[http] def canApply(request: Request): Boolean = validMethod(request) && matchUrl(uri, request.uri)
 

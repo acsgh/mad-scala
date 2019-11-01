@@ -162,11 +162,11 @@ object NettyBoot extends Server with App with ThymeleafHttpServer with JsonProto
     }
   }
 
-//  filter("/*") { implicit context =>
-//    nextJump =>
-//      log.info("Handling: {}", context.request.uri)
-//      val result = nextJump()
-//      log.info("Handling: {} - {}, done", context.request.uri, context.response.responseStatus)
-//      result
-//  }
+  filter("/*") { implicit ctx =>
+    nextJump =>
+      log.info("Handling: {}", ctx.request.uri)
+      val result = nextJump(ctx)
+      log.info("Handling: {} - {}, done", ctx.request.uri, ctx.response.responseStatus)
+      result
+  }
 }

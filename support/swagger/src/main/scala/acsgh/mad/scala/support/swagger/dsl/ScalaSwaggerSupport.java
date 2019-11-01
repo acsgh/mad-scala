@@ -11,7 +11,6 @@ import io.swagger.v3.core.jackson.ModelResolver;
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.models.media.*;
 import scala.collection.immutable.Vector;
-import scala.collection.immutable.VectorIterator;
 
 import java.lang.annotation.Annotation;
 import java.math.BigDecimal;

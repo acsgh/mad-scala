@@ -7,7 +7,7 @@ import com.googlecode.htmlcompressor.compressor.HtmlCompressor
 import play.twirl.api.HtmlFormat
 
 
-trait TwirlSupport extends Directives with ProductionInfo {
+trait TwirlSupport extends Directives {
 
   private val htmlCompressorFilter: HtmlCompressor = {
     val c = new HtmlCompressor()

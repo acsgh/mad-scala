@@ -2,14 +2,14 @@ package acsgh.mad.scala.router.http.directives
 
 import acsgh.mad.scala.router.http.RequestContext
 import acsgh.mad.scala.router.http.convertions.{BodyReader, DefaultFormats, DefaultParamHandling}
-import acsgh.mad.scala.router.http.model.{Response, RouteResult}
+import acsgh.mad.scala.router.http.model.Response
 import acsgh.mad.scala.router.http.model.ResponseStatus.UNSUPPORTED_MEDIA_TYPE
 
 trait RequestDirectives extends DefaultParamHandling with DefaultFormats with RequestParamsDirectives with RequestHeaderDirectives with RequestQueryDirectives with RequestCookieDirectives with RouteDirectives {
 
-  def requestBody(action: Array[Byte] => RouteResult)(implicit context: RequestContext): RouteResult = action(context.request.bodyBytes)
+  def requestBody(action: Array[Byte] => Response)(implicit context: RequestContext): Response = action(context.request.bodyBytes)
 
-  def requestBody[T](action: T => RouteResult)(implicit context: RequestContext, reader: BodyReader[T]): RouteResult = {
+  def requestBody[T](action: T => Response)(implicit context: RequestContext, reader: BodyReader[T]): Response = {
     if (reader.strictContentTypes) {
       requestHeader("Content-Type") { contentType =>
 

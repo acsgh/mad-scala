@@ -6,46 +6,39 @@ import acsgh.mad.scala.router.http.convertions.{DefaultFormats, DefaultParamHand
 import acsgh.mad.scala.router.http.directives.Directives
 import acsgh.mad.scala.router.http.files.{StaticClasspathFolderFilter, StaticFilesystemFolderFilter}
 import acsgh.mad.scala.router.http.model.RequestMethod._
-import acsgh.mad.scala.router.http.model.{RequestMethod, Response, Route}
+import acsgh.mad.scala.router.http.model.{FilterAction, HttpRoute, RequestMethod, RouteAction}
 
 trait Routes extends DefaultFormats with DefaultParamHandling with Directives {
 
   protected val httpRouter: HttpRouter
 
-  def options(uri: String)(action: Route): Unit = servlet(uri, OPTIONS)(action)
+  def options(uri: String)(action: RouteAction): Unit = servlet(uri, OPTIONS)(action)
 
-  def get(uri: String)(action: Route): Unit = servlet(uri, GET)(action)
+  def get(uri: String)(action: RouteAction): Unit = servlet(uri, GET)(action)
 
-  def head(uri: String)(action: Route): Unit = servlet(uri, HEAD)(action)
+  def head(uri: String)(action: RouteAction): Unit = servlet(uri, HEAD)(action)
 
-  def post(uri: String)(action: Route): Unit = servlet(uri, POST)(action)
+  def post(uri: String)(action: RouteAction): Unit = servlet(uri, POST)(action)
 
-  def put(uri: String)(action: Route): Unit = servlet(uri, PUT)(action)
+  def put(uri: String)(action: RouteAction): Unit = servlet(uri, PUT)(action)
 
-  def patch(uri: String)(action: Route): Unit = servlet(uri, PATCH)(action)
+  def patch(uri: String)(action: RouteAction): Unit = servlet(uri, PATCH)(action)
 
-  def delete(uri: String)(action: Route): Unit = servlet(uri, DELETE)(action)
+  def delete(uri: String)(action: RouteAction): Unit = servlet(uri, DELETE)(action)
 
-  def trace(uri: String)(action: Route): Unit = servlet(uri, TRACE)(action)
+  def trace(uri: String)(action: RouteAction): Unit = servlet(uri, TRACE)(action)
 
-  def filter(uri: String, methods: Set[RequestMethod] = Set())(action: RequestContext => (() => Response) => Response): Unit = {
-//    httpRouter.filter(new HttpRoute[RequestFilter](uri, methods, new RequestFilter {
-//      override def handle(nextJump: () => Response)(implicit context: RequestContext): Response = action(context)(nextJump)
-//    }))
+  def filter(uri: String, methods: Set[RequestMethod] = Set())(action: FilterAction): Unit = {
+    httpRouter.filter(new HttpRoute[FilterAction](uri, methods, action))
   }
 
-  def resourceFolder(uri: String, resourceFolderPath: String): Unit = filterInt(uri, Set(RequestMethod.GET))(StaticClasspathFolderFilter(resourceFolderPath))
+  def resourceFolder(uri: String, resourceFolderPath: String): Unit = 8//servlet(uri, Set(RequestMethod.GET))(StaticClasspathFolderFilter(resourceFolderPath).handle)
 
-  def filesystemFolder(uri: String, resourceFolderPath: String): Unit = filterInt(uri, Set(RequestMethod.GET))(StaticFilesystemFolderFilter(new File(resourceFolderPath)))
+  def filesystemFolder(uri: String, resourceFolderPath: String): Unit = 8//servlet(uri, Set(RequestMethod.GET))(StaticFilesystemFolderFilter(new File(resourceFolderPath)).handle)
 
   def webjars(): Unit = resourceFolder("/webjars/{path+}", "META-INF/resources/webjars")
 
-  protected def servlet(uri: String, method: RequestMethod)(action: Route): Unit = {
-    httpRouter.servlet(new HttpRoute[Route](uri, Set(method), action))
+  protected def servlet(uri: String, method: RequestMethod)(action: RouteAction): Unit = {
+    httpRouter.servlet(new HttpRoute[RouteAction](uri, Set(method), action))
   }
-
-  protected def filterInt(uri: String, methods: Set[RequestMethod] = Set())(action: RequestFilter): Unit = {
-//    httpRouter.filter(new HttpRoute[RequestFilter](uri, methods, action))
-  }
-
 }
