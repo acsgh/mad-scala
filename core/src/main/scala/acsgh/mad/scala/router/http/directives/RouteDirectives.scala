@@ -17,5 +17,5 @@ trait RouteDirectives extends ResponseDirectives {
     context.router.getErrorResponse(status, message)
   }
 
-  def serve(url: String)(implicit context: RequestContext): Response = context.router.process(context.request.copy(uri = URI.create(url)))
+//  def serve(url: String)(implicit context: RequestContext): Response = context.router.process(context.request.copy(uri = URI.create(url)))
 }

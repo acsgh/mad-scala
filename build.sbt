@@ -75,7 +75,7 @@ lazy val core = (project in file("core"))
     name := "core",
     commonSettings,
     libraryDependencies ++= Seq(
-      "com.github.acsgh.common.scala" %% "core" % "1.2.14",
+      "com.github.acsgh.common.scala" %% "core" % "1.2.15",
       "io.netty" % "netty-all" % "4.1.37.Final"
     )
   )

@@ -49,6 +49,8 @@ case class ResponseBuilder
     this
   }
 
+  def status : ResponseStatus = responseStatus
+
   def status(input: ResponseStatus): ResponseBuilder = {
     responseStatus = input
     this

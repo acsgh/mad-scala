@@ -1,5 +1,7 @@
 package acsgh.mad.scala.router.http
 
+import scala.concurrent.Future
+
 package object model {
 
   trait RouteError {
@@ -14,9 +16,6 @@ package object model {
 
   type RouteResult = Either[RouteError, Response]
 
-//  type Route[V[_]] = RequestContext => V[RouteResult]
+  type Route = RequestContext => Future[RouteResult]
 
-  trait Route[V[_]]{
-    def run(ctx:RequestContext):RouteResult
-  }
 }

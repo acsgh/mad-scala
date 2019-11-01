@@ -28,7 +28,7 @@ trait RequestServlet extends LogSupport with Directives {
   def handle(implicit requestContext: RequestContext): Response
 }
 
-final class HttpRouter(_productionMode:  => Boolean) extends LogSupport {
+final class HttpRouter(serverName:String, _productionMode: => Boolean) extends LogSupport {
 
   protected var filters: List[HttpRoute[RequestFilter]] = List()
   protected var servlet: List[HttpRoute[RequestServlet]] = List()
@@ -36,7 +36,7 @@ final class HttpRouter(_productionMode:  => Boolean) extends LogSupport {
   protected val defaultErrorCodeHandler: ErrorCodeHandler = new DefaultErrorCodeHandler()
   protected val exceptionHandler: ExceptionHandler = new DefaultExceptionHandler(_productionMode)
 
-  def productionMode:Boolean = _productionMode
+  def productionMode: Boolean = _productionMode
 
   private[http] def servlet(route: HttpRoute[RequestServlet]): Unit = {
     if (containsRoute(servlet, route.uri, route.methods)) {
@@ -49,13 +49,14 @@ final class HttpRouter(_productionMode:  => Boolean) extends LogSupport {
   private[http] def filter(route: HttpRoute[RequestFilter]): Unit = filters = filters ++ List(route)
 
   def process(httpRequest: Request): Response = {
-    val context: RequestContext = RequestContext(httpRequest, ResponseBuilder(httpRequest), this)
-    log.trace("Request {} {}", Array(httpRequest.method, httpRequest.uri): _*)
+    val ctx: RequestContext = RequestContext(httpRequest, ResponseBuilder(httpRequest), this)
+    log.debug(s"Request:  ${ctx.request.method} ${ctx.request.uri}")
+    ctx.response.header("Server", serverName)
     val stopWatch = StopWatch.createStarted()
     try {
-      runSafe(context)(processFilters)
+      runSafe(ctx)(processFilters)
     } finally {
-      stopWatch.printElapseTime("Request " + httpRequest.method + " " + httpRequest.uri, log, LogLevel.DEBUG)
+      stopWatch.printElapseTime(s"Response: ${ctx.request.method} ${ctx.request.uri} with ${ctx.response.status.code}", log, LogLevel.INFO)
     }
   }
 
@@ -110,16 +111,16 @@ final class HttpRouter(_productionMode:  => Boolean) extends LogSupport {
       })
   }
 
-  private def runSafe(context: RequestContext)(action: (RequestContext) => Response): Response = {
+  private def runSafe(ctx: RequestContext)(action: (RequestContext) => Response): Response = {
     try {
-      action(context)
+      action(ctx)
     } catch {
       case e: BadRequestException =>
         log.debug("Bad request", e)
-        exceptionHandler.handle(e)(context)
+        exceptionHandler.handle(e)(ctx)
       case e: Exception =>
-        log.error("Error during request", e)
-        exceptionHandler.handle(e)(context)
+        log.error(s"Error during request: ${ctx.request.method}: ${ctx.request.uri} - Body: '${new String(ctx.request.bodyBytes, "UTF-8")}'", e)
+        exceptionHandler.handle(e)(ctx)
     }
   }
 }

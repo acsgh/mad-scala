@@ -162,26 +162,11 @@ object NettyBoot extends Server with App with ThymeleafHttpServer with JsonProto
     }
   }
 
-  //  implicit class FutureRoute(val a: Future[RouteResult]) extends Route[Future] {
-  //    override def run(ctx: RequestContext): RouteResult = RouteMessage(ResponseStatus.OK, Some("asd"))
-  //  }
-  //
-  //  before("/*"){implicit ctx =>
-  //    ctx.response
-  //  }
-
-  //  before("/*"){implicit ctx =>
-  //    Future{
-  //      ctx.response
-  //    }
-  //  }
-
-
-  filter("/*") { implicit context =>
-    nextJump =>
-      log.info("Handling: {}", context.request.uri)
-      val result = nextJump()
-      log.info("Handling: {} - {}, done", context.request.uri, context.response.responseStatus)
-      result
-  }
+//  filter("/*") { implicit context =>
+//    nextJump =>
+//      log.info("Handling: {}", context.request.uri)
+//      val result = nextJump()
+//      log.info("Handling: {} - {}, done", context.request.uri, context.response.responseStatus)
+//      result
+//  }
 }

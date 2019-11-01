@@ -13,7 +13,7 @@ class StaticFilesystemFolderFilterTest extends FlatSpec with Matchers {
   def f =
     new {
       val baseFolder = "router/http/src/test/resources/assets"
-      val router = new HttpRouter(false)
+      val router = new HttpRouter("test", false)
       val routes = new Routes {
         override protected val httpRouter: HttpRouter = router
       }

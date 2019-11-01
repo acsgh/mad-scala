@@ -17,7 +17,8 @@ class NettyServerChannel
   private val port: Int,
   private val sslContext: Option[SslContext],
   private val httpRouter: HttpRouter,
-  private val wsRouter: WSRouter
+  private val wsRouter: WSRouter,
+  private val workerThreads:Int
 ) {
   private val started = new AtomicBoolean(false)
 
@@ -28,13 +29,13 @@ class NettyServerChannel
   private[scala] def start(): Unit = {
     if (started.compareAndSet(false, true)) {
       bossGroup = new NioEventLoopGroup(1)
-      workerGroup = new NioEventLoopGroup
+      workerGroup = new NioEventLoopGroup(workerThreads)
       val b = new ServerBootstrap
       b.option[Integer](ChannelOption.SO_BACKLOG, 1024)
 
       b.group(bossGroup, workerGroup)
         .channel(classOf[NioServerSocketChannel])
-        .handler(new LoggingHandler(LogLevel.INFO))
+        .handler(new LoggingHandler(LogLevel.DEBUG))
         .childHandler(new NettyServerChannelInitializer(httpRouter, wsRouter, sslContext))
 
       channel = b.bind(host, port).sync.channel

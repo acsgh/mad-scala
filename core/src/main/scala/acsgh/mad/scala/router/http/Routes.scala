@@ -40,10 +40,6 @@ trait Routes extends DefaultFormats with DefaultParamHandling with Directives {
 
   def webjars(): Unit = resourceFolder("/webjars/{path+}", "META-INF/resources/webjars")
 
-//  def before[T](uri:String, methods: Set[RequestMethod] = Set())(route:Route[T]):Unit = {
-//
-//  }
-
   protected def servlet(uri: String, method: RequestMethod)(action: RequestContext => Response): Unit = {
     httpRouter.servlet(new HttpRoute[RequestServlet](uri, Set(method), (context: RequestContext) => action(context)))
   }
