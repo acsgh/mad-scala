@@ -61,19 +61,13 @@ lazy val root = (project in file("."))
   )
   .aggregate(
     core,
-    routerHttp,
-    routerWebsocket,
     converterJsonJackson,
     converterJsonSpray,
     converterTemplateFreemarker,
     converterTemplateThymeleaf,
     converterTemplateTwirl,
-    providerServlet,
-    providerJetty,
-    providerNetty,
     supportSwagger,
-    examplesJetty,
-    examplesNetty
+    examples
   )
 
 lazy val core = (project in file("core"))
@@ -81,25 +75,10 @@ lazy val core = (project in file("core"))
     name := "core",
     commonSettings,
     libraryDependencies ++= Seq(
-      "com.github.acsgh.common.scala" %% "core" % "1.2.12"
+      "com.github.acsgh.common.scala" %% "core" % "1.2.12",
+      "io.netty" % "netty-all" % "4.1.37.Final"
     )
   )
-
-lazy val routerHttp = (project in file("router/http"))
-  .settings(
-    organization := "com.github.acsgh.mad.scala.router",
-    name := "http",
-    commonSettings
-  )
-  .dependsOn(core)
-
-lazy val routerWebsocket = (project in file("router/websocket"))
-  .settings(
-    organization := "com.github.acsgh.mad.scala.router",
-    name := "websocket",
-    commonSettings
-  )
-  .dependsOn(routerHttp)
 
 lazy val converterJsonJackson = (project in file("converter/json/jackson"))
   .settings(
@@ -111,7 +90,7 @@ lazy val converterJsonJackson = (project in file("converter/json/jackson"))
       "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.9.9"
     )
   )
-  .dependsOn(routerHttp)
+  .dependsOn(core)
 
 lazy val converterJsonSpray = (project in file("converter/json/spray"))
   .settings(
@@ -122,7 +101,7 @@ lazy val converterJsonSpray = (project in file("converter/json/spray"))
       "io.spray" %% "spray-json" % "1.3.5"
     )
   )
-  .dependsOn(routerHttp)
+  .dependsOn(core)
 
 lazy val converterTemplateFreemarker = (project in file("converter/template/freemarker"))
   .settings(
@@ -134,7 +113,7 @@ lazy val converterTemplateFreemarker = (project in file("converter/template/free
       "com.googlecode.htmlcompressor" % "htmlcompressor" % "1.5.2"
     )
   )
-  .dependsOn(routerHttp)
+  .dependsOn(core)
 
 lazy val converterTemplateThymeleaf = (project in file("converter/template/thymeleaf"))
   .settings(
@@ -146,7 +125,7 @@ lazy val converterTemplateThymeleaf = (project in file("converter/template/thyme
       "com.googlecode.htmlcompressor" % "htmlcompressor" % "1.5.2"
     )
   )
-  .dependsOn(routerHttp)
+  .dependsOn(core)
 
 lazy val converterTemplateTwirl = (project in file("converter/template/twirl"))
   .settings(
@@ -158,45 +137,7 @@ lazy val converterTemplateTwirl = (project in file("converter/template/twirl"))
       "com.googlecode.htmlcompressor" % "htmlcompressor" % "1.5.2"
     )
   )
-  .dependsOn(routerHttp)
-
-lazy val providerServlet = (project in file("provider/servlet"))
-  .settings(
-    organization := "com.github.acsgh.mad.scala.provider",
-    name := "servlet",
-    commonSettings,
-    libraryDependencies ++= Seq(
-      "javax.servlet" % "javax.servlet-api" % "4.0.1",
-    )
-  )
-  .dependsOn(routerHttp)
-
-lazy val providerJetty = (project in file("provider/jetty"))
-  .settings(
-    organization := "com.github.acsgh.mad.scala.provider",
-    name := "jetty",
-    commonSettings,
-    libraryDependencies ++= Seq(
-      "org.eclipse.jetty" % "jetty-server" % "9.4.19.v20190610",
-      "org.eclipse.jetty" % "jetty-webapp" % "9.4.19.v20190610",
-      "org.eclipse.jetty.websocket" % "websocket-server" % "9.4.19.v20190610",
-      "org.eclipse.jetty.websocket" % "websocket-servlet" % "9.3.6.v20151106",
-    )
-  )
-  .dependsOn(routerWebsocket)
-  .dependsOn(providerServlet)
-
-lazy val providerNetty = (project in file("provider/netty"))
-  .settings(
-    organization := "com.github.acsgh.mad.scala.provider",
-    name := "netty",
-    commonSettings,
-    libraryDependencies ++= Seq(
-      "io.netty" % "netty-all" % "4.1.37.Final",
-    )
-  )
-  .dependsOn(routerWebsocket)
-  .dependsOn(providerServlet)
+  .dependsOn(core)
 
 lazy val supportSwagger = (project in file("support/swagger"))
   .settings(
@@ -211,34 +152,19 @@ lazy val supportSwagger = (project in file("support/swagger"))
       "org.webjars" % "swagger-ui" % "3.23.0"
     )
   )
-  .dependsOn(routerHttp)
+  .dependsOn(core)
 
-lazy val examplesJetty = (project in file("examples/jetty"))
+lazy val examples = (project in file("examples"))
   .settings(
     organization := "com.github.acsgh.mad.scala.examples",
-    name := "jetty",
+    name := "examples",
     commonSettings,
     libraryDependencies ++= Seq(
       "org.webjars" % "bootstrap" % "3.3.7-1",
       "ch.qos.logback" % "logback-classic" % "1.1.7",
     )
   )
-  .dependsOn(converterTemplateThymeleaf)
-  .dependsOn(converterJsonJackson)
-  .dependsOn(providerJetty)
-  .dependsOn(supportSwagger)
-
-lazy val examplesNetty = (project in file("examples/netty"))
-  .settings(
-    organization := "com.github.acsgh.mad.scala.examples",
-    name := "netty",
-    commonSettings,
-    libraryDependencies ++= Seq(
-      "org.webjars" % "bootstrap" % "3.3.7-1",
-      "ch.qos.logback" % "logback-classic" % "1.1.7",
-    )
-  )
+  .dependsOn(core)
   .dependsOn(converterTemplateThymeleaf)
   .dependsOn(converterJsonSpray)
-  .dependsOn(providerNetty)
   .dependsOn(supportSwagger)
