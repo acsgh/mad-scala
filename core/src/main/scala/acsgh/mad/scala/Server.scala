@@ -102,7 +102,7 @@ abstract class Server extends App with Routes with WSRoutes {
     _workerThreads = workerThreads
   }
 
-  def readerIdleTimeSeconds: Int = readerIdleTimeSeconds
+  def readerIdleTimeSeconds: Int = _readerIdleTimeSeconds
 
   def readerIdleTimeSeconds(value: Int): Unit = {
     checkNotStarted()
