@@ -1,13 +1,16 @@
 package acsgh.mad.scala.examples.netty
 
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 
 import acsgh.mad.scala.Server
 import acsgh.mad.scala.converter.json.spray.SprayDirectives
 import acsgh.mad.scala.converter.template.thymeleaf.{ThymeleafHttpServer, ThymeleafTemplate}
+import acsgh.mad.scala.router.http.listener.LoggingEventListener
 import acsgh.mad.scala.router.http.model.ResponseStatus._
 import acsgh.mad.scala.support.swagger.SwaggerRoutes
 import com.acsgh.common.scala.App
+import com.acsgh.common.scala.time.TimerSplitter
 import io.swagger.v3.oas.models.OpenAPI
 
 object Boot extends Server with App with ThymeleafHttpServer with JsonProtocol with SprayDirectives with SwaggerRoutes {
@@ -28,6 +31,7 @@ object Boot extends Server with App with ThymeleafHttpServer with JsonProtocol w
 
 
   swaggerRoutes()
+  addHttpRequestListeners(LoggingEventListener)
 
   val ids = new AtomicLong(0)
 
@@ -153,6 +157,22 @@ object Boot extends Server with App with ThymeleafHttpServer with JsonProtocol w
         persons = persons - id
         responseJson(personOld)
       }
+    }
+  }
+
+  get("/slow", Operation(
+    operationId = "getSlowOperation",
+    summary = "Get person",
+    parameters = List(
+      QueryParameter("time", "The time in milliseconds")
+    ),
+    responses = ApiResponses(
+      OK -> ApiResponseJson(classOf[Person], "The response"),
+    )
+  )) { implicit context =>
+    requestQuery("time".as[Long].default(100)) { time =>
+      Thread.sleep(time)
+      responseBody(s"Response took: ${TimerSplitter.getIntervalInfo(System.currentTimeMillis() - context.request.starTime, TimeUnit.MILLISECONDS)}")
     }
   }
 

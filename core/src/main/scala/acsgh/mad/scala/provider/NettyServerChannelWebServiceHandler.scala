@@ -10,7 +10,12 @@ import io.netty.buffer.{ByteBufUtil, Unpooled}
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.http.websocketx.{BinaryWebSocketFrame, TextWebSocketFrame, WebSocketFrame, WebSocketServerProtocolHandler}
 
-class NettyWebSocketFrameHandler(private val wsRouter: WSRouter, private val uri: String, private val subprotocol: Option[String]) extends WebSocketServerProtocolHandler(uri, subprotocol.getOrElse(null), true) with LogSupport {
+class NettyServerChannelWebServiceHandler
+(
+  private val wsRouter: WSRouter,
+  private val uri: String,
+  private val subprotocol: Option[String]
+) extends WebSocketServerProtocolHandler(uri, subprotocol.orNull, true) with LogSupport {
 
   override def channelRegistered(ctx: ChannelHandlerContext): Unit = {
     super.channelRegistered(ctx)

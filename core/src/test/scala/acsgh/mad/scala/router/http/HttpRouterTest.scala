@@ -13,7 +13,7 @@ class HttpRouterTest extends FlatSpec with Matchers with DefaultFormats {
 
   def f =
     new {
-      val router = new HttpRouter("test", false)
+      val router = new HttpRouter("test", false, 1, 0)
       val routes = new Routes {
         override protected val httpRouter: HttpRouter = router
       }

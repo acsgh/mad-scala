@@ -14,7 +14,7 @@ class StaticClasspathFolderFilterTest extends FlatSpec with Matchers with Defaul
   def f =
     new {
       val baseFolder = "assets"
-      val router = new HttpRouter("test", false)
+      val router = new HttpRouter("test", false, 1, 0)
       val routes = new Routes {
         override protected val httpRouter: HttpRouter = router
       }

@@ -1,31 +1,66 @@
 package acsgh.mad.scala.router.http
 
-import acsgh.mad.scala.router.http.exception.BadRequestException
+import java.util.concurrent.TimeUnit
+
 import acsgh.mad.scala.router.http.handler.{DefaultErrorCodeHandler, DefaultExceptionHandler, ErrorCodeHandler, ExceptionHandler}
+import acsgh.mad.scala.router.http.listener.RequestListener
 import acsgh.mad.scala.router.http.model.{Route, _}
 import com.acsgh.common.scala.log.{LogLevel, LogSupport}
-import com.acsgh.common.scala.time.StopWatch
+import com.acsgh.common.scala.time.{StopWatch, TimerSplitter}
+import io.netty.channel.EventLoopGroup
+import io.netty.channel.nio.NioEventLoopGroup
+
+import scala.concurrent.TimeoutException
 
 
-final class HttpRouter(serverName: => String, _productionMode: => Boolean) extends LogSupport {
+final class HttpRouter(serverName: => String, _productionMode: => Boolean, workerThreads: => Int, workerTimeoutSeconds: => Int) extends LogSupport {
 
   protected var filters: List[Route[FilterAction]] = List()
   protected var servlet: List[Route[RouteAction]] = List()
   protected val errorCodeHandlers: Map[ResponseStatus, ErrorCodeHandler] = Map()
   protected val defaultErrorCodeHandler: ErrorCodeHandler = new DefaultErrorCodeHandler()
   protected val exceptionHandler: ExceptionHandler = new DefaultExceptionHandler(_productionMode)
+  private var _requestListeners: List[RequestListener] = List()
+  private lazy val handlersGroup: EventLoopGroup = new NioEventLoopGroup(workerThreads)
 
   def productionMode: Boolean = _productionMode
 
-  def process(httpRequest: Request): Response = {
-    implicit val ctx: RequestContext = model.RequestContext(httpRequest, ResponseBuilder(httpRequest), this)
-    log.debug(s"Request:  ${ctx.request.method} ${ctx.request.uri}")
-    ctx.response.header("Server", serverName)
-    val stopWatch = StopWatch.createStarted()
+  def requestListeners: List[RequestListener] = _requestListeners
+
+  def addRequestListeners(listener: RequestListener): Unit = {
+    _requestListeners = _requestListeners ++ List(listener)
+  }
+
+  def removeRequestListeners(listener: RequestListener): Unit = {
+    _requestListeners = _requestListeners.filterNot(_ == listener)
+  }
+
+  def stop(): Unit = {
+    handlersGroup.shutdownGracefully
+  }
+
+  private[scala] def process(httpRequest: Request): Response = {
+    implicit val ctx: RequestContext = getRequestContext(httpRequest)
+    onStart()
     try {
-      runSafe(runServlet)(ctx)
+      if (workerTimeoutSeconds > 0) {
+        val result = handlersGroup.submit(() => runSafe(runServlet))
+        try {
+          result.get(workerTimeoutSeconds, TimeUnit.SECONDS)
+        } catch {
+          case e: TimeoutException =>
+            result.cancel(true)
+            onTimeout()
+            getErrorResponse(ResponseStatus.INTERNAL_SERVER_ERROR, Some("Request Timeout"))
+          case e: Exception =>
+            onException(e)
+            exceptionHandler.handle(e)
+        }
+      } else {
+        runSafe(runServlet)
+      }
     } finally {
-      stopWatch.printElapseTime(s"Response: ${ctx.request.method} ${ctx.request.uri} with ${ctx.response.status.code}", log, LogLevel.INFO)
+      onStop()
     }
   }
 
@@ -80,12 +115,43 @@ final class HttpRouter(serverName: => String, _productionMode: => Boolean) exten
     try {
       action(ctx)
     } catch {
-      case e: BadRequestException =>
-        log.debug("Bad request", e)
-        exceptionHandler.handle(e)
+      case e: InterruptedException =>
+        onTimeout()
+        getErrorResponse(ResponseStatus.INTERNAL_SERVER_ERROR, Some("Request Timeout"))
       case e: Exception =>
-        log.error(s"Error during request: ${ctx.request.method}: ${ctx.request.uri} - Body: '${new String(ctx.request.bodyBytes, "UTF-8")}'", e)
+        onException(e)
         exceptionHandler.handle(e)
     }
+  }
+
+
+  private def onTimeout()(implicit ctx: RequestContext): Unit = {
+    log.trace(s"Timeout during request:  ${ctx.request.method} ${ctx.request.uri}")
+    notify(_.onTimeout())
+  }
+
+  private def onException(e: Exception)(implicit ctx: RequestContext): Unit = {
+    log.trace(s"Error during request: ${ctx.request.method}: ${ctx.request.uri} - Body: '${new String(ctx.request.bodyBytes, "UTF-8")}'", e)
+    notify(_.onException(e))
+  }
+
+  private def onStart()(implicit ctx: RequestContext): Unit = {
+    log.trace(s"Request:  ${ctx.request.method} ${ctx.request.uri}")
+    notify(_.onStart())
+  }
+
+  private def onStop()(implicit ctx: RequestContext): Unit = {
+    log.trace(s"Response: ${ctx.request.method} ${ctx.request.uri} with ${ctx.response.status.code} in ${TimerSplitter.getIntervalInfo(System.currentTimeMillis() - ctx.request.starTime, TimeUnit.MILLISECONDS)}")
+    notify(_.onStop())
+  }
+
+  private def getRequestContext(httpRequest: Request): RequestContext = {
+    val ctx: RequestContext = model.RequestContext(httpRequest, ResponseBuilder(httpRequest), this)
+    ctx.response.header("Server", serverName)
+    ctx
+  }
+
+  private def notify(action: RequestListener => Unit): Unit = {
+    _requestListeners.foreach(action)
   }
 }

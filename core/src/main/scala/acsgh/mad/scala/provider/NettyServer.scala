@@ -11,14 +11,17 @@ import io.netty.channel.{Channel, ChannelOption, EventLoopGroup}
 import io.netty.handler.logging.{LogLevel, LoggingHandler}
 import io.netty.handler.ssl.SslContext
 
-class NettyServerChannel
+class NettyServer
 (
   private val host: String,
   private val port: Int,
   private val sslContext: Option[SslContext],
   private val httpRouter: HttpRouter,
   private val wsRouter: WSRouter,
-  private val workerThreads:Int
+  private val workerThreads: Int,
+  private val readerIdleTimeSeconds: Int,
+  private val writerIdleTimeSeconds: Int,
+  private val workerTimeoutSeconds: Int,
 ) {
   private val started = new AtomicBoolean(false)
 
@@ -36,7 +39,7 @@ class NettyServerChannel
       b.group(bossGroup, workerGroup)
         .channel(classOf[NioServerSocketChannel])
         .handler(new LoggingHandler(LogLevel.DEBUG))
-        .childHandler(new NettyServerChannelInitializer(httpRouter, wsRouter, sslContext))
+        .childHandler(new NettyServerChannelInitializer(httpRouter, wsRouter, sslContext, readerIdleTimeSeconds, writerIdleTimeSeconds))
 
       channel = b.bind(host, port).sync.channel
     }

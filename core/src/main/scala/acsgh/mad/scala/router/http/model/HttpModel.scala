@@ -1,6 +1,7 @@
 package acsgh.mad.scala.router.http.model
 
 import java.net.URI
+import java.util.UUID
 
 import acsgh.mad.scala.URLSupport
 
@@ -13,6 +14,10 @@ case class Request
   headers: Map[String, List[String]],
   bodyBytes: Array[Byte]
 ) extends URLSupport {
+
+  val id: UUID = UUID.randomUUID()
+
+  val starTime: Long = System.currentTimeMillis()
 
   val path: String = uri.getPath
 
@@ -49,7 +54,7 @@ case class ResponseBuilder
     this
   }
 
-  def status : ResponseStatus = responseStatus
+  def status: ResponseStatus = responseStatus
 
   def status(input: ResponseStatus): ResponseBuilder = {
     responseStatus = input

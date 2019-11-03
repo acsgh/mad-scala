@@ -14,7 +14,10 @@ import io.netty.handler.codec.http._
 
 import scala.collection.JavaConverters._
 
-class NettyServerChannelHandler(private val httpRouter: HttpRouter) extends ChannelInboundHandlerAdapter with LogSupport {
+class NettyServerChannelHandler
+(
+  private val httpRouter: HttpRouter
+) extends ChannelInboundHandlerAdapter with LogSupport {
 
   override def channelReadComplete(ctx: ChannelHandlerContext): Unit = ctx.flush
 
@@ -22,10 +25,14 @@ class NettyServerChannelHandler(private val httpRouter: HttpRouter) extends Chan
     case req: HttpRequest =>
       if (HttpUtil.isKeepAlive(req)) ctx.write(new DefaultFullHttpResponse(HTTP_1_1, CONTINUE))
       val keepAlive = HttpUtil.isKeepAlive(req)
+
       val madRequest = geHttpRequest(req, ctx.channel.remoteAddress)
-      val wareResponse = httpRouter.process(madRequest)
-      val response = getNettyResponse(wareResponse)
-      if (!keepAlive) ctx.write(response).addListener(ChannelFutureListener.CLOSE)
+      val madResponse = httpRouter.process(madRequest)
+
+      val response = getNettyResponse(madResponse)
+      if (!keepAlive) {
+        ctx.write(response).addListener(ChannelFutureListener.CLOSE)
+      }
       else {
         response.headers.set(CONNECTION, HttpHeaderValues.KEEP_ALIVE)
         ctx.write(response)
