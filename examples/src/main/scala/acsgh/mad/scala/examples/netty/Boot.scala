@@ -180,7 +180,6 @@ object Boot extends Server with App with ThymeleafHttpServer with JsonProtocol w
 
   ws("/echo") { implicit context =>
     wsRequest[String] { input =>
-      Thread.sleep(4000000)
       wsResponse(s"You said: $input")
     }
   }
