@@ -10,34 +10,37 @@ import io.netty.buffer.{ByteBufUtil, Unpooled}
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.http.websocketx.{BinaryWebSocketFrame, TextWebSocketFrame, WebSocketFrame, WebSocketServerProtocolHandler}
 
-class NettyServerChannelWebServiceHandler
+class NettyServerChannelWebSocketHandler
 (
   private val wsRouter: WSRouter,
   private val uri: String,
   private val subprotocol: Option[String]
 ) extends WebSocketServerProtocolHandler(uri, subprotocol.orNull, true) with LogSupport {
 
-  override def channelRegistered(ctx: ChannelHandlerContext): Unit = {
-    super.channelRegistered(ctx)
-
-    wsRouter.process(toWebSocketConnectedRequest(ctx)).foreach { response =>
-      if (response.close) {
-        ctx.close
-      }
-    }
-  }
+  private var connected: Boolean = false
 
   override def channelUnregistered(ctx: ChannelHandlerContext): Unit = {
     super.channelUnregistered(ctx)
 
-    wsRouter.process(toWebSocketDisconnectedRequest(ctx)).foreach { response =>
-      if (response.close) {
-        ctx.close
+    if (connected) {
+      wsRouter.process(toWebSocketDisconnectedRequest(ctx)).foreach { response =>
+        if (response.isInstanceOf[WSResponseClose]) {
+          ctx.close
+        }
       }
+      connected = false
     }
   }
 
   override protected def decode(ctx: ChannelHandlerContext, frame: WebSocketFrame, out: util.List[AnyRef]): Unit = {
+    if (!connected) {
+      wsRouter.process(toWebSocketConnectedRequest(ctx)).foreach { response =>
+        if (response.isInstanceOf[WSResponseClose]) {
+          ctx.close
+        }
+      }
+      connected = true
+    }
     getWebSocketRequest(ctx, frame).fold(super.decode(ctx, frame, out)) { r =>
       wsRouter.process(r).foreach { response =>
         toWebSocketFrame(response).foreach(ctx.channel.writeAndFlush)
@@ -58,26 +61,22 @@ class NettyServerChannelWebServiceHandler
   }
 
   private def toWebSocketConnectedRequest(ctx: ChannelHandlerContext) = WSRequestConnect(
-    ctx.channel.id.asLongText,
     ctx.channel.remoteAddress.toString,
     URI.create(uri)
   )
 
   private def toWebSocketDisconnectedRequest(ctx: ChannelHandlerContext) = WSRequestDisconnect(
-    ctx.channel.id.asLongText,
     ctx.channel.remoteAddress.toString,
     URI.create(uri)
   )
 
   private def getTextRequest(ctx: ChannelHandlerContext, frame: TextWebSocketFrame) = WSRequestText(
-    ctx.channel.id.asLongText,
     ctx.channel.remoteAddress.toString,
     URI.create(uri),
     frame.text()
   )
 
   private def getBinaryRequest(ctx: ChannelHandlerContext, frame: BinaryWebSocketFrame) = WSRequestBinary(
-    ctx.channel.id.asLongText,
     ctx.channel.remoteAddress.toString,
     URI.create(uri),
     ByteBufUtil.getBytes(frame.content)

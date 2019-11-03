@@ -15,11 +15,11 @@ import scala.concurrent.TimeoutException
 
 final class HttpRouter(serverName: => String, _productionMode: => Boolean, workerThreads: => Int, workerTimeoutSeconds: => Int) extends LogSupport {
 
-  protected var filters: List[Route[FilterAction]] = List()
-  protected var servlet: List[Route[RouteAction]] = List()
-  protected val errorCodeHandlers: Map[ResponseStatus, ErrorCodeHandler] = Map()
-  protected val defaultErrorCodeHandler: ErrorCodeHandler = new DefaultErrorCodeHandler()
-  protected val exceptionHandler: ExceptionHandler = new DefaultExceptionHandler(_productionMode)
+  private var filters: List[Route[FilterAction]] = List()
+  private var servlet: List[Route[RouteAction]] = List()
+  private val errorCodeHandlers: Map[ResponseStatus, ErrorCodeHandler] = Map()
+  private val defaultErrorCodeHandler: ErrorCodeHandler = new DefaultErrorCodeHandler()
+  private val exceptionHandler: ExceptionHandler = new DefaultExceptionHandler(_productionMode)
   private var _requestListeners: List[RequestListener] = List()
   private lazy val handlersGroup: EventLoopGroup = new NioEventLoopGroup(workerThreads)
 
@@ -115,7 +115,7 @@ final class HttpRouter(serverName: => String, _productionMode: => Boolean, worke
     try {
       action(ctx)
     } catch {
-      case e: InterruptedException =>
+      case _: InterruptedException =>
         onTimeout()
         getErrorResponse(ResponseStatus.INTERNAL_SERVER_ERROR, Some("Request Timeout"))
       case e: Exception =>

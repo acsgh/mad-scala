@@ -8,6 +8,7 @@ import acsgh.mad.scala.converter.json.spray.SprayDirectives
 import acsgh.mad.scala.converter.template.thymeleaf.{ThymeleafHttpServer, ThymeleafTemplate}
 import acsgh.mad.scala.router.http.listener.LoggingEventListener
 import acsgh.mad.scala.router.http.model.ResponseStatus._
+import acsgh.mad.scala.router.ws.listener.WSLoggingEventListener
 import acsgh.mad.scala.support.swagger.SwaggerRoutes
 import com.acsgh.common.scala.App
 import com.acsgh.common.scala.time.TimerSplitter
@@ -32,6 +33,7 @@ object Boot extends Server with App with ThymeleafHttpServer with JsonProtocol w
 
   swaggerRoutes()
   addHttpRequestListeners(LoggingEventListener)
+  addWSRequestListeners(WSLoggingEventListener)
 
   val ids = new AtomicLong(0)
 
@@ -177,8 +179,9 @@ object Boot extends Server with App with ThymeleafHttpServer with JsonProtocol w
   }
 
   ws("/echo") { implicit context =>
-    requestString { input =>
-      responseBody(s"You said: $input")
+    wsRequest[String] { input =>
+      Thread.sleep(4000000)
+      wsResponse(s"You said: $input")
     }
   }
 

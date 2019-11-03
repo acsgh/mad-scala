@@ -2,7 +2,7 @@ package acsgh.mad.scala.provider
 
 import acsgh.mad.scala.router.http.HttpRouter
 import acsgh.mad.scala.router.ws.WSRouter
-import io.netty.channel.{ChannelInitializer, EventLoopGroup}
+import io.netty.channel.ChannelInitializer
 import io.netty.channel.socket.SocketChannel
 import io.netty.handler.codec.http.{HttpObjectAggregator, HttpServerCodec}
 import io.netty.handler.ssl.SslContext
@@ -13,8 +13,8 @@ class NettyServerChannelInitializer
   private val httpRouter: HttpRouter,
   private val wsRouter: WSRouter,
   private val sslContext: Option[SslContext],
-  private val readerIdleTimeSeconds:Int,
-  private val writerIdleTimeSeconds:Int,
+  private val readerIdleTimeSeconds: Int,
+  private val writerIdleTimeSeconds: Int,
 ) extends ChannelInitializer[SocketChannel] {
 
   override def initChannel(ch: SocketChannel): Unit = {
@@ -27,10 +27,10 @@ class NettyServerChannelInitializer
 
     for (route <- wsRouter.wsRoutes) {
       if (route._2.subprotocols.isEmpty) {
-        p.addLast(new NettyServerChannelWebServiceHandler(wsRouter, route._1, None))
+        p.addLast(new NettyServerChannelWebSocketHandler(wsRouter, route._1, None))
       } else {
         for (subprotocol <- route._2.subprotocols) {
-          p.addLast(new NettyServerChannelWebServiceHandler(wsRouter, route._1, Some(subprotocol)))
+          p.addLast(new NettyServerChannelWebSocketHandler(wsRouter, route._1, Some(subprotocol)))
         }
       }
     }

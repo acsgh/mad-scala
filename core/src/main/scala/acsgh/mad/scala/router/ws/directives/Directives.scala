@@ -1,21 +1,24 @@
 package acsgh.mad.scala.router.ws.directives
 
-import acsgh.mad.scala.router.ws.WSRequestContext
-import acsgh.mad.scala.router.ws.convertions.DefaultFormats
-import acsgh.mad.scala.router.ws.model.{WSRequestBinary, WSRequestText, WSResponse}
+import acsgh.mad.scala.router.ws.convertions.{BodyReader, BodyWriter, DefaultFormats}
+import acsgh.mad.scala.router.ws.model._
 
 trait Directives extends DefaultFormats {
-  def requestString(action: String => Option[WSResponse])(implicit context: WSRequestContext): Option[WSResponse] = context.request match {
-    case t: WSRequestText => action(t.text)
-    case _ => None
+  def wsRequest[T](action: T => Option[WSResponse])(implicit context: WSRequestContext, reader: BodyReader[T]): Option[WSResponse] = context.request match {
+    case t: WSRequestText => action(reader.read(t.text))
+    case t: WSRequestBinary => action(reader.read(t.bytes))
+    case _ => None // Do nothing
   }
 
-  def requestBytes(action: Array[Byte] => Option[WSResponse])(implicit context: WSRequestContext): Option[WSResponse] = context.request match {
-    case t: WSRequestBinary => action(t.bytes)
-    case _ => None
+  def wsResponse[T](input: T)(implicit context: WSRequestContext, writer: BodyWriter[T]): Option[WSResponse] = context.request match {
+    case _: WSRequestText => wsResponseText(input)
+    case _: WSRequestBinary => wsResponseBytes(input)
+    case _ => None // Do nothing
   }
 
-  def responseBody(input: Array[Byte])(implicit context: WSRequestContext): Option[WSResponse] = Some(context.response.bytes(input))
+  def wsResponseText[T](input: T)(implicit context: WSRequestContext, writer: BodyWriter[T]): Option[WSResponse] = Some(WSResponseText(writer.writeText(input)))
 
-  def responseBody(input: String)(implicit context: WSRequestContext): Option[WSResponse] = Some(context.response.text(input))
+  def wsResponseBytes[T](input: T)(implicit context: WSRequestContext, writer: BodyWriter[T]): Option[WSResponse] = Some(WSResponseBinary(writer.writeBytes(input)))
+
+  def close()(implicit context: WSRequestContext): Option[WSResponse] = Some(WSResponseClose())
 }

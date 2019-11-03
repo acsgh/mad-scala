@@ -3,6 +3,7 @@ package acsgh.mad.scala
 import acsgh.mad.scala.provider.NettyServer
 import acsgh.mad.scala.router.http.listener.RequestListener
 import acsgh.mad.scala.router.http.{HttpRouter, Routes}
+import acsgh.mad.scala.router.ws.listener.WSRequestListener
 import acsgh.mad.scala.router.ws.{WSRouter, WSRoutes}
 import com.acsgh.common.scala.App
 
@@ -16,7 +17,8 @@ abstract class Server extends App with Routes with WSRoutes {
   private var _workerThreads: Int = 30
   private var _readerIdleTimeSeconds: Int = 60
   private var _writerIdleTimeSeconds: Int = 30
-  private var _workerTimeoutSeconds: Int = 60
+  private var _httpWorkerTimeoutSeconds: Int = 60
+  private var _wsWorkerTimeoutSeconds: Int = 60
 
   private var httpServer: Option[NettyServer] = None
   private var httpsServer: Option[NettyServer] = None
@@ -25,16 +27,20 @@ abstract class Server extends App with Routes with WSRoutes {
     name
   }, {
     _productionMode
-  },{
+  }, {
     _workerThreads
-  },{
-    _workerTimeoutSeconds
+  }, {
+    _httpWorkerTimeoutSeconds
   })
 
   protected val wsRouter: WSRouter = new WSRouter({
     name
   }, {
     _productionMode
+  }, {
+    _workerThreads
+  }, {
+    _wsWorkerTimeoutSeconds
   })
 
   def httpRequestListeners: List[RequestListener] = httpRouter.requestListeners
@@ -47,6 +53,18 @@ abstract class Server extends App with Routes with WSRoutes {
   def removeHttpRequestListeners(listener: RequestListener): Unit = {
     checkNotStarted()
     httpRouter.removeRequestListeners(listener)
+  }
+
+  def wsRequestListeners: List[WSRequestListener] = wsRouter.requestListeners
+
+  def addWSRequestListeners(listener: WSRequestListener): Unit = {
+    checkNotStarted()
+    wsRouter.addRequestListeners(listener)
+  }
+
+  def removeWSRequestListeners(listener: WSRequestListener): Unit = {
+    checkNotStarted()
+    wsRouter.removeRequestListeners(listener)
   }
 
   def productionMode(value: Boolean): Unit = {
@@ -98,13 +116,19 @@ abstract class Server extends App with Routes with WSRoutes {
     _writerIdleTimeSeconds = value
   }
 
-  def workerTimeoutSeconds: Int = _workerTimeoutSeconds
+  def httpWorkerTimeoutSeconds: Int = _httpWorkerTimeoutSeconds
 
-  def workerTimeoutSeconds(value: Int): Unit = {
+  def httpWorkerTimeoutSeconds(value: Int): Unit = {
     checkNotStarted()
-    _workerTimeoutSeconds = value
+    _httpWorkerTimeoutSeconds = value
   }
 
+  def wsWorkerTimeoutSeconds: Int = _wsWorkerTimeoutSeconds
+
+  def wsWorkerTimeoutSeconds(value: Int): Unit = {
+    checkNotStarted()
+    _wsWorkerTimeoutSeconds = value
+  }
 
   def ipAddress: String = _ipAddress
 
@@ -117,7 +141,7 @@ abstract class Server extends App with Routes with WSRoutes {
     httpPort.foreach { port =>
       log.info(s"$name server is listening in http://$ipAddress:$port")
       httpServer = Some(
-        new NettyServer(ipAddress, port, None, httpRouter, wsRouter, _workerThreads, _readerIdleTimeSeconds, _writerIdleTimeSeconds, _workerTimeoutSeconds)
+        new NettyServer(ipAddress, port, None, httpRouter, wsRouter, _workerThreads, _readerIdleTimeSeconds, _writerIdleTimeSeconds, _httpWorkerTimeoutSeconds)
       )
     }
 
@@ -125,7 +149,7 @@ abstract class Server extends App with Routes with WSRoutes {
       log.info(s"$name server is listening in https://$ipAddress:$port")
       val sslContext = sslConfig.fold(SSLConfig.DEFAULT)(_.sslContext)
       httpsServer = Some(
-        new NettyServer(ipAddress, port, Some(sslContext), httpRouter, wsRouter, _workerThreads, _readerIdleTimeSeconds, _writerIdleTimeSeconds, _workerTimeoutSeconds)
+        new NettyServer(ipAddress, port, Some(sslContext), httpRouter, wsRouter, _workerThreads, _readerIdleTimeSeconds, _writerIdleTimeSeconds, _httpWorkerTimeoutSeconds)
       )
     }
   }
@@ -139,6 +163,7 @@ abstract class Server extends App with Routes with WSRoutes {
     httpServer.foreach(_.stop())
     httpsServer.foreach(_.stop())
     httpRouter.stop()
+    wsRouter.stop()
     httpServer = None
     httpsServer = None
   }
