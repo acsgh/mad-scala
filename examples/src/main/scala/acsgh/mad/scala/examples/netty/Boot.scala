@@ -13,6 +13,7 @@ import acsgh.mad.scala.support.swagger.SwaggerRoutes
 import com.acsgh.common.scala.App
 import com.acsgh.common.scala.time.TimerSplitter
 import io.swagger.v3.oas.models.OpenAPI
+import io.swagger.v3.oas.models.media.NumberSchema
 
 object Boot extends Server with App with ThymeleafHttpServer with JsonProtocol with SprayDirectives with SwaggerRoutes {
   override val name: String = "Netty Boot Example"
@@ -166,7 +167,7 @@ object Boot extends Server with App with ThymeleafHttpServer with JsonProtocol w
     operationId = "getSlowOperation",
     summary = "Get person",
     parameters = List(
-      QueryParameter("time", "The time in milliseconds")
+      QueryParameter("time", "The time in milliseconds", schema = new NumberSchema)
     ),
     responses = ApiResponses(
       OK -> ApiResponseJson(classOf[Person], "The response"),
