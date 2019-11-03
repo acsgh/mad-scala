@@ -83,6 +83,6 @@ trait URLSupport extends LogSupport {
     while (matcher.find) {
       names = matcher.group.replace("{", "").replace("+}", "").replace("}", "") :: names
     }
-    names
+    names.reverse
   }
 }
