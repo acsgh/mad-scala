@@ -25,7 +25,7 @@ case class Request
 
   val queryParams: Map[String, List[String]] = extractQueryParam(uri)
 
-  val cookieParams: Map[String, String] = headers.getOrElse("Cookie", List()).flatMap(_.split(";")).map(extractCookie).toMap
+  val cookieParams: Map[String, List[String]] = headers.getOrElse("Cookie", List()).flatMap(_.split(";")).map(extractCookie).groupBy(_._1).toMap.mapValues(_.map(_._2).toList).toMap
 
   private[router] def validContentType(contentTypes: Set[String], contentType: String) = contentTypes.isEmpty || contentTypes.exists(t => t.equalsIgnoreCase(contentType))
 }

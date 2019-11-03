@@ -55,7 +55,7 @@ trait DefaultParamHandling {
     }
 
     def cookieValue(implicit context: RequestContext): R = {
-      val value = context.request.cookieParams.find(_._1.equalsIgnoreCase(param.name)).map(_._2).toList
+      val value = context.request.cookieParams.find(_._1.equalsIgnoreCase(param.name)).map(_._2).getOrElse(List())
       param("Cookie", value)
     }
 
