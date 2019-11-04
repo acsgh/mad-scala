@@ -76,9 +76,15 @@ final class HttpRouter(serverName: => String, _productionMode: => Boolean, worke
     }
   }
 
-  private[http] def servlet(route: Route[RouteAction]): Unit = servlet = servlet ++ List(route)
+  private[http] def servlet(route: Route[RouteAction]): Unit = {
+    checkNotStarted()
+    servlet = servlet ++ List(route)
+  }
 
-  private[http] def filter(route: Route[FilterAction]): Unit = filters = filters ++ List(route)
+  private[http] def filter(route: Route[FilterAction]): Unit = {
+    checkNotStarted()
+    filters = filters ++ List(route)
+  }
 
   private[http] def getErrorResponse(responseStatus: ResponseStatus, message: Option[String] = None)(implicit context: RequestContext): Response = {
     val errorCodeHandler = errorCodeHandlers.getOrElse(responseStatus, defaultErrorCodeHandler)
@@ -86,6 +92,7 @@ final class HttpRouter(serverName: => String, _productionMode: => Boolean, worke
   }
 
   private def runServlet(context: RequestContext): Response = {
+    checkStarted()
     servlet
       .find(_.canApply(context.request))
       .map(r => runRoute(r, context))
@@ -95,7 +102,6 @@ final class HttpRouter(serverName: => String, _productionMode: => Boolean, worke
   }
 
   private def runRoute(route: Route[RouteAction], context: RequestContext): Response = {
-    checkNotStarted()
     val stopWatch = StopWatch.createStarted()
     try {
       implicit val ctx: RequestContext = context.ofRoute(route)
@@ -107,7 +113,6 @@ final class HttpRouter(serverName: => String, _productionMode: => Boolean, worke
   }
 
   private def runFilters(route: Route[RouteAction], nextFilters: List[Route[FilterAction]])(implicit context: RequestContext): Response = {
-    checkNotStarted()
     runSafe { c1 =>
       if (nextFilters.nonEmpty) {
         val currentFilter = nextFilters.head
@@ -172,6 +177,12 @@ final class HttpRouter(serverName: => String, _productionMode: => Boolean, worke
   private def checkNotStarted(): Unit = {
     if (started) {
       throw new IllegalArgumentException("This action can only be performed before start the service")
+    }
+  }
+
+  private def checkStarted(): Unit = {
+    if (!started) {
+      throw new IllegalArgumentException("This action can only be performed after start the service")
     }
   }
 }

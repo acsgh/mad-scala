@@ -3,9 +3,9 @@ package acsgh.mad.scala.examples.netty
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 
-import acsgh.mad.scala.Server
+import acsgh.mad.scala.{Server, ServerApp}
 import acsgh.mad.scala.converter.json.spray.SprayDirectives
-import acsgh.mad.scala.converter.template.thymeleaf.{ThymeleafHttpServer, ThymeleafTemplate}
+import acsgh.mad.scala.converter.template.thymeleaf.{ThymeleafDirectives, ThymeleafEngineProvider, ThymeleafTemplate}
 import acsgh.mad.scala.router.http.listener.LoggingEventListener
 import acsgh.mad.scala.router.http.model.ResponseStatus._
 import acsgh.mad.scala.router.ws.listener.WSLoggingEventListener
@@ -14,11 +14,12 @@ import com.acsgh.common.scala.App
 import com.acsgh.common.scala.time.TimerSplitter
 import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.media.NumberSchema
+import org.thymeleaf.TemplateEngine
 
-object Boot extends Server with App with ThymeleafHttpServer with JsonProtocol with SprayDirectives with SwaggerRoutes {
+object Boot extends ServerApp with JsonProtocol with ThymeleafDirectives with SprayDirectives with SwaggerRoutes {
   override val name: String = "Netty Boot Example"
 
-  override protected val prefix: String = "/templates/"
+  implicit protected val thymeleafEngine: TemplateEngine = ThymeleafEngineProvider.build("/templates/")
 
   implicit protected val openApi: OpenAPI = OpenAPI(
     info = Info(

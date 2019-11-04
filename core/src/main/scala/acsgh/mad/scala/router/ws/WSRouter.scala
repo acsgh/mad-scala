@@ -56,6 +56,7 @@ final class WSRouter(serverName: => String, _productionMode: => Boolean, workerT
   }
 
   private[scala] def process(request: WSRequest): Option[WSResponse] = {
+    checkStarted()
     _wsRoutes.get(request.uri.toString).map(_.handler).getOrElse(defaultHandler)
 
     implicit val ctx: WSRequestContext = WSRequestContext(request, _wsRoutes.get(request.uri.toString))
@@ -140,6 +141,12 @@ final class WSRouter(serverName: => String, _productionMode: => Boolean, workerT
   private def checkNotStarted(): Unit = {
     if (started) {
       throw new IllegalArgumentException("This action can only be performed before start the service")
+    }
+  }
+
+  private def checkStarted(): Unit = {
+    if (!started) {
+      throw new IllegalArgumentException("This action can only be performed after start the service")
     }
   }
 }

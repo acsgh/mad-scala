@@ -1,26 +1,14 @@
 package acsgh.mad.scala.converter.template.thymeleaf
 
-import acsgh.mad.scala.Server
 import org.thymeleaf.TemplateEngine
 import org.thymeleaf.templatemode.TemplateMode
 import org.thymeleaf.templateresolver.{ClassLoaderTemplateResolver, FileTemplateResolver}
 
-trait ThymeleafHttpServer extends ThymeleafDirectives {
-  server: Server =>
+object ThymeleafEngineProvider {
 
-  protected val source: ThymeleafSource = ThymeleafSource.Classpath
-  protected val prefix: String
-  protected val suffix: String = ".html"
-  protected val templateMode: TemplateMode = TemplateMode.HTML
-  protected val encoding: String = "UTF-8"
+  def build(prefix: String, suffix: String = ".html", source: ThymeleafSource = ThymeleafSource.Classpath, templateMode: TemplateMode = TemplateMode.HTML, encoding: String = "UTF-8"): TemplateEngine = {
+    val engine = new TemplateEngine
 
-  protected implicit val thymeleafEngine: TemplateEngine = new TemplateEngine
-
-  onConfigure {
-    configureTemplateEngine()
-  }
-
-  private def configureTemplateEngine(): Unit = {
     try {
       val templateResolver = source match {
         case ThymeleafSource.File =>
@@ -34,10 +22,12 @@ trait ThymeleafHttpServer extends ThymeleafDirectives {
       templateResolver.setPrefix(prefix)
       templateResolver.setSuffix(suffix)
       templateResolver.setCharacterEncoding(encoding)
-      thymeleafEngine.setTemplateResolver(templateResolver)
+      engine.setTemplateResolver(templateResolver)
     } catch {
       case e: Exception =>
         throw new RuntimeException(e)
     }
+
+    engine
   }
 }
