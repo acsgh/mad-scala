@@ -155,6 +155,8 @@ abstract class Server extends App with Routes with WSRoutes {
   }
 
   onStart {
+    httpRouter.start()
+    wsRouter.start()
     httpServer.foreach(_.start())
     httpsServer.foreach(_.start())
   }

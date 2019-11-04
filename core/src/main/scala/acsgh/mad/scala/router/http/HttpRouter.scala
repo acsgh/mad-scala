@@ -1,6 +1,7 @@
 package acsgh.mad.scala.router.http
 
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 
 import acsgh.mad.scala.router.http.handler.{DefaultErrorCodeHandler, DefaultExceptionHandler, ErrorCodeHandler, ExceptionHandler}
 import acsgh.mad.scala.router.http.listener.RequestListener
@@ -23,6 +24,8 @@ final class HttpRouter(serverName: => String, _productionMode: => Boolean, worke
   private var _requestListeners: List[RequestListener] = List()
   private lazy val handlersGroup: EventLoopGroup = new NioEventLoopGroup(workerThreads)
 
+  private val _started = new AtomicBoolean(false)
+
   def productionMode: Boolean = _productionMode
 
   def requestListeners: List[RequestListener] = _requestListeners
@@ -35,8 +38,17 @@ final class HttpRouter(serverName: => String, _productionMode: => Boolean, worke
     _requestListeners = _requestListeners.filterNot(_ == listener)
   }
 
+  def started: Boolean = _started.get()
+
+  def start(): Unit = {
+    if (_started.compareAndSet(false, true)) {
+    }
+  }
+
   def stop(): Unit = {
-    handlersGroup.shutdownGracefully
+    if (_started.compareAndSet(true, false)) {
+      handlersGroup.shutdownGracefully
+    }
   }
 
   private[scala] def process(httpRequest: Request): Response = {
@@ -83,6 +95,7 @@ final class HttpRouter(serverName: => String, _productionMode: => Boolean, worke
   }
 
   private def runRoute(route: Route[RouteAction], context: RequestContext): Response = {
+    checkNotStarted()
     val stopWatch = StopWatch.createStarted()
     try {
       implicit val ctx: RequestContext = context.ofRoute(route)
@@ -94,6 +107,7 @@ final class HttpRouter(serverName: => String, _productionMode: => Boolean, worke
   }
 
   private def runFilters(route: Route[RouteAction], nextFilters: List[Route[FilterAction]])(implicit context: RequestContext): Response = {
+    checkNotStarted()
     runSafe { c1 =>
       if (nextFilters.nonEmpty) {
         val currentFilter = nextFilters.head
@@ -153,5 +167,11 @@ final class HttpRouter(serverName: => String, _productionMode: => Boolean, worke
 
   private def notify(action: RequestListener => Unit): Unit = {
     _requestListeners.foreach(action)
+  }
+
+  private def checkNotStarted(): Unit = {
+    if (started) {
+      throw new IllegalArgumentException("This action can only be performed before start the service")
+    }
   }
 }

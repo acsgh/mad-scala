@@ -2,7 +2,7 @@ package acsgh.mad.scala.router.http.model
 
 import acsgh.mad.scala.URLSupport
 
-private[http] trait Route[T] extends URLSupport {
+trait Route[T] extends URLSupport {
 
   val uri: String
   val methods: Set[RequestMethod]

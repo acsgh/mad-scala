@@ -1,6 +1,7 @@
 package acsgh.mad.scala.router.ws
 
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 
 import acsgh.mad.scala.router.ws.listener.WSRequestListener
 import acsgh.mad.scala.router.ws.model._
@@ -19,6 +20,8 @@ final class WSRouter(serverName: => String, _productionMode: => Boolean, workerT
   private var _requestListeners: List[WSRequestListener] = List()
   private lazy val handlersGroup: EventLoopGroup = new NioEventLoopGroup(workerThreads)
 
+  private val _started = new AtomicBoolean(false)
+
   private[scala] def wsRoutes: Map[String, WSRoute] = _wsRoutes
 
   def productionMode: Boolean = _productionMode
@@ -33,11 +36,24 @@ final class WSRouter(serverName: => String, _productionMode: => Boolean, workerT
     _requestListeners = _requestListeners.filterNot(_ == listener)
   }
 
-  def stop(): Unit = {
-    handlersGroup.shutdownGracefully
+  def started: Boolean = _started.get()
+
+  def start(): Unit = {
+    if (_started.compareAndSet(false, true)) {
+    }
   }
 
-  private[ws] def route(uri: String, subprotocols: Set[String] = Set())(handler: WSRouteAction): Unit = _wsRoutes = _wsRoutes + (uri -> WSRoute(subprotocols, handler))
+  def stop(): Unit = {
+    if (_started.compareAndSet(true, false)) {
+      handlersGroup.shutdownGracefully
+    }
+  }
+
+  private[ws] def route(uri: String, subprotocols: Set[String] = Set())(handler: WSRouteAction): Unit = {
+    checkNotStarted()
+
+    _wsRoutes = _wsRoutes + (uri -> WSRoute(subprotocols, handler))
+  }
 
   private[scala] def process(request: WSRequest): Option[WSResponse] = {
     _wsRoutes.get(request.uri.toString).map(_.handler).getOrElse(defaultHandler)
@@ -119,5 +135,11 @@ final class WSRouter(serverName: => String, _productionMode: => Boolean, workerT
 
   private def notify(action: WSRequestListener => Unit): Unit = {
     _requestListeners.foreach(action)
+  }
+
+  private def checkNotStarted(): Unit = {
+    if (started) {
+      throw new IllegalArgumentException("This action can only be performed before start the service")
+    }
   }
 }
