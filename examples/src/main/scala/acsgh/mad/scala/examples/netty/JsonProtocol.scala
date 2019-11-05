@@ -1,9 +1,9 @@
 package acsgh.mad.scala.examples.netty
 
-import spray.json.DefaultJsonProtocol
+import spray.json.{DefaultJsonProtocol, RootJsonFormat}
 
 trait JsonProtocol extends DefaultJsonProtocol {
 
-  implicit val personFormat = jsonFormat3(Person)
+  implicit val personFormat: RootJsonFormat[Person] = jsonFormat3(Person)
 
 }

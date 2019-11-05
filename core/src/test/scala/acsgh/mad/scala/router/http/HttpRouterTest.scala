@@ -11,14 +11,8 @@ import scala.language.reflectiveCalls
 
 class HttpRouterTest extends FlatSpec with Matchers with DefaultFormats {
 
-  def f =
-    new {
-      val router = HttpRouter("test", false, 1, 0)
-    }
-
   "HttpRouter" should "return 404 if no route" in {
-    val fixture = f
-    val router = fixture.router
+    val router = new HttpRouterBuilder()
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -28,15 +22,14 @@ class HttpRouterTest extends FlatSpec with Matchers with DefaultFormats {
       new Array[Byte](0)
     )
 
-    val response = router.process(request)
+    val response = router.build("test", productionMode = false).process(request)
 
     response.protocolVersion should be(request.protocolVersion)
     response.responseStatus should be(ResponseStatus.NOT_FOUND)
   }
 
   it should "return 500 if error" in {
-    val fixture = f
-    val router = fixture.router
+    val router = new HttpRouterBuilder()
 
     val request = Request(
       RequestMethod.GET,
@@ -51,15 +44,14 @@ class HttpRouterTest extends FlatSpec with Matchers with DefaultFormats {
       throw new RuntimeException("aaaaaa")
     }
 
-    val response = router.process(request)
+    val response = router.build("test", productionMode = false).process(request)
 
     response.protocolVersion should be(request.protocolVersion)
     response.responseStatus should be(ResponseStatus.INTERNAL_SERVER_ERROR)
   }
 
   it should "return 400 if bad request" in {
-    val fixture = f
-    val router = fixture.router
+    val router = new HttpRouterBuilder()
 
     val request = Request(
       RequestMethod.GET,
@@ -74,15 +66,14 @@ class HttpRouterTest extends FlatSpec with Matchers with DefaultFormats {
       throw new BadRequestException("aaaaaa")
     }
 
-    val response = router.process(request)
+    val response = router.build("test", productionMode = false).process(request)
 
     response.protocolVersion should be(request.protocolVersion)
     response.responseStatus should be(ResponseStatus.BAD_REQUEST)
   }
 
   it should "handle a fix request" in {
-    val fixture = f
-    val router = fixture.router
+    val router = new HttpRouterBuilder()
 
     val request = Request(
       RequestMethod.GET,
@@ -98,7 +89,7 @@ class HttpRouterTest extends FlatSpec with Matchers with DefaultFormats {
       ctx.response.body(body.getBytes("UTF-8"))
     }
 
-    val response = router.process(request)
+    val response = router.build("test", productionMode = false).process(request)
 
     response.protocolVersion should be(request.protocolVersion)
     response.responseStatus should be(ResponseStatus.OK)
@@ -106,8 +97,7 @@ class HttpRouterTest extends FlatSpec with Matchers with DefaultFormats {
   }
 
   it should "handle a param request" in {
-    val fixture = f
-    val router = fixture.router
+    val router = new HttpRouterBuilder()
 
     val request = Request(
       RequestMethod.GET,
@@ -124,7 +114,7 @@ class HttpRouterTest extends FlatSpec with Matchers with DefaultFormats {
       ctx.response.body(id.getBytes("UTF-8"))
     }
 
-    val response = router.process(request)
+    val response = router.build("test", productionMode = false).process(request)
 
     response.protocolVersion should be(request.protocolVersion)
     response.responseStatus should be(ResponseStatus.OK)
@@ -132,8 +122,7 @@ class HttpRouterTest extends FlatSpec with Matchers with DefaultFormats {
   }
 
   it should "handle a filter" in {
-    val fixture = f
-    val router = fixture.router
+    val router = new HttpRouterBuilder()
 
     val request = Request(
       RequestMethod.GET,
@@ -156,7 +145,7 @@ class HttpRouterTest extends FlatSpec with Matchers with DefaultFormats {
       ctx.response.body(body.getBytes("UTF-8"))
     }
 
-    val response = router.process(request)
+    val response = router.build("test", productionMode = false).process(request)
 
     response.protocolVersion should be(request.protocolVersion)
     response.responseStatus should be(ResponseStatus.CREATED)
@@ -164,8 +153,7 @@ class HttpRouterTest extends FlatSpec with Matchers with DefaultFormats {
   }
 
   it should "handle a wildcard request" in {
-    val fixture = f
-    val router = fixture.router
+    val router = new HttpRouterBuilder()
 
     val request = Request(
       RequestMethod.GET,
@@ -181,7 +169,7 @@ class HttpRouterTest extends FlatSpec with Matchers with DefaultFormats {
       ctx.response.body(body.getBytes("UTF-8"))
     }
 
-    val response = router.process(request)
+    val response = router.build("test", productionMode = false).process(request)
 
     response.protocolVersion should be(request.protocolVersion)
     response.responseStatus should be(ResponseStatus.OK)

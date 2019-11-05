@@ -2,12 +2,16 @@ package acsgh.mad.scala
 
 import com.acsgh.common.scala.App
 
-trait ServerApp extends App with ServerDelegate[Server] {
+trait ServerApp extends App {
 
-  override protected var server: Server = new Server()
+  protected var server: Server = _
+
+  protected def buildServer(builder: ServerBuilder): Server
 
   onConfigure {
-    server.name(name)
+    val builder = new ServerBuilder()
+    builder.name(name)
+    server = buildServer(builder)
   }
 
   onStart {

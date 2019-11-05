@@ -18,5 +18,5 @@ case class SSLConfig
   keyFile: File,
   keyPassword: Option[String]
 ) {
-  val sslContext: SslContext = SslContextBuilder.forServer(keyCertChainFile, keyFile, keyPassword.getOrElse(null)).build
+  val sslContext: SslContext = SslContextBuilder.forServer(keyCertChainFile, keyFile, keyPassword.orNull).build
 }

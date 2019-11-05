@@ -19,7 +19,6 @@ case class Server
   writerIdleTimeSeconds: Int,
   httpRouter: HttpRouter,
   wsRouter: WSRouter
-
 ) extends LogSupport {
 
   private val _started = new AtomicBoolean(false)

@@ -2,7 +2,7 @@ package acsgh.mad.scala.router.http.directives
 
 import java.net.URI
 
-import acsgh.mad.scala.router.http.HttpRouter
+import acsgh.mad.scala.router.http.HttpRouterBuilder
 import acsgh.mad.scala.router.http.convertions.DefaultFormats
 import acsgh.mad.scala.router.http.model.{ProtocolVersion, Request, RequestMethod, ResponseStatus}
 import org.scalatest._
@@ -11,14 +11,8 @@ import scala.language.reflectiveCalls
 
 class RequestParamDirectiveTest extends FlatSpec with Matchers with DefaultFormats with Directives {
 
-  def f =
-    new {
-      val router = HttpRouter("test", false, 1, 0)
-    }
-
   "RequestParamDirective" should "return 400 if no path" in {
-    val fixture = f
-    val router = fixture.router
+    val router = new HttpRouterBuilder()
 
     val request = Request(
       RequestMethod.GET,
@@ -35,15 +29,14 @@ class RequestParamDirectiveTest extends FlatSpec with Matchers with DefaultForma
       }
     }
 
-    val response = router.process(request)
+    val response = router.build("test", productionMode = false).process(request)
 
     response.responseStatus should be(ResponseStatus.OK)
     new String(response.bodyBytes, "UTf-8") should be("")
   }
 
   it should "return 200 if path" in {
-    val fixture = f
-    val router = fixture.router
+    val router = new HttpRouterBuilder()
 
     val request = Request(
       RequestMethod.GET,
@@ -60,15 +53,14 @@ class RequestParamDirectiveTest extends FlatSpec with Matchers with DefaultForma
       }
     }
 
-    val response = router.process(request)
+    val response = router.build("test", productionMode = false).process(request)
 
     response.responseStatus should be(ResponseStatus.OK)
     new String(response.bodyBytes, "UTf-8") should be("1234")
   }
 
   it should "return 200 if path convert" in {
-    val fixture = f
-    val router = fixture.router
+    val router = new HttpRouterBuilder()
 
     val request = Request(
       RequestMethod.GET,
@@ -85,15 +77,14 @@ class RequestParamDirectiveTest extends FlatSpec with Matchers with DefaultForma
       }
     }
 
-    val response = router.process(request)
+    val response = router.build("test", productionMode = false).process(request)
 
     response.responseStatus should be(ResponseStatus.OK)
     new String(response.bodyBytes, "UTf-8") should be("1234")
   }
 
   it should "return 200 if path list empty" in {
-    val fixture = f
-    val router = fixture.router
+    val router = new HttpRouterBuilder()
 
     val request = Request(
       RequestMethod.GET,
@@ -110,15 +101,14 @@ class RequestParamDirectiveTest extends FlatSpec with Matchers with DefaultForma
       }
     }
 
-    val response = router.process(request)
+    val response = router.build("test", productionMode = false).process(request)
 
     response.responseStatus should be(ResponseStatus.OK)
     new String(response.bodyBytes, "UTf-8") should be("List()")
   }
 
   it should "return 200 if path list" in {
-    val fixture = f
-    val router = fixture.router
+    val router = new HttpRouterBuilder()
 
     val request = Request(
       RequestMethod.GET,
@@ -135,15 +125,14 @@ class RequestParamDirectiveTest extends FlatSpec with Matchers with DefaultForma
       }
     }
 
-    val response = router.process(request)
+    val response = router.build("test", productionMode = false).process(request)
 
     response.responseStatus should be(ResponseStatus.OK)
     new String(response.bodyBytes, "UTf-8") should be("List(1234)")
   }
 
   it should "return 200 if two path" in {
-    val fixture = f
-    val router = fixture.router
+    val router = new HttpRouterBuilder()
 
     val request = Request(
       RequestMethod.GET,
@@ -160,15 +149,14 @@ class RequestParamDirectiveTest extends FlatSpec with Matchers with DefaultForma
       }
     }
 
-    val response = router.process(request)
+    val response = router.build("test", productionMode = false).process(request)
 
     response.responseStatus should be(ResponseStatus.OK)
     new String(response.bodyBytes, "UTf-8") should be("List(1234, 1235)")
   }
 
   it should "return 200 if default path" in {
-    val fixture = f
-    val router = fixture.router
+    val router = new HttpRouterBuilder()
 
     val request = Request(
       RequestMethod.GET,
@@ -185,15 +173,14 @@ class RequestParamDirectiveTest extends FlatSpec with Matchers with DefaultForma
       }
     }
 
-    val response = router.process(request)
+    val response = router.build("test", productionMode = false).process(request)
 
     response.responseStatus should be(ResponseStatus.OK)
     new String(response.bodyBytes, "UTf-8") should be("1234")
   }
 
   it should "return 200 if optional path" in {
-    val fixture = f
-    val router = fixture.router
+    val router = new HttpRouterBuilder()
 
     val request = Request(
       RequestMethod.GET,
@@ -210,15 +197,14 @@ class RequestParamDirectiveTest extends FlatSpec with Matchers with DefaultForma
       }
     }
 
-    val response = router.process(request)
+    val response = router.build("test", productionMode = false).process(request)
 
     response.responseStatus should be(ResponseStatus.OK)
     new String(response.bodyBytes, "UTf-8") should be("None")
   }
 
   it should "return 400 if no path convert" in {
-    val fixture = f
-    val router = fixture.router
+    val router = new HttpRouterBuilder()
 
     val request = Request(
       RequestMethod.GET,
@@ -235,7 +221,7 @@ class RequestParamDirectiveTest extends FlatSpec with Matchers with DefaultForma
       }
     }
 
-    val response = router.process(request)
+    val response = router.build("test", productionMode = false).process(request)
 
     response.responseStatus should be(ResponseStatus.BAD_REQUEST)
   }

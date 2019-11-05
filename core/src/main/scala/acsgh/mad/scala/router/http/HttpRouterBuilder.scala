@@ -16,9 +16,13 @@ class HttpRouterBuilder() extends HttpRoutes with LogSupport {
   private var _exceptionHandler: ExceptionHandler = new DefaultExceptionHandler()
   private var _requestListeners: List[RequestListener] = List()
 
+  def workerThreads:Int = _workerThreads
+
   def workerThreads(value: Int): Unit = {
     _workerThreads = value
   }
+
+  def workerTimeoutSeconds:Int = _workerTimeoutSeconds
 
   def workerTimeoutSeconds(value: Int): Unit = {
     _workerTimeoutSeconds = value

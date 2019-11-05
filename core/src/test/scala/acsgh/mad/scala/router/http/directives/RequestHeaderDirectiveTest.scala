@@ -2,7 +2,7 @@ package acsgh.mad.scala.router.http.directives
 
 import java.net.URI
 
-import acsgh.mad.scala.router.http.HttpRouter
+import acsgh.mad.scala.router.http.HttpRouterBuilder
 import acsgh.mad.scala.router.http.convertions.DefaultFormats
 import acsgh.mad.scala.router.http.model.{ProtocolVersion, Request, RequestMethod, ResponseStatus}
 import org.scalatest._
@@ -11,14 +11,8 @@ import scala.language.reflectiveCalls
 
 class RequestHeaderDirectiveTest extends FlatSpec with Matchers with DefaultFormats with Directives {
 
-  def f =
-    new {
-      val router = HttpRouter("test", false, 1, 0)
-    }
-
   "RequestHeaderDirective" should "return 400 if no header" in {
-    val fixture = f
-    val router = fixture.router
+    val router = new HttpRouterBuilder()
 
     val request = Request(
       RequestMethod.GET,
@@ -35,14 +29,13 @@ class RequestHeaderDirectiveTest extends FlatSpec with Matchers with DefaultForm
       }
     }
 
-    val response = router.process(request)
+    val response = router.build("test", productionMode = false).process(request)
 
     response.responseStatus should be(ResponseStatus.BAD_REQUEST)
   }
 
   it should "return 200 if header" in {
-    val fixture = f
-    val router = fixture.router
+    val router = new HttpRouterBuilder()
 
     val request = Request(
       RequestMethod.GET,
@@ -59,15 +52,14 @@ class RequestHeaderDirectiveTest extends FlatSpec with Matchers with DefaultForm
       }
     }
 
-    val response = router.process(request)
+    val response = router.build("test", productionMode = false).process(request)
 
     response.responseStatus should be(ResponseStatus.OK)
     new String(response.bodyBytes, "UTf-8") should be("1234")
   }
 
   it should "return 200 if header convert" in {
-    val fixture = f
-    val router = fixture.router
+    val router = new HttpRouterBuilder()
 
     val request = Request(
       RequestMethod.GET,
@@ -84,15 +76,14 @@ class RequestHeaderDirectiveTest extends FlatSpec with Matchers with DefaultForm
       }
     }
 
-    val response = router.process(request)
+    val response = router.build("test", productionMode = false).process(request)
 
     response.responseStatus should be(ResponseStatus.OK)
     new String(response.bodyBytes, "UTf-8") should be("1234")
   }
 
   it should "return 200 if header list empty" in {
-    val fixture = f
-    val router = fixture.router
+    val router = new HttpRouterBuilder()
 
     val request = Request(
       RequestMethod.GET,
@@ -109,15 +100,14 @@ class RequestHeaderDirectiveTest extends FlatSpec with Matchers with DefaultForm
       }
     }
 
-    val response = router.process(request)
+    val response = router.build("test", productionMode = false).process(request)
 
     response.responseStatus should be(ResponseStatus.OK)
     new String(response.bodyBytes, "UTf-8") should be("List()")
   }
 
   it should "return 200 if header list" in {
-    val fixture = f
-    val router = fixture.router
+    val router = new HttpRouterBuilder()
 
     val request = Request(
       RequestMethod.GET,
@@ -134,15 +124,14 @@ class RequestHeaderDirectiveTest extends FlatSpec with Matchers with DefaultForm
       }
     }
 
-    val response = router.process(request)
+    val response = router.build("test", productionMode = false).process(request)
 
     response.responseStatus should be(ResponseStatus.OK)
     new String(response.bodyBytes, "UTf-8") should be("List(1234, 1235)")
   }
 
   it should "return 200 if two header" in {
-    val fixture = f
-    val router = fixture.router
+    val router = new HttpRouterBuilder()
 
     val request = Request(
       RequestMethod.GET,
@@ -159,15 +148,14 @@ class RequestHeaderDirectiveTest extends FlatSpec with Matchers with DefaultForm
       }
     }
 
-    val response = router.process(request)
+    val response = router.build("test", productionMode = false).process(request)
 
     response.responseStatus should be(ResponseStatus.OK)
     new String(response.bodyBytes, "UTf-8") should be("List(1234, 1235)")
   }
 
   it should "return 200 if default header" in {
-    val fixture = f
-    val router = fixture.router
+    val router = new HttpRouterBuilder()
 
     val request = Request(
       RequestMethod.GET,
@@ -184,15 +172,14 @@ class RequestHeaderDirectiveTest extends FlatSpec with Matchers with DefaultForm
       }
     }
 
-    val response = router.process(request)
+    val response = router.build("test", productionMode = false).process(request)
 
     response.responseStatus should be(ResponseStatus.OK)
     new String(response.bodyBytes, "UTf-8") should be("1234")
   }
 
   it should "return 200 if optional header" in {
-    val fixture = f
-    val router = fixture.router
+    val router = new HttpRouterBuilder()
 
     val request = Request(
       RequestMethod.GET,
@@ -209,15 +196,14 @@ class RequestHeaderDirectiveTest extends FlatSpec with Matchers with DefaultForm
       }
     }
 
-    val response = router.process(request)
+    val response = router.build("test", productionMode = false).process(request)
 
     response.responseStatus should be(ResponseStatus.OK)
     new String(response.bodyBytes, "UTf-8") should be("None")
   }
 
   it should "return 400 if no header convert" in {
-    val fixture = f
-    val router = fixture.router
+    val router = new HttpRouterBuilder()
 
     val request = Request(
       RequestMethod.GET,
@@ -234,7 +220,7 @@ class RequestHeaderDirectiveTest extends FlatSpec with Matchers with DefaultForm
       }
     }
 
-    val response = router.process(request)
+    val response = router.build("test", productionMode = false).process(request)
 
     response.responseStatus should be(ResponseStatus.BAD_REQUEST)
   }

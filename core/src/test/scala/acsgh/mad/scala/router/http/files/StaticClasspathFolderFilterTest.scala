@@ -2,7 +2,7 @@ package acsgh.mad.scala.router.http.files
 
 import java.net.URI
 
-import acsgh.mad.scala.router.http.HttpRouter
+import acsgh.mad.scala.router.http.HttpRouterBuilder
 import acsgh.mad.scala.router.http.convertions.DefaultFormats
 import acsgh.mad.scala.router.http.model.{ProtocolVersion, Request, RequestMethod, ResponseStatus}
 import org.scalatest._
@@ -11,17 +11,12 @@ import scala.language.reflectiveCalls
 
 class StaticClasspathFolderFilterTest extends FlatSpec with Matchers with DefaultFormats {
 
-  def f =
-    new {
-      val baseFolder = "assets"
-      val router = HttpRouter("test", false, 1, 0)
-    }
+  val baseFolder = "assets"
 
   "StaticClasspathFolderFilter" should "return 404 if no file" in {
-    val fixture = f
-    val router = fixture.router
+    val router = new HttpRouterBuilder()
 
-    router.resourceFolder("/assets", f.baseFolder)
+    router.resourceFolder("/assets", baseFolder)
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -30,17 +25,16 @@ class StaticClasspathFolderFilterTest extends FlatSpec with Matchers with Defaul
       Map(),
       new Array[Byte](0)
     )
-    val response = router.process(request)
+    val response = router.build("test", productionMode = false).process(request)
 
     response.protocolVersion should be(request.protocolVersion)
     response.responseStatus should be(ResponseStatus.NOT_FOUND)
   }
 
   it should "return 200 if file" in {
-    val fixture = f
-    val router = fixture.router
+    val router = new HttpRouterBuilder()
 
-    router.resourceFolder("/", f.baseFolder)
+    router.resourceFolder("/", baseFolder)
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -49,7 +43,7 @@ class StaticClasspathFolderFilterTest extends FlatSpec with Matchers with Defaul
       Map(),
       new Array[Byte](0)
     )
-    val response = router.process(request)
+    val response = router.build("test", productionMode = false).process(request)
 
     response.protocolVersion should be(request.protocolVersion)
     response.responseStatus should be(ResponseStatus.OK)
@@ -59,10 +53,9 @@ class StaticClasspathFolderFilterTest extends FlatSpec with Matchers with Defaul
   }
 
   it should "return 304 if file not modifier, etag" in {
-    val fixture = f
-    val router = fixture.router
+    val router = new HttpRouterBuilder()
 
-    router.resourceFolder("/", f.baseFolder)
+    router.resourceFolder("/", baseFolder)
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -71,7 +64,7 @@ class StaticClasspathFolderFilterTest extends FlatSpec with Matchers with Defaul
       Map("If-None-Match" -> List("396199333EDBF40AD43E62A1C1397793")),
       new Array[Byte](0)
     )
-    val response = router.process(request)
+    val response = router.build("test", productionMode = false).process(request)
 
     response.protocolVersion should be(request.protocolVersion)
     response.responseStatus should be(ResponseStatus.NOT_MODIFIED)
@@ -80,10 +73,9 @@ class StaticClasspathFolderFilterTest extends FlatSpec with Matchers with Defaul
   }
 
   it should "return 304 if file not modifier, date" in {
-    val fixture = f
-    val router = fixture.router
+    val router = new HttpRouterBuilder()
 
-    router.resourceFolder("/", f.baseFolder)
+    router.resourceFolder("/", baseFolder)
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -92,7 +84,7 @@ class StaticClasspathFolderFilterTest extends FlatSpec with Matchers with Defaul
       Map("If-Modified-Since" -> List("Mon, 28 Oct 2119 21:30:51 CET")),
       new Array[Byte](0)
     )
-    val response = router.process(request)
+    val response = router.build("test", productionMode = false).process(request)
 
     response.protocolVersion should be(request.protocolVersion)
     response.responseStatus should be(ResponseStatus.NOT_MODIFIED)

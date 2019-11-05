@@ -38,7 +38,7 @@ trait HttpRoutes extends DefaultFormats with DefaultParamHandling with Directive
 
   protected def filter(route: Route[FilterAction]): Unit
 
-  protected def servlet(uri: String, method: RequestMethod)(action: RouteAction): Unit = servlet(HttpRoute[RouteAction](uri, Set(method), action))
+  def servlet(uri: String, method: RequestMethod)(action: RouteAction): Unit = servlet(HttpRoute[RouteAction](uri, Set(method), action))
 
   protected def assetsUri(uri: String): String = {
     if (uri.contains("*")) {
