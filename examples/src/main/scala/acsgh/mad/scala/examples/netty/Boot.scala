@@ -9,14 +9,14 @@ import acsgh.mad.scala.converter.template.thymeleaf.{ThymeleafDirectives, Thymel
 import acsgh.mad.scala.router.http.listener.LoggingEventListener
 import acsgh.mad.scala.router.http.model.ResponseStatus._
 import acsgh.mad.scala.router.ws.listener.WSLoggingEventListener
-import acsgh.mad.scala.support.swagger.SwaggerRoutes
+import acsgh.mad.scala.support.swagger.{ServerSwaggerApp, SwaggerRoutes}
 import com.acsgh.common.scala.App
 import com.acsgh.common.scala.time.TimerSplitter
 import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.media.NumberSchema
 import org.thymeleaf.TemplateEngine
 
-object Boot extends ServerApp with JsonProtocol with ThymeleafDirectives with SprayDirectives with SwaggerRoutes {
+object Boot extends ServerSwaggerApp with JsonProtocol with ThymeleafDirectives with SprayDirectives {
   override val name: String = "Netty Boot Example"
 
   implicit protected val thymeleafEngine: TemplateEngine = ThymeleafEngineProvider.build("/templates/")

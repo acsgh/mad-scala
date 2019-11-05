@@ -2,9 +2,9 @@ package acsgh.mad.scala.router.http.directives
 
 import java.net.URI
 
+import acsgh.mad.scala.router.http.HttpRouter
 import acsgh.mad.scala.router.http.convertions.DefaultFormats
 import acsgh.mad.scala.router.http.model.{ProtocolVersion, Request, RequestMethod, ResponseStatus}
-import acsgh.mad.scala.router.http.{HttpRouter, Routes}
 import org.scalatest._
 
 import scala.language.reflectiveCalls
@@ -13,16 +13,13 @@ class RequestQueryDirectiveTest extends FlatSpec with Matchers with DefaultForma
 
   def f =
     new {
-      val router = new HttpRouter("test", false, 1, 0)
-      val routes = new Routes {
-        override protected val httpRouter: HttpRouter = router
-      }
+      val router = HttpRouter("test", false, 1, 0)
     }
 
   "RequestQueryDirective" should "return 400 if no query" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -32,7 +29,7 @@ class RequestQueryDirectiveTest extends FlatSpec with Matchers with DefaultForma
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       requestParam("SessionId") { query =>
         responseBody(query)
       }
@@ -46,7 +43,7 @@ class RequestQueryDirectiveTest extends FlatSpec with Matchers with DefaultForma
   it should "return 200 if query" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -56,7 +53,7 @@ class RequestQueryDirectiveTest extends FlatSpec with Matchers with DefaultForma
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       requestQuery("SessionId") { query =>
         responseBody(query)
       }
@@ -71,7 +68,7 @@ class RequestQueryDirectiveTest extends FlatSpec with Matchers with DefaultForma
   it should "return 200 if query convert" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -81,7 +78,7 @@ class RequestQueryDirectiveTest extends FlatSpec with Matchers with DefaultForma
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       requestQuery("SessionId".as[Long]) { query =>
         responseBody(query.toString)
       }
@@ -96,7 +93,7 @@ class RequestQueryDirectiveTest extends FlatSpec with Matchers with DefaultForma
   it should "return 200 if query list empty" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -106,7 +103,7 @@ class RequestQueryDirectiveTest extends FlatSpec with Matchers with DefaultForma
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       requestQuery("SessionId".list) { query =>
         responseBody(query.toString)
       }
@@ -121,7 +118,7 @@ class RequestQueryDirectiveTest extends FlatSpec with Matchers with DefaultForma
   it should "return 200 if query list" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -131,7 +128,7 @@ class RequestQueryDirectiveTest extends FlatSpec with Matchers with DefaultForma
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       requestQuery("SessionId".list) { query =>
         responseBody(query.toString)
       }
@@ -146,7 +143,7 @@ class RequestQueryDirectiveTest extends FlatSpec with Matchers with DefaultForma
   it should "return 200 if two query" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -156,7 +153,7 @@ class RequestQueryDirectiveTest extends FlatSpec with Matchers with DefaultForma
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       requestQuery("SessionId1", "SessionId2") { (query1, query2) =>
         responseBody(List(query1, query2).toString)
       }
@@ -171,7 +168,7 @@ class RequestQueryDirectiveTest extends FlatSpec with Matchers with DefaultForma
   it should "return 200 if default query" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -181,7 +178,7 @@ class RequestQueryDirectiveTest extends FlatSpec with Matchers with DefaultForma
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       requestQuery("SessionId".default("1234")) { query =>
         responseBody(query.toString)
       }
@@ -196,7 +193,7 @@ class RequestQueryDirectiveTest extends FlatSpec with Matchers with DefaultForma
   it should "return 200 if optional query" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -206,7 +203,7 @@ class RequestQueryDirectiveTest extends FlatSpec with Matchers with DefaultForma
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       requestQuery("SessionId".opt) { query =>
         responseBody(query.toString)
       }
@@ -221,7 +218,7 @@ class RequestQueryDirectiveTest extends FlatSpec with Matchers with DefaultForma
   it should "return 400 if no query convert" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -231,7 +228,7 @@ class RequestQueryDirectiveTest extends FlatSpec with Matchers with DefaultForma
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       requestQuery("SessionId".as[Long]) { query =>
         responseBody(query.toString)
       }

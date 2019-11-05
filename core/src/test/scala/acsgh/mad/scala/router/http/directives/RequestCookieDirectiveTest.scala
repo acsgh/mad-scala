@@ -2,9 +2,9 @@ package acsgh.mad.scala.router.http.directives
 
 import java.net.URI
 
+import acsgh.mad.scala.router.http.HttpRouter
 import acsgh.mad.scala.router.http.convertions.DefaultFormats
 import acsgh.mad.scala.router.http.model.{ProtocolVersion, Request, RequestMethod, ResponseStatus}
-import acsgh.mad.scala.router.http.{HttpRouter, Routes}
 import org.scalatest._
 
 import scala.language.reflectiveCalls
@@ -13,16 +13,13 @@ class RequestCookieDirectiveTest extends FlatSpec with Matchers with DefaultForm
 
   def f =
     new {
-      val router = new HttpRouter("test", false, 1, 0)
-      val routes = new Routes {
-        override protected val httpRouter: HttpRouter = router
-      }
+      val router = HttpRouter("test", false, 1, 0)
     }
 
   "RequestCookieDirective" should "return 400 if no cookie" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -32,7 +29,7 @@ class RequestCookieDirectiveTest extends FlatSpec with Matchers with DefaultForm
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       requestCookie("SessionId") { cookie =>
         responseBody(cookie)
       }
@@ -46,7 +43,7 @@ class RequestCookieDirectiveTest extends FlatSpec with Matchers with DefaultForm
   it should "return 200 if cookie" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -56,7 +53,7 @@ class RequestCookieDirectiveTest extends FlatSpec with Matchers with DefaultForm
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       requestCookie("SessionId") { cookie =>
         responseBody(cookie)
       }
@@ -71,7 +68,7 @@ class RequestCookieDirectiveTest extends FlatSpec with Matchers with DefaultForm
   it should "return 200 if cookie convert" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -81,7 +78,7 @@ class RequestCookieDirectiveTest extends FlatSpec with Matchers with DefaultForm
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       requestCookie("SessionId".as[Long]) { cookie =>
         responseBody(cookie.toString)
       }
@@ -96,18 +93,18 @@ class RequestCookieDirectiveTest extends FlatSpec with Matchers with DefaultForm
   it should "return 200 if cookie list empty" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
       URI.create("/"),
       ProtocolVersion.HTTP_1_1,
-//      Map("Cookie" -> List("SessionId=1234")),
+      //      Map("Cookie" -> List("SessionId=1234")),
       Map(),
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       requestCookie("SessionId".list) { cookie =>
         responseBody(cookie.toString)
       }
@@ -122,7 +119,7 @@ class RequestCookieDirectiveTest extends FlatSpec with Matchers with DefaultForm
   it should "return 200 if cookie list" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -132,7 +129,7 @@ class RequestCookieDirectiveTest extends FlatSpec with Matchers with DefaultForm
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       requestCookie("SessionId".list) { cookie =>
         responseBody(cookie.toString)
       }
@@ -147,7 +144,7 @@ class RequestCookieDirectiveTest extends FlatSpec with Matchers with DefaultForm
   it should "return 200 if two cookie" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -157,8 +154,8 @@ class RequestCookieDirectiveTest extends FlatSpec with Matchers with DefaultForm
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
-      requestCookie("SessionId1","SessionId2") { (cookie1, cookie2) =>
+    router.get("/") { implicit ctx =>
+      requestCookie("SessionId1", "SessionId2") { (cookie1, cookie2) =>
         responseBody(List(cookie1, cookie2).toString)
       }
     }
@@ -172,7 +169,7 @@ class RequestCookieDirectiveTest extends FlatSpec with Matchers with DefaultForm
   it should "return 200 if default cookie" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -182,7 +179,7 @@ class RequestCookieDirectiveTest extends FlatSpec with Matchers with DefaultForm
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       requestCookie("SessionId".default("1234")) { cookie =>
         responseBody(cookie.toString)
       }
@@ -197,7 +194,7 @@ class RequestCookieDirectiveTest extends FlatSpec with Matchers with DefaultForm
   it should "return 200 if optional cookie" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -207,7 +204,7 @@ class RequestCookieDirectiveTest extends FlatSpec with Matchers with DefaultForm
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       requestCookie("SessionId".opt) { cookie =>
         responseBody(cookie.toString)
       }
@@ -222,7 +219,7 @@ class RequestCookieDirectiveTest extends FlatSpec with Matchers with DefaultForm
   it should "return 400 if no cookie convert" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -232,7 +229,7 @@ class RequestCookieDirectiveTest extends FlatSpec with Matchers with DefaultForm
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       requestCookie("SessionId".as[Long]) { cookie =>
         responseBody(cookie.toString)
       }

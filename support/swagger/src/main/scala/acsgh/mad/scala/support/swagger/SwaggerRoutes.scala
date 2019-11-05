@@ -1,6 +1,6 @@
 package acsgh.mad.scala.support.swagger
 
-import acsgh.mad.scala.router.http.Routes
+import acsgh.mad.scala.router.http.HttpRoutes
 import acsgh.mad.scala.router.http.model.RequestMethod._
 import acsgh.mad.scala.router.http.model.{RequestMethod, RouteAction}
 import acsgh.mad.scala.support.swagger.dsl.OpenApiBuilder
@@ -8,7 +8,7 @@ import com.acsgh.common.scala.log.LogSupport
 import io.swagger.v3.core.util.{Json, Yaml}
 import io.swagger.v3.oas.models.{OpenAPI, Operation, PathItem, Paths}
 
-trait SwaggerRoutes extends Routes with OpenApiBuilder with LogSupport{
+trait SwaggerRoutes extends HttpRoutes with OpenApiBuilder with LogSupport{
 
   def swaggerRoutes(docPath: String = "/api-docs")(implicit openAPi: OpenAPI): Unit = {
     webjars()

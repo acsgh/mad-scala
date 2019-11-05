@@ -1,9 +1,9 @@
 package acsgh.mad.scala.router.ws.directives
 
-import acsgh.mad.scala.router.ws.convertions.{BodyReader, BodyWriter, DefaultFormats}
+import acsgh.mad.scala.router.ws.convertions.{BodyReader, BodyWriter, WSDefaultFormats}
 import acsgh.mad.scala.router.ws.model._
 
-trait Directives extends DefaultFormats {
+trait WSDirectives extends WSDefaultFormats {
   def wsRequest[T](action: T => Option[WSResponse])(implicit context: WSRequestContext, reader: BodyReader[T]): Option[WSResponse] = context.request match {
     case t: WSRequestText => action(reader.read(t.text))
     case t: WSRequestBinary => action(reader.read(t.bytes))

@@ -13,10 +13,7 @@ class HttpRouterTest extends FlatSpec with Matchers with DefaultFormats {
 
   def f =
     new {
-      val router = new HttpRouter("test", false, 1, 0)
-      val routes = new Routes {
-        override protected val httpRouter: HttpRouter = router
-      }
+      val router = HttpRouter("test", false, 1, 0)
     }
 
   "HttpRouter" should "return 404 if no route" in {
@@ -40,7 +37,7 @@ class HttpRouterTest extends FlatSpec with Matchers with DefaultFormats {
   it should "return 500 if error" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -50,7 +47,7 @@ class HttpRouterTest extends FlatSpec with Matchers with DefaultFormats {
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       throw new RuntimeException("aaaaaa")
     }
 
@@ -63,7 +60,7 @@ class HttpRouterTest extends FlatSpec with Matchers with DefaultFormats {
   it should "return 400 if bad request" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -73,7 +70,7 @@ class HttpRouterTest extends FlatSpec with Matchers with DefaultFormats {
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       throw new BadRequestException("aaaaaa")
     }
 
@@ -86,7 +83,7 @@ class HttpRouterTest extends FlatSpec with Matchers with DefaultFormats {
   it should "handle a fix request" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -97,7 +94,7 @@ class HttpRouterTest extends FlatSpec with Matchers with DefaultFormats {
     )
 
     val body = "Hello there"
-    routes.get("/hello") { implicit ctx =>
+    router.get("/hello") { implicit ctx =>
       ctx.response.body(body.getBytes("UTF-8"))
     }
 
@@ -111,7 +108,7 @@ class HttpRouterTest extends FlatSpec with Matchers with DefaultFormats {
   it should "handle a param request" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -122,7 +119,7 @@ class HttpRouterTest extends FlatSpec with Matchers with DefaultFormats {
     )
 
     val body = "1"
-    routes.get("/persons/{id}/name") { implicit ctx =>
+    router.get("/persons/{id}/name") { implicit ctx =>
       val id = ctx.pathParams("id")
       ctx.response.body(id.getBytes("UTF-8"))
     }
@@ -137,7 +134,7 @@ class HttpRouterTest extends FlatSpec with Matchers with DefaultFormats {
   it should "handle a filter" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -148,14 +145,14 @@ class HttpRouterTest extends FlatSpec with Matchers with DefaultFormats {
     )
 
 
-    routes.filter("/*") { implicit ctx =>
+    router.filter("/*") { implicit ctx =>
       nextJump =>
         ctx.response.status(ResponseStatus.CREATED)
         nextJump(ctx)
     }
 
     val body = "Hi there"
-    routes.get("/persons/*") { implicit ctx =>
+    router.get("/persons/*") { implicit ctx =>
       ctx.response.body(body.getBytes("UTF-8"))
     }
 
@@ -169,7 +166,7 @@ class HttpRouterTest extends FlatSpec with Matchers with DefaultFormats {
   it should "handle a wildcard request" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -180,7 +177,7 @@ class HttpRouterTest extends FlatSpec with Matchers with DefaultFormats {
     )
 
     val body = "Hi there"
-    routes.get("/persons/*") { implicit ctx =>
+    router.get("/persons/*") { implicit ctx =>
       ctx.response.body(body.getBytes("UTF-8"))
     }
 

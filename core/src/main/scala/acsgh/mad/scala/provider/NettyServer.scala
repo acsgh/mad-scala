@@ -20,8 +20,7 @@ class NettyServer
   private val wsRouter: WSRouter,
   private val workerThreads: Int,
   private val readerIdleTimeSeconds: Int,
-  private val writerIdleTimeSeconds: Int,
-  private val workerTimeoutSeconds: Int,
+  private val writerIdleTimeSeconds: Int
 ) {
   private val started = new AtomicBoolean(false)
 

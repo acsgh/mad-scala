@@ -1,7 +1,6 @@
 package acsgh.mad.scala.router.ws
 
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicBoolean
 
 import acsgh.mad.scala.router.ws.listener.WSRequestListener
 import acsgh.mad.scala.router.ws.model._
@@ -12,54 +11,25 @@ import io.netty.channel.nio.NioEventLoopGroup
 
 import scala.concurrent.TimeoutException
 
+case class WSRouter
+(
+  serverName: String,
+  productionMode: Boolean,
+  workerThreads: Int,
+  private val workerTimeoutSeconds: Int,
+  wsRoutes: Map[String, WSRoute],
+  private val defaultHandler: WSRouteAction,
+  private val requestListeners: List[WSRequestListener]
+) extends LogSupport {
 
-final class WSRouter(serverName: => String, _productionMode: => Boolean, workerThreads: => Int, workerTimeoutSeconds: => Int) extends LogSupport {
+  private val handlersGroup: EventLoopGroup = new NioEventLoopGroup(workerThreads)
 
-  private var _wsRoutes: Map[String, WSRoute] = Map()
-  private val defaultHandler: WSRouteAction = _ => Some(WSResponseText("Unknown route"))
-  private var _requestListeners: List[WSRequestListener] = List()
-  private lazy val handlersGroup: EventLoopGroup = new NioEventLoopGroup(workerThreads)
-
-  private val _started = new AtomicBoolean(false)
-
-  private[scala] def wsRoutes: Map[String, WSRoute] = _wsRoutes
-
-  def productionMode: Boolean = _productionMode
-
-  def requestListeners: List[WSRequestListener] = _requestListeners
-
-  def addRequestListeners(listener: WSRequestListener): Unit = {
-    _requestListeners = _requestListeners ++ List(listener)
-  }
-
-  def removeRequestListeners(listener: WSRequestListener): Unit = {
-    _requestListeners = _requestListeners.filterNot(_ == listener)
-  }
-
-  def started: Boolean = _started.get()
-
-  def start(): Unit = {
-    if (_started.compareAndSet(false, true)) {
-    }
-  }
-
-  def stop(): Unit = {
-    if (_started.compareAndSet(true, false)) {
-      handlersGroup.shutdownGracefully
-    }
-  }
-
-  private[ws] def route(uri: String, subprotocols: Set[String] = Set())(handler: WSRouteAction): Unit = {
-    checkNotStarted()
-
-    _wsRoutes = _wsRoutes + (uri -> WSRoute(subprotocols, handler))
+  def close(): Unit = {
+    handlersGroup.shutdownGracefully
   }
 
   private[scala] def process(request: WSRequest): Option[WSResponse] = {
-    checkStarted()
-    _wsRoutes.get(request.uri.toString).map(_.handler).getOrElse(defaultHandler)
-
-    implicit val ctx: WSRequestContext = WSRequestContext(request, _wsRoutes.get(request.uri.toString))
+    implicit val ctx: WSRequestContext = WSRequestContext(request, wsRoutes.get(request.uri.toString))
     onStart()
 
     var response: Option[WSResponse] = None
@@ -135,18 +105,6 @@ final class WSRouter(serverName: => String, _productionMode: => Boolean, workerT
   }
 
   private def notify(action: WSRequestListener => Unit): Unit = {
-    _requestListeners.foreach(action)
-  }
-
-  private def checkNotStarted(): Unit = {
-    if (started) {
-      throw new IllegalArgumentException("This action can only be performed before start the service")
-    }
-  }
-
-  private def checkStarted(): Unit = {
-    if (!started) {
-      throw new IllegalArgumentException("This action can only be performed after start the service")
-    }
+    requestListeners.foreach(action)
   }
 }

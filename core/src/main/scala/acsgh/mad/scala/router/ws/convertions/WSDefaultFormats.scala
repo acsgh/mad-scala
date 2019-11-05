@@ -2,7 +2,7 @@ package acsgh.mad.scala.router.ws.convertions
 
 import acsgh.mad.scala.router.ws.model.WSRequestContext
 
-trait DefaultFormats {
+trait WSDefaultFormats {
 
   implicit object DefaultBytesBodyReader extends BodyReader[Array[Byte]] {
     override def read(body: Array[Byte])(implicit context: WSRequestContext): Array[Byte] = body

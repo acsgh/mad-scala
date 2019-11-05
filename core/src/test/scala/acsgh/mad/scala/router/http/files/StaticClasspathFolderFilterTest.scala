@@ -2,9 +2,9 @@ package acsgh.mad.scala.router.http.files
 
 import java.net.URI
 
+import acsgh.mad.scala.router.http.HttpRouter
 import acsgh.mad.scala.router.http.convertions.DefaultFormats
 import acsgh.mad.scala.router.http.model.{ProtocolVersion, Request, RequestMethod, ResponseStatus}
-import acsgh.mad.scala.router.http.{HttpRouter, Routes}
 import org.scalatest._
 
 import scala.language.reflectiveCalls
@@ -14,17 +14,14 @@ class StaticClasspathFolderFilterTest extends FlatSpec with Matchers with Defaul
   def f =
     new {
       val baseFolder = "assets"
-      val router = new HttpRouter("test", false, 1, 0)
-      val routes = new Routes {
-        override protected val httpRouter: HttpRouter = router
-      }
+      val router = HttpRouter("test", false, 1, 0)
     }
 
   "StaticClasspathFolderFilter" should "return 404 if no file" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
-    routes.resourceFolder("/assets", f.baseFolder)
+
+    router.resourceFolder("/assets", f.baseFolder)
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -42,8 +39,8 @@ class StaticClasspathFolderFilterTest extends FlatSpec with Matchers with Defaul
   it should "return 200 if file" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
-    routes.resourceFolder("/", f.baseFolder)
+
+    router.resourceFolder("/", f.baseFolder)
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -64,8 +61,8 @@ class StaticClasspathFolderFilterTest extends FlatSpec with Matchers with Defaul
   it should "return 304 if file not modifier, etag" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
-    routes.resourceFolder("/", f.baseFolder)
+
+    router.resourceFolder("/", f.baseFolder)
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -85,8 +82,8 @@ class StaticClasspathFolderFilterTest extends FlatSpec with Matchers with Defaul
   it should "return 304 if file not modifier, date" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
-    routes.resourceFolder("/", f.baseFolder)
+
+    router.resourceFolder("/", f.baseFolder)
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",

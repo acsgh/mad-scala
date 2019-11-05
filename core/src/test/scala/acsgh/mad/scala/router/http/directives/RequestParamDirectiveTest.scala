@@ -2,9 +2,9 @@ package acsgh.mad.scala.router.http.directives
 
 import java.net.URI
 
+import acsgh.mad.scala.router.http.HttpRouter
 import acsgh.mad.scala.router.http.convertions.DefaultFormats
 import acsgh.mad.scala.router.http.model.{ProtocolVersion, Request, RequestMethod, ResponseStatus}
-import acsgh.mad.scala.router.http.{HttpRouter, Routes}
 import org.scalatest._
 
 import scala.language.reflectiveCalls
@@ -13,16 +13,13 @@ class RequestParamDirectiveTest extends FlatSpec with Matchers with DefaultForma
 
   def f =
     new {
-      val router = new HttpRouter("test", false, 1, 0)
-      val routes = new Routes {
-        override protected val httpRouter: HttpRouter = router
-      }
+      val router = HttpRouter("test", false, 1, 0)
     }
 
   "RequestParamDirective" should "return 400 if no path" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -32,7 +29,7 @@ class RequestParamDirectiveTest extends FlatSpec with Matchers with DefaultForma
       new Array[Byte](0)
     )
 
-    routes.get("/{id}") { implicit ctx =>
+    router.get("/{id}") { implicit ctx =>
       requestParam("id") { path =>
         responseBody(path)
       }
@@ -47,7 +44,7 @@ class RequestParamDirectiveTest extends FlatSpec with Matchers with DefaultForma
   it should "return 200 if path" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -57,7 +54,7 @@ class RequestParamDirectiveTest extends FlatSpec with Matchers with DefaultForma
       new Array[Byte](0)
     )
 
-    routes.get("/{id}") { implicit ctx =>
+    router.get("/{id}") { implicit ctx =>
       requestParam("id") { path =>
         responseBody(path)
       }
@@ -72,7 +69,7 @@ class RequestParamDirectiveTest extends FlatSpec with Matchers with DefaultForma
   it should "return 200 if path convert" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -82,7 +79,7 @@ class RequestParamDirectiveTest extends FlatSpec with Matchers with DefaultForma
       new Array[Byte](0)
     )
 
-    routes.get("/{id}") { implicit ctx =>
+    router.get("/{id}") { implicit ctx =>
       requestParam("id".as[Long]) { path =>
         responseBody(path.toString)
       }
@@ -97,7 +94,7 @@ class RequestParamDirectiveTest extends FlatSpec with Matchers with DefaultForma
   it should "return 200 if path list empty" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -107,7 +104,7 @@ class RequestParamDirectiveTest extends FlatSpec with Matchers with DefaultForma
       new Array[Byte](0)
     )
 
-    routes.get("/{id}") { implicit ctx =>
+    router.get("/{id}") { implicit ctx =>
       requestParam("id".list) { path =>
         responseBody(path.toString)
       }
@@ -122,7 +119,7 @@ class RequestParamDirectiveTest extends FlatSpec with Matchers with DefaultForma
   it should "return 200 if path list" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -132,7 +129,7 @@ class RequestParamDirectiveTest extends FlatSpec with Matchers with DefaultForma
       new Array[Byte](0)
     )
 
-    routes.get("/{id}") { implicit ctx =>
+    router.get("/{id}") { implicit ctx =>
       requestParam("id".list) { path =>
         responseBody(path.toString)
       }
@@ -147,7 +144,7 @@ class RequestParamDirectiveTest extends FlatSpec with Matchers with DefaultForma
   it should "return 200 if two path" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -157,7 +154,7 @@ class RequestParamDirectiveTest extends FlatSpec with Matchers with DefaultForma
       new Array[Byte](0)
     )
 
-    routes.get("/{id1}/{id2}") { implicit ctx =>
+    router.get("/{id1}/{id2}") { implicit ctx =>
       requestParam("id1", "id2") { (path1, path2) =>
         responseBody(List(path1, path2).toString)
       }
@@ -172,7 +169,7 @@ class RequestParamDirectiveTest extends FlatSpec with Matchers with DefaultForma
   it should "return 200 if default path" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -182,7 +179,7 @@ class RequestParamDirectiveTest extends FlatSpec with Matchers with DefaultForma
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       requestParam("id".default("1234")) { path =>
         responseBody(path.toString)
       }
@@ -197,7 +194,7 @@ class RequestParamDirectiveTest extends FlatSpec with Matchers with DefaultForma
   it should "return 200 if optional path" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -207,7 +204,7 @@ class RequestParamDirectiveTest extends FlatSpec with Matchers with DefaultForma
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       requestParam("id".opt) { path =>
         responseBody(path.toString)
       }
@@ -222,7 +219,7 @@ class RequestParamDirectiveTest extends FlatSpec with Matchers with DefaultForma
   it should "return 400 if no path convert" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -232,7 +229,7 @@ class RequestParamDirectiveTest extends FlatSpec with Matchers with DefaultForma
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       requestParam("id".as[Long]) { path =>
         responseBody(path.toString)
       }

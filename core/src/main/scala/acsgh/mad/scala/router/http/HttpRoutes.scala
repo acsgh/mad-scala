@@ -6,11 +6,9 @@ import acsgh.mad.scala.router.http.convertions.{DefaultFormats, DefaultParamHand
 import acsgh.mad.scala.router.http.directives.Directives
 import acsgh.mad.scala.router.http.files.{StaticClasspathFolderFilter, StaticFilesystemFolderFilter}
 import acsgh.mad.scala.router.http.model.RequestMethod._
-import acsgh.mad.scala.router.http.model.{FilterAction, HttpRoute, RequestMethod, RouteAction}
+import acsgh.mad.scala.router.http.model.{FilterAction, HttpRoute, RequestMethod, Route, RouteAction}
 
-trait Routes extends DefaultFormats with DefaultParamHandling with Directives {
-
-  protected val httpRouter: HttpRouter
+trait HttpRoutes extends DefaultFormats with DefaultParamHandling with Directives {
 
   def options(uri: String)(action: RouteAction): Unit = servlet(uri, OPTIONS)(action)
 
@@ -28,15 +26,19 @@ trait Routes extends DefaultFormats with DefaultParamHandling with Directives {
 
   def trace(uri: String)(action: RouteAction): Unit = servlet(uri, TRACE)(action)
 
-  def filter(uri: String, methods: Set[RequestMethod] = Set())(action: FilterAction): Unit = httpRouter.filter(HttpRoute[FilterAction](uri, methods, action))
+  def filter(uri: String, methods: Set[RequestMethod] = Set())(action: FilterAction): Unit = filter(HttpRoute[FilterAction](uri, methods, action))
 
-  def resourceFolder(uri: String, resourceFolderPath: String): Unit = httpRouter.servlet(StaticClasspathFolderFilter(assetsUri(uri), resourceFolderPath))
+  def resourceFolder(uri: String, resourceFolderPath: String): Unit = servlet(StaticClasspathFolderFilter(assetsUri(uri), resourceFolderPath))
 
-  def filesystemFolder(uri: String, resourceFolderPath: String): Unit = httpRouter.servlet(StaticFilesystemFolderFilter(assetsUri(uri), new File(resourceFolderPath)))
+  def filesystemFolder(uri: String, resourceFolderPath: String): Unit = servlet(StaticFilesystemFolderFilter(assetsUri(uri), new File(resourceFolderPath)))
 
   def webjars(): Unit = resourceFolder("/webjars", "META-INF/resources/webjars")
 
-  protected def servlet(uri: String, method: RequestMethod)(action: RouteAction): Unit = httpRouter.servlet(HttpRoute[RouteAction](uri, Set(method), action))
+  protected def servlet(route: Route[RouteAction]): Unit
+
+  protected def filter(route: Route[FilterAction]): Unit
+
+  protected def servlet(uri: String, method: RequestMethod)(action: RouteAction): Unit = servlet(HttpRoute[RouteAction](uri, Set(method), action))
 
   protected def assetsUri(uri: String): String = {
     if (uri.contains("*")) {

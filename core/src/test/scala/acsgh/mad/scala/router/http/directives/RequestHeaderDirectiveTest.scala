@@ -2,9 +2,9 @@ package acsgh.mad.scala.router.http.directives
 
 import java.net.URI
 
+import acsgh.mad.scala.router.http.HttpRouter
 import acsgh.mad.scala.router.http.convertions.DefaultFormats
 import acsgh.mad.scala.router.http.model.{ProtocolVersion, Request, RequestMethod, ResponseStatus}
-import acsgh.mad.scala.router.http.{HttpRouter, Routes}
 import org.scalatest._
 
 import scala.language.reflectiveCalls
@@ -13,16 +13,13 @@ class RequestHeaderDirectiveTest extends FlatSpec with Matchers with DefaultForm
 
   def f =
     new {
-      val router = new HttpRouter("test", false, 1, 0)
-      val routes = new Routes {
-        override protected val httpRouter: HttpRouter = router
-      }
+      val router = HttpRouter("test", false, 1, 0)
     }
 
   "RequestHeaderDirective" should "return 400 if no header" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -32,7 +29,7 @@ class RequestHeaderDirectiveTest extends FlatSpec with Matchers with DefaultForm
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       requestHeader("SessionId") { header =>
         responseBody(header)
       }
@@ -46,7 +43,7 @@ class RequestHeaderDirectiveTest extends FlatSpec with Matchers with DefaultForm
   it should "return 200 if header" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -56,7 +53,7 @@ class RequestHeaderDirectiveTest extends FlatSpec with Matchers with DefaultForm
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       requestHeader("SessionId") { header =>
         responseBody(header)
       }
@@ -71,7 +68,7 @@ class RequestHeaderDirectiveTest extends FlatSpec with Matchers with DefaultForm
   it should "return 200 if header convert" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -81,7 +78,7 @@ class RequestHeaderDirectiveTest extends FlatSpec with Matchers with DefaultForm
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       requestHeader("SessionId".as[Long]) { header =>
         responseBody(header.toString)
       }
@@ -96,7 +93,7 @@ class RequestHeaderDirectiveTest extends FlatSpec with Matchers with DefaultForm
   it should "return 200 if header list empty" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -106,7 +103,7 @@ class RequestHeaderDirectiveTest extends FlatSpec with Matchers with DefaultForm
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       requestHeader("SessionId".list) { header =>
         responseBody(header.toString)
       }
@@ -121,7 +118,7 @@ class RequestHeaderDirectiveTest extends FlatSpec with Matchers with DefaultForm
   it should "return 200 if header list" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -131,7 +128,7 @@ class RequestHeaderDirectiveTest extends FlatSpec with Matchers with DefaultForm
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       requestHeader("SessionId".list) { header =>
         responseBody(header.toString)
       }
@@ -146,7 +143,7 @@ class RequestHeaderDirectiveTest extends FlatSpec with Matchers with DefaultForm
   it should "return 200 if two header" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -156,8 +153,8 @@ class RequestHeaderDirectiveTest extends FlatSpec with Matchers with DefaultForm
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
-      requestHeader("SessionId1","SessionId2") { (header1, header2) =>
+    router.get("/") { implicit ctx =>
+      requestHeader("SessionId1", "SessionId2") { (header1, header2) =>
         responseBody(List(header1, header2).toString)
       }
     }
@@ -171,7 +168,7 @@ class RequestHeaderDirectiveTest extends FlatSpec with Matchers with DefaultForm
   it should "return 200 if default header" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -181,7 +178,7 @@ class RequestHeaderDirectiveTest extends FlatSpec with Matchers with DefaultForm
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       requestHeader("SessionId".default("1234")) { header =>
         responseBody(header.toString)
       }
@@ -196,7 +193,7 @@ class RequestHeaderDirectiveTest extends FlatSpec with Matchers with DefaultForm
   it should "return 200 if optional header" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -206,7 +203,7 @@ class RequestHeaderDirectiveTest extends FlatSpec with Matchers with DefaultForm
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       requestHeader("SessionId".opt) { header =>
         responseBody(header.toString)
       }
@@ -221,7 +218,7 @@ class RequestHeaderDirectiveTest extends FlatSpec with Matchers with DefaultForm
   it should "return 400 if no header convert" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
+
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -231,7 +228,7 @@ class RequestHeaderDirectiveTest extends FlatSpec with Matchers with DefaultForm
       new Array[Byte](0)
     )
 
-    routes.get("/") { implicit ctx =>
+    router.get("/") { implicit ctx =>
       requestHeader("SessionId".as[Long]) { header =>
         responseBody(header.toString)
       }

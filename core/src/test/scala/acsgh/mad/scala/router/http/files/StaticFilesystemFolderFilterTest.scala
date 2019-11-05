@@ -4,7 +4,7 @@ import java.net.URI
 
 import acsgh.mad.scala.router.http.convertions.DefaultFormats
 import acsgh.mad.scala.router.http.model.{ProtocolVersion, Request, RequestMethod, ResponseStatus}
-import acsgh.mad.scala.router.http.{HttpRouter, Routes}
+import acsgh.mad.scala.router.http.{HttpRouter, HttpRoutes}
 import org.scalatest._
 
 import scala.language.reflectiveCalls
@@ -14,17 +14,14 @@ class StaticFilesystemFolderFilterTest extends FlatSpec with Matchers with Defau
   def f =
     new {
       val baseFolder = "core/src/test/resources/assets"
-      val router = new HttpRouter("test", false, 1, 0)
-      val routes = new Routes {
-        override protected val httpRouter: HttpRouter = router
-      }
+      val router = HttpRouter("test", false, 1, 0)
     }
 
   "StaticFilesystemFolderFilter" should "return 404 if no file" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
-    routes.filesystemFolder("/assets2", f.baseFolder)
+    
+    router.filesystemFolder("/assets2", f.baseFolder)
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -42,8 +39,8 @@ class StaticFilesystemFolderFilterTest extends FlatSpec with Matchers with Defau
   it should "return 200 if file" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
-    routes.filesystemFolder("/", f.baseFolder)
+    
+    router.filesystemFolder("/", f.baseFolder)
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -64,8 +61,8 @@ class StaticFilesystemFolderFilterTest extends FlatSpec with Matchers with Defau
   it should "return 304 if file not modifier, etag" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
-    routes.filesystemFolder("/", f.baseFolder)
+    
+    router.filesystemFolder("/", f.baseFolder)
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
@@ -85,8 +82,8 @@ class StaticFilesystemFolderFilterTest extends FlatSpec with Matchers with Defau
   it should "return 304 if file not modifier, date" in {
     val fixture = f
     val router = fixture.router
-    val routes = fixture.routes
-    routes.filesystemFolder("/", f.baseFolder)
+    
+    router.filesystemFolder("/", f.baseFolder)
     val request = Request(
       RequestMethod.GET,
       "1.2.3.4",
