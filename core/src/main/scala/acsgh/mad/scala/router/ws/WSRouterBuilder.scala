@@ -9,7 +9,7 @@ class WSRouterBuilder() extends WSRoutes with LogSupport {
   private var _workerThreads: Int = 30
   private var _workerTimeoutSeconds: Int = 60
   private var _wsRoutes: Map[String, WSRoute] = Map()
-  private var _defaultHandler: WSRouteAction = _ => Some(WSResponseText("Unknown route"))
+  private var _defaultHandler: WSRouteAction = ctx => Some(WSResponseText("Unknown route"))
   private var _requestListeners: List[WSRequestListener] = List()
 
   def workerThreads: Int = _workerThreads
