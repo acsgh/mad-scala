@@ -35,4 +35,10 @@ trait ResponseDirectives extends DefaultParamHandling with DefaultFormats {
       responseBody(writer.write(input))
     }
   }
+
+  def noBody(status: ResponseStatus = ResponseStatus.NO_CONTENT)(implicit context: RequestContext): Response = {
+    responseStatus(status){
+      responseBody("")
+    }
+  }
 }
