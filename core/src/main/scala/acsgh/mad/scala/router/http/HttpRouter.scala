@@ -33,6 +33,7 @@ case class HttpRouter
   }
 
   private[scala] def process(httpRequest: Request): Response = {
+
     implicit val ctx: RequestContext = getRequestContext(httpRequest)
     onStart()
     try {
@@ -64,18 +65,18 @@ case class HttpRouter
   }
 
   private def runServlet(context: RequestContext): Response = {
-    servlet
-      .find(_.canApply(context.request))
-      .map(r => runRoute(r, context))
+    implicit val ctx: RequestContext = context
+    context
+      .route
+      .map(r => runRoute(r))
       .getOrElse({
         getErrorResponse(ResponseStatus.NOT_FOUND)(context)
       })
   }
 
-  private def runRoute(route: Route[RouteAction], context: RequestContext): Response = {
+  private def runRoute(route: Route[RouteAction])(implicit context: RequestContext): Response = {
     val stopWatch = StopWatch.createStarted()
     try {
-      implicit val ctx: RequestContext = context.ofRoute(route)
       val filtersToExecute = filters.filter(_.canApply(context.request))
       runFilters(route, filtersToExecute)
     } finally {
@@ -136,7 +137,10 @@ case class HttpRouter
   }
 
   private def getRequestContext(httpRequest: Request): RequestContext = {
-    val ctx: RequestContext = model.RequestContext(httpRequest, ResponseBuilder(httpRequest), this)
+    val route = servlet
+      .find(_.canApply(httpRequest))
+
+    val ctx: RequestContext = model.RequestContext(httpRequest, ResponseBuilder(httpRequest), this, route)
     ctx.response.header("Server", serverName)
     ctx
   }

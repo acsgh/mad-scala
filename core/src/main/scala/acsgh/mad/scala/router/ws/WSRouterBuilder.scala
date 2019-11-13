@@ -38,7 +38,7 @@ class WSRouterBuilder() extends WSRoutes with LogSupport {
     _requestListeners = _requestListeners.filterNot(_ == value)
   }
 
-  override protected def route(uri: String, subprotocols: Set[String])(handler: WSRouteAction): Unit = _wsRoutes = _wsRoutes + (uri -> WSRoute(subprotocols, handler))
+  override protected def route(uri: String, subprotocols: Set[String])(handler: WSRouteAction): Unit = _wsRoutes = _wsRoutes + (uri -> WSRoute(uri, subprotocols, handler))
 
   def build(serverName: String, productionMode: Boolean): WSRouter = WSRouter(
     serverName,
