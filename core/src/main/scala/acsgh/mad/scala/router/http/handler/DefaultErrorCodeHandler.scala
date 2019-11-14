@@ -9,7 +9,7 @@ class DefaultErrorCodeHandler extends ErrorCodeHandler {
     }
   }
 
-  private def getStatusBody(status: ResponseStatus, message: Option[String]): String = {
+  protected def getStatusBody(status: ResponseStatus, message: Option[String]): String = {
     s"""<html>
        |<head>
        |   <title>${status.code} - ${status.message}</title>

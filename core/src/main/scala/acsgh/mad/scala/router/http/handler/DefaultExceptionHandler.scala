@@ -20,6 +20,19 @@ object DefaultExceptionHandler {
     result
   }
 
+  def stacktraceToPlain(throwable: Throwable): String = {
+    var result = ""
+    result += stacktraceToPlainInternal(throwable, causeThrowable = false)
+    var cause = throwable.getCause
+
+    while (cause != null) {
+      result += stacktraceToPlainInternal(cause, causeThrowable = true)
+      cause = cause.getCause
+    }
+
+    result
+  }
+
   private def stacktraceToHtmlInternal(throwable: Throwable, causeThrowable: Boolean) = {
     var result = ""
     result += "<b>"
@@ -29,6 +42,16 @@ object DefaultExceptionHandler {
     result += throwable.getClass.getName + ":&nbsp;" + "</b>" + throwable.getMessage + "<br/>\n"
     for (stackTraceElement <- throwable.getStackTrace) {
       result += "&nbsp;&nbsp;&nbsp;&nbsp;" + stackTraceElement + "<br/>\n"
+    }
+    result
+  }
+
+  private def stacktraceToPlainInternal(throwable: Throwable, causeThrowable: Boolean) = {
+    var result = if (causeThrowable) "Caused by: " else ""
+
+    result += throwable.getClass.getName + " " + throwable.getMessage + "\n"
+    for (stackTraceElement <- throwable.getStackTrace) {
+      result += "\t" + stackTraceElement + "\n"
     }
     result
   }
@@ -42,7 +65,7 @@ class DefaultExceptionHandler() extends ExceptionHandler {
     }
   }
 
-  private def getStatusBody(status: ResponseStatus, throwable: Throwable)(implicit ctx: RequestContext): String = {
+  protected def getStatusBody(status: ResponseStatus, throwable: Throwable)(implicit ctx: RequestContext): String = {
     s"""<html>
        |<head>
        |   <title>${status.code} - ${status.message}</title>

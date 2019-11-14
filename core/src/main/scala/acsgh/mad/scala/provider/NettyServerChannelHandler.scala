@@ -77,7 +77,9 @@ class NettyServerChannelHandler
     case c: HttpContent =>
       val content = c.content
       if (content.isReadable) {
-        ByteBufUtil.getBytes(content)
+        val result = ByteBufUtil.getBytes(content)
+        content.release()
+        result
       } else {
         new Array[Byte](0)
       }
