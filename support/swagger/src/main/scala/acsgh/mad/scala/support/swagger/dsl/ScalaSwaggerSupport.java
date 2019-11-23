@@ -63,7 +63,7 @@ public class ScalaSwaggerSupport extends ModelResolver {
                         scala.collection.Iterator iterator = ((Vector) enumClass.getDeclaredMethod("values").invoke(null)).iterator();
 
                         while (iterator.hasNext()) {
-                            enumModel.addEnumItem(iterator.next().toString());
+                            enumModel.addEnumItem(((EnumEntry) iterator.next()).entryName());
                         }
 
                         transferCommonValues(enumModel, schema);
