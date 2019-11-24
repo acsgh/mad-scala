@@ -45,7 +45,7 @@ class NettyServer
   }
 
   private[scala] def stop(): Unit = {
-    if (started.compareAndSet(false, true)) {
+    if (started.compareAndSet(true, false)) {
       channel.close.sync
       close(bossGroup)
       close(workerGroup)
