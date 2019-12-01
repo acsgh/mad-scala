@@ -1,16 +1,15 @@
-package acsgh.mad.scala.converter.template.freemarker
+package acsgh.mad.scala.server.converter.template.freemarker
 
 import java.io.{ByteArrayOutputStream, PrintWriter}
 
-import acsgh.mad.scala.core.http.convertions.BodyWriter
-import acsgh.mad.scala.core.http.model.RequestContext
-import acsgh.mad.scala.router.http.directives.Directives
-import acsgh.mad.scala.router.http.model.RequestContext
+import acsgh.mad.scala.server.router.http.convertions.HttpBodyWriter
+import acsgh.mad.scala.server.router.http.directives.HttpDirectives
+import acsgh.mad.scala.server.router.http.model.HttpRequestContext
 import com.googlecode.htmlcompressor.compressor.HtmlCompressor
 import freemarker.template.Configuration
 
 trait FreemarkerDirectives {
-  directives: Directives =>
+  directives: HttpDirectives =>
 
   protected val freemarkerConfig: Configuration
 
@@ -24,10 +23,10 @@ trait FreemarkerDirectives {
     c
   }
 
-  implicit object FreemarkerBodyWriter extends BodyWriter[FreemarkerTemplate] {
+  implicit object FreemarkerBodyWriter extends HttpBodyWriter[FreemarkerTemplate] {
     override val contentType: String = "text/html; charset=UTF-8"
 
-    override def write(input: FreemarkerTemplate)(implicit context: RequestContext): Array[Byte] = {
+    override def write(input: FreemarkerTemplate)(implicit context: HttpRequestContext): Array[Byte] = {
       val out = new ByteArrayOutputStream
       val printStream = new PrintWriter(out)
       try {

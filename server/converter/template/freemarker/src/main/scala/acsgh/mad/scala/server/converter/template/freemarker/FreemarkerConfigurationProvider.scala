@@ -1,4 +1,4 @@
-package acsgh.mad.scala.converter.template.freemarker
+package acsgh.mad.scala.server.converter.template.freemarker
 
 import java.io.File
 

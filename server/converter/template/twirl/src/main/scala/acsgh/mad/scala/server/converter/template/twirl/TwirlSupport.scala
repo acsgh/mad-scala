@@ -1,14 +1,13 @@
-package acsgh.mad.scala.converter.template.twirl
+package acsgh.mad.scala.server.converter.template.twirl
 
-import acsgh.mad.scala.core.http.convertions.BodyWriter
-import acsgh.mad.scala.core.http.model.RequestContext
-import acsgh.mad.scala.router.http.directives.Directives
-import acsgh.mad.scala.router.http.model.RequestContext
+import acsgh.mad.scala.server.router.http.convertions.HttpBodyWriter
+import acsgh.mad.scala.server.router.http.directives.HttpDirectives
+import acsgh.mad.scala.server.router.http.model.HttpRequestContext
 import com.googlecode.htmlcompressor.compressor.HtmlCompressor
 import play.twirl.api.HtmlFormat
 
 
-trait TwirlSupport extends Directives {
+trait TwirlSupport extends HttpDirectives {
 
   private val htmlCompressorFilter: HtmlCompressor = {
     val c = new HtmlCompressor()
@@ -20,10 +19,10 @@ trait TwirlSupport extends Directives {
     c
   }
 
-  implicit object TwirlBodyWriter extends BodyWriter[HtmlFormat.Appendable] {
+  implicit object TwirlBodyWriter extends HttpBodyWriter[HtmlFormat.Appendable] {
     override val contentType: String = "text/html; charset=UTF-8"
 
-    override def write(input: HtmlFormat.Appendable)(implicit context: RequestContext): Array[Byte] = {
+    override def write(input: HtmlFormat.Appendable)(implicit context: HttpRequestContext): Array[Byte] = {
       val body = if (context.router.productionMode) htmlCompressorFilter.compress(input.body) else input.body
       body.getBytes("UTF-8")
     }

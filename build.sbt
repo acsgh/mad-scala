@@ -64,9 +64,9 @@ lazy val root = (project in file("."))
     serverCore,
     serverConverterJsonJackson,
     serverConverterJsonSpray,
-//    converterTemplateFreemarker,
-//    converterTemplateThymeleaf,
-//    converterTemplateTwirl,
+    serverConverterTemplateFreemarker,
+    serverConverterTemplateThymeleaf,
+    serverConverterTemplateTwirl,
 //    supportSwagger,
 //    examples
   )
@@ -111,42 +111,42 @@ lazy val serverConverterJsonSpray = (project in file("server/converter/json/spra
     )
   )
   .dependsOn(serverCore)
-//
-//lazy val converterTemplateFreemarker = (project in file("converter/template/freemarker"))
-//  .settings(
-//    organization := "com.github.acsgh.mad.scala.converter.template",
-//    name := "freemarker",
-//    commonSettings,
-//    libraryDependencies ++= Seq(
-//      "org.freemarker" % "freemarker" % "2.3.28",
-//      "com.googlecode.htmlcompressor" % "htmlcompressor" % "1.5.2"
-//    )
-//  )
-//  .dependsOn(core)
-//
-//lazy val converterTemplateThymeleaf = (project in file("converter/template/thymeleaf"))
-//  .settings(
-//    organization := "com.github.acsgh.mad.scala.converter.template",
-//    name := "thymeleaf",
-//    commonSettings,
-//    libraryDependencies ++= Seq(
-//      "org.thymeleaf" % "thymeleaf" % "3.0.11.RELEASE",
-//      "com.googlecode.htmlcompressor" % "htmlcompressor" % "1.5.2"
-//    )
-//  )
-//  .dependsOn(core)
-//
-//lazy val converterTemplateTwirl = (project in file("converter/template/twirl"))
-//  .settings(
-//    organization := "com.github.acsgh.mad.scala.converter.template",
-//    name := "twirl",
-//    commonSettings,
-//    libraryDependencies ++= Seq(
-//      "com.typesafe.play" %% "twirl-api" % "1.4.2",
-//      "com.googlecode.htmlcompressor" % "htmlcompressor" % "1.5.2"
-//    )
-//  )
-//  .dependsOn(core)
+
+lazy val serverConverterTemplateFreemarker = (project in file("server/converter/template/freemarker"))
+  .settings(
+    organization := "com.github.acsgh.mad.scala.server.converter.template",
+    name := "freemarker",
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "org.freemarker" % "freemarker" % "2.3.28",
+      "com.googlecode.htmlcompressor" % "htmlcompressor" % "1.5.2"
+    )
+  )
+  .dependsOn(serverCore)
+
+lazy val serverConverterTemplateThymeleaf = (project in file("server/converter/template/thymeleaf"))
+  .settings(
+    organization := "com.github.acsgh.mad.scala.server.converter.template",
+    name := "thymeleaf",
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "org.thymeleaf" % "thymeleaf" % "3.0.11.RELEASE",
+      "com.googlecode.htmlcompressor" % "htmlcompressor" % "1.5.2"
+    )
+  )
+  .dependsOn(serverCore)
+
+lazy val serverConverterTemplateTwirl = (project in file("server/converter/template/twirl"))
+  .settings(
+    organization := "com.github.acsgh.mad.scala.server.converter.template",
+    name := "twirl",
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "com.typesafe.play" %% "twirl-api" % "1.4.2",
+      "com.googlecode.htmlcompressor" % "htmlcompressor" % "1.5.2"
+    )
+  )
+  .dependsOn(serverCore)
 //
 //lazy val supportSwagger = (project in file("support/swagger"))
 //  .settings(

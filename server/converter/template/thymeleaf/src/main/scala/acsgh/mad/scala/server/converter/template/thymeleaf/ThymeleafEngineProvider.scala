@@ -1,4 +1,4 @@
-package acsgh.mad.scala.converter.template.thymeleaf
+package acsgh.mad.scala.server.converter.template.thymeleaf
 
 import org.thymeleaf.TemplateEngine
 import org.thymeleaf.templatemode.TemplateMode

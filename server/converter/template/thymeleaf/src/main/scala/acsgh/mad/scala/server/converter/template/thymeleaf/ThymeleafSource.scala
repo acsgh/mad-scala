@@ -1,4 +1,4 @@
-package acsgh.mad.scala.converter.template.thymeleaf
+package acsgh.mad.scala.server.converter.template.thymeleaf
 
 import enumeratum.{Enum, EnumEntry}
 
