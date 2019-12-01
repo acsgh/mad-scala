@@ -4,12 +4,12 @@ import java.net.URI
 
 import acsgh.mad.scala.core.http.model.{HttpRequest, ProtocolVersion, RequestMethod, ResponseStatus}
 import acsgh.mad.scala.server.router.http.HttpRouterBuilder
-import acsgh.mad.scala.server.router.http.convertions.DefaultFormats
+import acsgh.mad.scala.server.router.http.convertions.HttpDefaultFormats
 import org.scalatest._
 
 import scala.language.reflectiveCalls
 
-class StaticClasspathFolderFilterTest extends FlatSpec with Matchers with DefaultFormats {
+class StaticClasspathFolderFilterTest extends FlatSpec with Matchers with HttpDefaultFormats {
 
   val baseFolder = "assets"
 

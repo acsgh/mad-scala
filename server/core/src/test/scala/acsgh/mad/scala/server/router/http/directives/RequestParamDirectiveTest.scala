@@ -4,12 +4,12 @@ import java.net.URI
 
 import acsgh.mad.scala.core.http.model.{HttpRequest, ProtocolVersion, RequestMethod, ResponseStatus}
 import acsgh.mad.scala.server.router.http.HttpRouterBuilder
-import acsgh.mad.scala.server.router.http.convertions.DefaultFormats
+import acsgh.mad.scala.server.router.http.convertions.HttpDefaultFormats
 import org.scalatest._
 
 import scala.language.reflectiveCalls
 
-class RequestParamDirectiveTest extends FlatSpec with Matchers with DefaultFormats with HttpDirectives {
+class RequestParamDirectiveTest extends FlatSpec with Matchers with HttpDefaultFormats with HttpDirectives {
 
   "RequestParamDirective" should "return 400 if no path" in {
     val router = new HttpRouterBuilder()

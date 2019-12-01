@@ -1,12 +1,12 @@
 package acsgh.mad.scala.server.router.http.directives
 
 import acsgh.mad.scala.core.http.model.{HttpCookie, HttpResponse, ProtocolVersion, ResponseStatus}
-import acsgh.mad.scala.server.router.http.convertions.{BodyWriter, DefaultFormats, DefaultParamHandling, ParamWriter}
+import acsgh.mad.scala.server.router.http.convertions.{HttpBodyWriter, HttpDefaultFormats, HttpDefaultParamHandling, HttpParamWriter}
 import acsgh.mad.scala.server.router.http.model.HttpRequestContext
 
-trait HttpResponseDirectives extends DefaultParamHandling with DefaultFormats {
+trait HttpResponseDirectives extends HttpDefaultParamHandling with HttpDefaultFormats {
 
-  def responseHeader[T](name: String, value: T)(action: => HttpResponse)(implicit context: HttpRequestContext, converter: ParamWriter[T]): HttpResponse = {
+  def responseHeader[T](name: String, value: T)(action: => HttpResponse)(implicit context: HttpRequestContext, converter: HttpParamWriter[T]): HttpResponse = {
     context.response.header(name, converter.write(value))
     action
   }
@@ -27,7 +27,7 @@ trait HttpResponseDirectives extends DefaultParamHandling with DefaultFormats {
 
   def responseBody(input: Array[Byte])(implicit context: HttpRequestContext): HttpResponse = context.response.body(input)
 
-  def responseBody[T](input: T)(implicit context: HttpRequestContext, writer: BodyWriter[T]): HttpResponse = {
+  def responseBody[T](input: T)(implicit context: HttpRequestContext, writer: HttpBodyWriter[T]): HttpResponse = {
     if (!context.response.hasHeader("Content-Type")) {
       responseHeader("Content-Type", writer.contentType) {
         responseBody(writer.write(input))

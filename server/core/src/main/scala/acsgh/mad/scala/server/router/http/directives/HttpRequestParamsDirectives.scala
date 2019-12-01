@@ -1,10 +1,10 @@
 package acsgh.mad.scala.server.router.http.directives
 
 import acsgh.mad.scala.core.http.model.HttpResponse
-import acsgh.mad.scala.server.router.http.convertions.{DefaultFormats, DefaultParamHandling}
+import acsgh.mad.scala.server.router.http.convertions.{HttpDefaultFormats, HttpDefaultParamHandling}
 import acsgh.mad.scala.server.router.http.model.HttpRequestContext
 
-trait HttpRequestParamsDirectives extends DefaultParamHandling with DefaultFormats {
+trait HttpRequestParamsDirectives extends HttpDefaultParamHandling with HttpDefaultFormats {
 
   def requestParam[P1, R1](param1: Param[P1, R1])(action: R1 => HttpResponse)(implicit context: HttpRequestContext): HttpResponse = {
     action(param1.pathValue)

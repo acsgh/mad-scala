@@ -62,8 +62,8 @@ lazy val root = (project in file("."))
   .aggregate(
     core,
     serverCore,
-//    converterJsonJackson,
-//    converterJsonSpray,
+    serverConverterJsonJackson,
+    serverConverterJsonSpray,
 //    converterTemplateFreemarker,
 //    converterTemplateThymeleaf,
 //    converterTemplateTwirl,
@@ -88,29 +88,29 @@ lazy val serverCore = (project in file("server/core"))
     commonSettings,
   )
   .dependsOn(core)
-//
-//lazy val converterJsonJackson = (project in file("converter/json/jackson"))
-//  .settings(
-//    organization := "com.github.acsgh.mad.scala.converter.json",
-//    name := "jackson",
-//    commonSettings,
-//    libraryDependencies ++= Seq(
-//      "com.fasterxml.jackson.core" % "jackson-databind" % "2.9.9",
-//      "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.9.9"
-//    )
-//  )
-//  .dependsOn(core)
-//
-//lazy val converterJsonSpray = (project in file("converter/json/spray"))
-//  .settings(
-//    organization := "com.github.acsgh.mad.scala.converter.json",
-//    name := "spray",
-//    commonSettings,
-//    libraryDependencies ++= Seq(
-//      "io.spray" %% "spray-json" % "1.3.5"
-//    )
-//  )
-//  .dependsOn(core)
+
+lazy val serverConverterJsonJackson = (project in file("server/converter/json/jackson"))
+  .settings(
+    organization := "com.github.acsgh.mad.scala.server.converter.json",
+    name := "jackson",
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "com.fasterxml.jackson.core" % "jackson-databind" % "2.9.9",
+      "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.9.9"
+    )
+  )
+  .dependsOn(serverCore)
+
+lazy val serverConverterJsonSpray = (project in file("server/converter/json/spray"))
+  .settings(
+    organization := "com.github.acsgh.mad.scala.server.converter.json",
+    name := "spray",
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "io.spray" %% "spray-json" % "1.3.5"
+    )
+  )
+  .dependsOn(serverCore)
 //
 //lazy val converterTemplateFreemarker = (project in file("converter/template/freemarker"))
 //  .settings(

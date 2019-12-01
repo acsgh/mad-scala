@@ -1,7 +1,7 @@
 package acsgh.mad.scala.server.router.http.directives
 
 import acsgh.mad.scala.core.http.exception.BadRequestException
-import acsgh.mad.scala.server.router.http.convertions.ParamReader
+import acsgh.mad.scala.server.router.http.convertions.HttpParamReader
 
 trait Param[P, R] {
 
@@ -10,7 +10,7 @@ trait Param[P, R] {
   def apply(paramType: String, input: List[String]): R
 }
 
-case class SingleParam[P](name: String)(implicit reader: ParamReader[P]) extends Param[P, P] {
+case class SingleParam[P](name: String)(implicit reader: HttpParamReader[P]) extends Param[P, P] {
   override def apply(paramType: String, input: List[String]): P = {
     try {
       input.headOption.map(reader.read) match {
@@ -25,7 +25,7 @@ case class SingleParam[P](name: String)(implicit reader: ParamReader[P]) extends
   }
 }
 
-case class DefaultParam[P](name: String, defaultValue: P)(implicit reader: ParamReader[P]) extends Param[P, P] {
+case class DefaultParam[P](name: String, defaultValue: P)(implicit reader: HttpParamReader[P]) extends Param[P, P] {
   override def apply(paramType: String, input: List[String]): P = {
     try {
       input.headOption.map(reader.read) match {
@@ -40,7 +40,7 @@ case class DefaultParam[P](name: String, defaultValue: P)(implicit reader: Param
   }
 }
 
-case class OptionParam[P](name: String)(implicit reader: ParamReader[P]) extends Param[P, Option[P]] {
+case class OptionParam[P](name: String)(implicit reader: HttpParamReader[P]) extends Param[P, Option[P]] {
   override def apply(paramType: String, input: List[String]): Option[P] = {
     try {
       input.headOption.map(reader.read)
@@ -51,7 +51,7 @@ case class OptionParam[P](name: String)(implicit reader: ParamReader[P]) extends
   }
 }
 
-case class ListParam[P](name: String)(implicit reader: ParamReader[P]) extends Param[P, List[P]] {
+case class ListParam[P](name: String)(implicit reader: HttpParamReader[P]) extends Param[P, List[P]] {
   override def apply(paramType: String, input: List[String]): List[P] = {
     try {
       input.map(reader.read)
