@@ -27,7 +27,7 @@ Contains the basic routing logic it has two submodules, one to handle only http 
   <div class="tab-pane fade show active" id="http-maven" role="tabpanel" aria-labelledby="maven-tab">
   ```
   <dependency>
-    <groupId>com.github.acsgh.mad.scala.router</groupId>
+    <groupId>com.github.acsgh.mad.scala.server.router</groupId>
     <artifactId>http_2.12</artifactId>
     <version>{{ page.current_version}}</version>
     <type>pom</type>
@@ -36,7 +36,7 @@ Contains the basic routing logic it has two submodules, one to handle only http 
   </div>
   <div class="tab-pane fade" id="http-gradle" role="tabpanel" aria-labelledby="profile-tab">
   ```
-  implementation 'com.github.acsgh.mad.scala.router:http_2.12:{{ page.current_version}}'
+  implementation 'com.github.acsgh.mad.scala.server.router:http_2.12:{{ page.current_version}}'
   ``` 
   </div>
 </div>

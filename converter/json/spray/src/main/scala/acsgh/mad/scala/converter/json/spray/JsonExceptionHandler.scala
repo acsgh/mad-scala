@@ -1,13 +1,14 @@
 package acsgh.mad.scala.converter.json.spray
 
-import acsgh.mad.scala.router.http.exception.BadRequestException
+import acsgh.mad.scala.core.http.exception.BadRequestException
+import acsgh.mad.scala.core.http.model.{RequestContext, HttpResponse}
 import acsgh.mad.scala.router.http.handler.DefaultExceptionHandler
 import acsgh.mad.scala.router.http.model.ResponseStatus.{BAD_REQUEST, INTERNAL_SERVER_ERROR}
 import acsgh.mad.scala.router.http.model.{RequestContext, Response}
 
 class JsonExceptionHandler extends DefaultExceptionHandler with SprayDirectives with JsonErrorCodeFormat {
 
-  override def handle(throwable: Throwable)(implicit ctx: RequestContext): Response = {
+  override def handle(throwable: Throwable)(implicit ctx: RequestContext): HttpResponse = {
     val status = if (throwable.isInstanceOf[BadRequestException]) BAD_REQUEST else INTERNAL_SERVER_ERROR
 
     requestHeader("Accept".opt, "Content-Type".opt) { (accept, contentType) =>

@@ -61,13 +61,14 @@ lazy val root = (project in file("."))
   )
   .aggregate(
     core,
-    converterJsonJackson,
-    converterJsonSpray,
-    converterTemplateFreemarker,
-    converterTemplateThymeleaf,
-    converterTemplateTwirl,
-    supportSwagger,
-    examples
+    serverCore,
+//    converterJsonJackson,
+//    converterJsonSpray,
+//    converterTemplateFreemarker,
+//    converterTemplateThymeleaf,
+//    converterTemplateTwirl,
+//    supportSwagger,
+//    examples
   )
 
 lazy val core = (project in file("core"))
@@ -80,91 +81,99 @@ lazy val core = (project in file("core"))
     )
   )
 
-lazy val converterJsonJackson = (project in file("converter/json/jackson"))
+lazy val serverCore = (project in file("server/core"))
   .settings(
-    organization := "com.github.acsgh.mad.scala.converter.json",
-    name := "jackson",
+    organization := "com.github.acsgh.mad.scala.server",
+    name := "core",
     commonSettings,
-    libraryDependencies ++= Seq(
-      "com.fasterxml.jackson.core" % "jackson-databind" % "2.9.9",
-      "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.9.9"
-    )
   )
   .dependsOn(core)
-
-lazy val converterJsonSpray = (project in file("converter/json/spray"))
-  .settings(
-    organization := "com.github.acsgh.mad.scala.converter.json",
-    name := "spray",
-    commonSettings,
-    libraryDependencies ++= Seq(
-      "io.spray" %% "spray-json" % "1.3.5"
-    )
-  )
-  .dependsOn(core)
-
-lazy val converterTemplateFreemarker = (project in file("converter/template/freemarker"))
-  .settings(
-    organization := "com.github.acsgh.mad.scala.converter.template",
-    name := "freemarker",
-    commonSettings,
-    libraryDependencies ++= Seq(
-      "org.freemarker" % "freemarker" % "2.3.28",
-      "com.googlecode.htmlcompressor" % "htmlcompressor" % "1.5.2"
-    )
-  )
-  .dependsOn(core)
-
-lazy val converterTemplateThymeleaf = (project in file("converter/template/thymeleaf"))
-  .settings(
-    organization := "com.github.acsgh.mad.scala.converter.template",
-    name := "thymeleaf",
-    commonSettings,
-    libraryDependencies ++= Seq(
-      "org.thymeleaf" % "thymeleaf" % "3.0.11.RELEASE",
-      "com.googlecode.htmlcompressor" % "htmlcompressor" % "1.5.2"
-    )
-  )
-  .dependsOn(core)
-
-lazy val converterTemplateTwirl = (project in file("converter/template/twirl"))
-  .settings(
-    organization := "com.github.acsgh.mad.scala.converter.template",
-    name := "twirl",
-    commonSettings,
-    libraryDependencies ++= Seq(
-      "com.typesafe.play" %% "twirl-api" % "1.4.2",
-      "com.googlecode.htmlcompressor" % "htmlcompressor" % "1.5.2"
-    )
-  )
-  .dependsOn(core)
-
-lazy val supportSwagger = (project in file("support/swagger"))
-  .settings(
-    organization := "com.github.acsgh.mad.scala.support",
-    name := "swagger",
-    commonSettings,
-    libraryDependencies ++= Seq(
-      "io.swagger.core.v3" % "swagger-core" % "2.0.8",
-      "io.swagger.core.v3" % "swagger-annotations" % "2.0.8",
-      "io.swagger.core.v3" % "swagger-integration" % "2.0.8",
-      "com.github.swagger-akka-http" %% "swagger-scala-module" % "2.0.4",
-      "org.webjars" % "swagger-ui" % "3.23.0"
-    )
-  )
-  .dependsOn(core)
-
-lazy val examples = (project in file("examples"))
-  .settings(
-    organization := "com.github.acsgh.mad.scala.examples",
-    name := "examples",
-    commonSettings,
-    libraryDependencies ++= Seq(
-      "org.webjars" % "bootstrap" % "3.3.7-1",
-      "ch.qos.logback" % "logback-classic" % "1.1.7",
-    )
-  )
-  .dependsOn(core)
-  .dependsOn(converterTemplateThymeleaf)
-  .dependsOn(converterJsonSpray)
-  .dependsOn(supportSwagger)
+//
+//lazy val converterJsonJackson = (project in file("converter/json/jackson"))
+//  .settings(
+//    organization := "com.github.acsgh.mad.scala.converter.json",
+//    name := "jackson",
+//    commonSettings,
+//    libraryDependencies ++= Seq(
+//      "com.fasterxml.jackson.core" % "jackson-databind" % "2.9.9",
+//      "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.9.9"
+//    )
+//  )
+//  .dependsOn(core)
+//
+//lazy val converterJsonSpray = (project in file("converter/json/spray"))
+//  .settings(
+//    organization := "com.github.acsgh.mad.scala.converter.json",
+//    name := "spray",
+//    commonSettings,
+//    libraryDependencies ++= Seq(
+//      "io.spray" %% "spray-json" % "1.3.5"
+//    )
+//  )
+//  .dependsOn(core)
+//
+//lazy val converterTemplateFreemarker = (project in file("converter/template/freemarker"))
+//  .settings(
+//    organization := "com.github.acsgh.mad.scala.converter.template",
+//    name := "freemarker",
+//    commonSettings,
+//    libraryDependencies ++= Seq(
+//      "org.freemarker" % "freemarker" % "2.3.28",
+//      "com.googlecode.htmlcompressor" % "htmlcompressor" % "1.5.2"
+//    )
+//  )
+//  .dependsOn(core)
+//
+//lazy val converterTemplateThymeleaf = (project in file("converter/template/thymeleaf"))
+//  .settings(
+//    organization := "com.github.acsgh.mad.scala.converter.template",
+//    name := "thymeleaf",
+//    commonSettings,
+//    libraryDependencies ++= Seq(
+//      "org.thymeleaf" % "thymeleaf" % "3.0.11.RELEASE",
+//      "com.googlecode.htmlcompressor" % "htmlcompressor" % "1.5.2"
+//    )
+//  )
+//  .dependsOn(core)
+//
+//lazy val converterTemplateTwirl = (project in file("converter/template/twirl"))
+//  .settings(
+//    organization := "com.github.acsgh.mad.scala.converter.template",
+//    name := "twirl",
+//    commonSettings,
+//    libraryDependencies ++= Seq(
+//      "com.typesafe.play" %% "twirl-api" % "1.4.2",
+//      "com.googlecode.htmlcompressor" % "htmlcompressor" % "1.5.2"
+//    )
+//  )
+//  .dependsOn(core)
+//
+//lazy val supportSwagger = (project in file("support/swagger"))
+//  .settings(
+//    organization := "com.github.acsgh.mad.scala.support",
+//    name := "swagger",
+//    commonSettings,
+//    libraryDependencies ++= Seq(
+//      "io.swagger.core.v3" % "swagger-core" % "2.0.8",
+//      "io.swagger.core.v3" % "swagger-annotations" % "2.0.8",
+//      "io.swagger.core.v3" % "swagger-integration" % "2.0.8",
+//      "com.github.swagger-akka-http" %% "swagger-scala-module" % "2.0.4",
+//      "org.webjars" % "swagger-ui" % "3.23.0"
+//    )
+//  )
+//  .dependsOn(core)
+//
+//lazy val examples = (project in file("examples"))
+//  .settings(
+//    organization := "com.github.acsgh.mad.scala.examples",
+//    name := "examples",
+//    commonSettings,
+//    libraryDependencies ++= Seq(
+//      "org.webjars" % "bootstrap" % "3.3.7-1",
+//      "ch.qos.logback" % "logback-classic" % "1.1.7",
+//    )
+//  )
+//  .dependsOn(core)
+//  .dependsOn(converterTemplateThymeleaf)
+//  .dependsOn(converterJsonSpray)
+//  .dependsOn(supportSwagger)

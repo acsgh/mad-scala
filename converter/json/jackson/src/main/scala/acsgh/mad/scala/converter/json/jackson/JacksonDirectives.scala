@@ -2,9 +2,11 @@ package acsgh.mad.scala.converter.json.jackson
 
 import java.io.ByteArrayOutputStream
 
+import acsgh.mad.scala.core.http.convertions.{BodyReader, BodyWriter}
+import acsgh.mad.scala.core.http.exception.BadRequestException
+import acsgh.mad.scala.core.http.model.{RequestContext, HttpResponse}
 import acsgh.mad.scala.router.http.convertions.{BodyReader, BodyWriter}
 import acsgh.mad.scala.router.http.directives.Directives
-import acsgh.mad.scala.router.http.exception.BadRequestException
 import acsgh.mad.scala.router.http.model.{RequestContext, Response}
 import com.fasterxml.jackson.databind.ObjectMapper
 
@@ -38,8 +40,8 @@ trait JacksonDirectives {
     }
   }
 
-  def requestJson[T](clazz: Class[T])(action: T => Response)(implicit context: RequestContext, objectMapper: ObjectMapper): Response = requestBody(action)(context, reader(clazz))
+  def requestJson[T](clazz: Class[T])(action: T => HttpResponse)(implicit context: RequestContext, objectMapper: ObjectMapper): HttpResponse = requestBody(action)(context, reader(clazz))
 
-  def responseJson[T](value: T)(implicit context: RequestContext, objectMapper: ObjectMapper): Response = responseBody(value)(context, writer())
+  def responseJson[T](value: T)(implicit context: RequestContext, objectMapper: ObjectMapper): HttpResponse = responseBody(value)(context, writer())
 
 }
