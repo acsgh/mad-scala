@@ -4,7 +4,9 @@ import java.io.{File, FileInputStream, FileNotFoundException}
 import java.time.Instant
 import java.util.Date
 
-case class StaticFilesystemFolderFilter(override val uri: String, private val baseFolder: File) extends FileFilter(uri) {
+import scala.concurrent.duration.{Duration, DurationInt}
+
+case class StaticFilesystemFolderFilter(override val uri: String, private val baseFolder: File, cacheDuration: Duration = 1 minute) extends FileFilter(uri, cacheDuration) {
 
   if (!baseFolder.exists || !baseFolder.isDirectory) throw new FileNotFoundException("Folder " + baseFolder.getAbsolutePath + " does not exist or is not a folder")
 

@@ -86,6 +86,9 @@ lazy val serverCore = (project in file("server/core"))
     organization := "com.github.acsgh.mad.scala.server",
     name := "core",
     commonSettings,
+    libraryDependencies ++= Seq(
+      "org.cache2k" % "cache2k-core" % "1.2.4.Final"
+    )
   )
   .dependsOn(core)
 

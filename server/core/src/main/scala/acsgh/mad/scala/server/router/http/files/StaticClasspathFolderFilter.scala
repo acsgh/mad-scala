@@ -4,7 +4,9 @@ import java.net.URL
 import java.time.Instant
 import java.util.Date
 
-case class StaticClasspathFolderFilter(override val uri: String, private val baseFolder: String, classLoader: ClassLoader = Thread.currentThread().getContextClassLoader) extends FileFilter(uri) {
+import scala.concurrent.duration.{Duration, DurationInt}
+
+case class StaticClasspathFolderFilter(override val uri: String, private val baseFolder: String, classLoader: ClassLoader = Thread.currentThread().getContextClassLoader, cacheDuration: Duration = 1 minute) extends FileFilter(uri, cacheDuration) {
 
   override def getFileInfo(fileName: String): Option[FileInfo] = {
     val file = baseFolder + addTradingSlash(fileName)
