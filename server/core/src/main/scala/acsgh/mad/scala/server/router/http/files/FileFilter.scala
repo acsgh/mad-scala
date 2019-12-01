@@ -15,7 +15,7 @@ object FileFilter {
   val DATE_FORMATTER = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz")
 }
 
-abstract class FileFilter(val uri: String) extends Route[RouteAction] with HttpDirectives {
+abstract class FileFilter(val uri: String) extends Route[HttpRouteAction] with HttpDirectives {
 
   validUrl(uri)
 
@@ -23,7 +23,7 @@ abstract class FileFilter(val uri: String) extends Route[RouteAction] with HttpD
 
   override private[http] def canApply(request: HttpRequest): Boolean = super.canApply(request) && getFileInfo(uri(request)).isDefined
 
-  override val action: RouteAction = { implicit ctx =>
+  override val action: HttpRouteAction = { implicit ctx =>
     val requestUri = uri(ctx.request)
     log.trace("Requesting file: {}", requestUri)
 

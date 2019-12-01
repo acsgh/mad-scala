@@ -19,8 +19,8 @@ case class HttpRouter
   productionMode: Boolean,
   workerThreads: Int,
   private val workerTimeoutSeconds: Int,
-  private val filters: List[Route[FilterAction]],
-  private val servlet: List[Route[RouteAction]],
+  private val filters: List[Route[HttpFilterAction]],
+  private val servlet: List[Route[HttpRouteAction]],
   private val errorCodeHandlers: Map[ResponseStatus, ErrorCodeHandler],
   private val defaultErrorCodeHandler: ErrorCodeHandler,
   private val exceptionHandler: ExceptionHandler,
@@ -75,7 +75,7 @@ case class HttpRouter
       })
   }
 
-  private def runRoute(route: Route[RouteAction])(implicit context: HttpRequestContext): HttpResponse = {
+  private def runRoute(route: Route[HttpRouteAction])(implicit context: HttpRequestContext): HttpResponse = {
     val stopWatch = StopWatch.createStarted()
     try {
       val filtersToExecute = filters.filter(_.canApply(context.request))
@@ -85,7 +85,7 @@ case class HttpRouter
     }
   }
 
-  private def runFilters(route: Route[RouteAction], nextFilters: List[Route[FilterAction]])(implicit context: HttpRequestContext): HttpResponse = {
+  private def runFilters(route: Route[HttpRouteAction], nextFilters: List[Route[HttpFilterAction]])(implicit context: HttpRequestContext): HttpResponse = {
     runSafe { c1 =>
       if (nextFilters.nonEmpty) {
         val currentFilter = nextFilters.head

@@ -67,8 +67,8 @@ lazy val root = (project in file("."))
     serverConverterTemplateFreemarker,
     serverConverterTemplateThymeleaf,
     serverConverterTemplateTwirl,
-//    supportSwagger,
-//    examples
+    serverSupportSwagger,
+    serverExample
   )
 
 lazy val core = (project in file("core"))
@@ -147,33 +147,33 @@ lazy val serverConverterTemplateTwirl = (project in file("server/converter/templ
     )
   )
   .dependsOn(serverCore)
-//
-//lazy val supportSwagger = (project in file("support/swagger"))
-//  .settings(
-//    organization := "com.github.acsgh.mad.scala.support",
-//    name := "swagger",
-//    commonSettings,
-//    libraryDependencies ++= Seq(
-//      "io.swagger.core.v3" % "swagger-core" % "2.0.8",
-//      "io.swagger.core.v3" % "swagger-annotations" % "2.0.8",
-//      "io.swagger.core.v3" % "swagger-integration" % "2.0.8",
-//      "com.github.swagger-akka-http" %% "swagger-scala-module" % "2.0.4",
-//      "org.webjars" % "swagger-ui" % "3.23.0"
-//    )
-//  )
-//  .dependsOn(core)
-//
-//lazy val examples = (project in file("examples"))
-//  .settings(
-//    organization := "com.github.acsgh.mad.scala.examples",
-//    name := "examples",
-//    commonSettings,
-//    libraryDependencies ++= Seq(
-//      "org.webjars" % "bootstrap" % "3.3.7-1",
-//      "ch.qos.logback" % "logback-classic" % "1.1.7",
-//    )
-//  )
-//  .dependsOn(core)
-//  .dependsOn(converterTemplateThymeleaf)
-//  .dependsOn(converterJsonSpray)
-//  .dependsOn(supportSwagger)
+
+lazy val serverSupportSwagger = (project in file("server/support/swagger"))
+  .settings(
+    organization := "com.github.acsgh.mad.scala.server.support",
+    name := "swagger",
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "io.swagger.core.v3" % "swagger-core" % "2.0.8",
+      "io.swagger.core.v3" % "swagger-annotations" % "2.0.8",
+      "io.swagger.core.v3" % "swagger-integration" % "2.0.8",
+      "com.github.swagger-akka-http" %% "swagger-scala-module" % "2.0.4",
+      "org.webjars" % "swagger-ui" % "3.23.0"
+    )
+  )
+  .dependsOn(serverCore)
+
+lazy val serverExample = (project in file("examples/server"))
+  .settings(
+    organization := "com.github.acsgh.mad.scala.examples.server",
+    name := "server",
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "org.webjars" % "bootstrap" % "3.3.7-1",
+      "ch.qos.logback" % "logback-classic" % "1.1.7",
+    )
+  )
+  .dependsOn(serverCore)
+  .dependsOn(serverConverterTemplateThymeleaf)
+  .dependsOn(serverConverterJsonSpray)
+  .dependsOn(serverSupportSwagger)

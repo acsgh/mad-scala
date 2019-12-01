@@ -1,4 +1,4 @@
-package acsgh.mad.scala.support.swagger.dsl;
+package acsgh.mad.scala.server.support.swagger.dsl;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;

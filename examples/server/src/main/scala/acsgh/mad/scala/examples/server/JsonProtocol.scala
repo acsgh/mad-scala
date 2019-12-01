@@ -1,4 +1,4 @@
-package acsgh.mad.scala.examples.netty
+package acsgh.mad.scala.examples.server
 
 import spray.json.{DefaultJsonProtocol, RootJsonFormat}
 

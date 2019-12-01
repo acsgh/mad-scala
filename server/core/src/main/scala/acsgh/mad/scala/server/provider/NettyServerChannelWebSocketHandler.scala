@@ -9,7 +9,6 @@ import com.acsgh.common.scala.log.LogSupport
 import io.netty.buffer.{ByteBufUtil, Unpooled}
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.http.websocketx.{BinaryWebSocketFrame, TextWebSocketFrame, WebSocketFrame, WebSocketServerProtocolHandler}
-import io.netty.util.ReferenceCountUtil
 
 class NettyServerChannelWebSocketHandler
 (
@@ -34,22 +33,18 @@ class NettyServerChannelWebSocketHandler
   }
 
   override protected def decode(ctx: ChannelHandlerContext, frame: WebSocketFrame, out: util.List[AnyRef]): Unit = {
-    try {
-      if (!connected) {
-        wsRouter.process(toWebSocketConnectedRequest(ctx)).foreach { response =>
-          if (response.isInstanceOf[WSResponseClose]) {
-            ctx.close
-          }
-        }
-        connected = true
-      }
-      getWebSocketRequest(ctx, frame).fold(super.decode(ctx, frame, out)) { r =>
-        wsRouter.process(r).foreach { response =>
-          toWebSocketFrame(response).foreach(ctx.channel.writeAndFlush)
+    if (!connected) {
+      wsRouter.process(toWebSocketConnectedRequest(ctx)).foreach { response =>
+        if (response.isInstanceOf[WSResponseClose]) {
+          ctx.close
         }
       }
-    } finally {
-      ReferenceCountUtil.release(frame);
+      connected = true
+    }
+    getWebSocketRequest(ctx, frame).fold(super.decode(ctx, frame, out)) { r =>
+      wsRouter.process(r).foreach { response =>
+        toWebSocketFrame(response).foreach(ctx.channel.writeAndFlush)
+      }
     }
   }
 

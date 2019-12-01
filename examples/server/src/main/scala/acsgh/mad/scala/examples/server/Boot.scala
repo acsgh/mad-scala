@@ -1,9 +1,9 @@
-package acsgh.mad.scala.examples.netty
+package acsgh.mad.scala.examples.server
 
-import acsgh.mad.scala.converter.json.spray.{JsonErrorCodeHandler, JsonExceptionHandler}
-import acsgh.mad.scala.router.http.listener.LoggingEventListener
-import acsgh.mad.scala.router.ws.listener.WSLoggingEventListener
-import acsgh.mad.scala.{Server, ServerApp, ServerBuilder}
+import acsgh.mad.scala.server.converter.json.spray.{JsonErrorCodeHandler, JsonExceptionHandler}
+import acsgh.mad.scala.server.router.http.listener.LoggingEventListener
+import acsgh.mad.scala.server.router.ws.listener.WSLoggingEventListener
+import acsgh.mad.scala.server.{Server, ServerApp, ServerBuilder}
 
 object Boot extends ServerApp {
 

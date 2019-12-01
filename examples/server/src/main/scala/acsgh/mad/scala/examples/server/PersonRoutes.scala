@@ -1,13 +1,13 @@
-package acsgh.mad.scala.examples.netty
+package acsgh.mad.scala.examples.server
 
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 
-import acsgh.mad.scala.ServerBuilder
-import acsgh.mad.scala.converter.json.spray.SprayDirectives
-import acsgh.mad.scala.converter.template.thymeleaf.{ThymeleafDirectives, ThymeleafEngineProvider, ThymeleafTemplate}
-import acsgh.mad.scala.router.http.model.ResponseStatus._
-import acsgh.mad.scala.support.swagger.ControllerSwagger
+import acsgh.mad.scala.server.ServerBuilder
+import acsgh.mad.scala.server.converter.json.spray.SprayDirectives
+import acsgh.mad.scala.server.converter.template.thymeleaf.{ThymeleafDirectives, ThymeleafEngineProvider, ThymeleafTemplate}
+import acsgh.mad.scala.core.http.model.ResponseStatus._
+import acsgh.mad.scala.server.support.swagger.ControllerSwagger
 import com.acsgh.common.scala.time.TimerSplitter
 import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.media.NumberSchema

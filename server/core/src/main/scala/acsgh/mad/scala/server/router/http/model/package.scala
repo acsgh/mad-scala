@@ -5,8 +5,8 @@ import acsgh.mad.scala.core.http.model.HttpResponse
 
 package object model {
 
-  type RouteAction = HttpRequestContext => HttpResponse
+  type HttpRouteAction = HttpRequestContext => HttpResponse
 
-  type FilterAction = HttpRequestContext => RouteAction => HttpResponse
+  type HttpFilterAction = HttpRequestContext => HttpRouteAction => HttpResponse
 
 }

@@ -9,7 +9,7 @@ case class HttpRequestContext
   request: HttpRequest,
   response: HttpResponseBuilder,
   router: HttpRouter,
-  route: Option[Route[RouteAction]]
+  route: Option[Route[HttpRouteAction]]
 ) extends URLSupport {
   private[scala] val pathParams: Map[String, String] = route.map(r => extractPathParams(r.uri, request.uri)).getOrElse(Map())
 }

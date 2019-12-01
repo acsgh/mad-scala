@@ -1,6 +1,6 @@
-package acsgh.mad.scala.support.swagger.dsl
+package acsgh.mad.scala.server.support.swagger.dsl
 
-import acsgh.mad.scala.router.http.model.ResponseStatus
+import acsgh.mad.scala.core.http.model.ResponseStatus
 import io.swagger.v3.core.converter.ModelConverters
 import io.swagger.v3.core.util.Json
 import io.swagger.v3.oas.models._
