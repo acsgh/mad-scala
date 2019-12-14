@@ -18,7 +18,6 @@ object NettyExample extends NettyServerApp {
     builder.http.webjars()
     builder.http.defaultErrorCodeHandler(new JsonErrorCodeHandler())
     builder.http.exceptionHandler(new JsonExceptionHandler())
-    builder.http.workerTimeoutSeconds(5)
     PersonRoutes(builder)
 
     builder.build()

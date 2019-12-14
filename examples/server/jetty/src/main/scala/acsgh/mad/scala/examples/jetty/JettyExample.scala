@@ -18,7 +18,6 @@ object JettyExample extends JettyServerApp {
     builder.http.webjars()
     builder.http.defaultErrorCodeHandler(new JsonErrorCodeHandler())
     builder.http.exceptionHandler(new JsonExceptionHandler())
-    builder.http.workerTimeoutSeconds(5)
     PersonRoutes(builder)
 
     builder.build()
