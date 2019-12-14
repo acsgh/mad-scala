@@ -2,14 +2,13 @@ package acsgh.mad.scala.server.router.http
 
 import java.util.concurrent.TimeUnit
 
+import acsgh.mad.scala.core.WorkerExecutor
 import acsgh.mad.scala.core.http.model.{HttpRequest, HttpResponse, HttpResponseBuilder, ResponseStatus}
 import acsgh.mad.scala.server.router.http.handler.{ErrorCodeHandler, ExceptionHandler}
 import acsgh.mad.scala.server.router.http.listener.RequestListener
 import acsgh.mad.scala.server.router.http.model.{Route, _}
 import com.acsgh.common.scala.log.{LogLevel, LogSupport}
 import com.acsgh.common.scala.time.{StopWatch, TimerSplitter}
-import io.netty.channel.EventLoopGroup
-import io.netty.channel.nio.NioEventLoopGroup
 
 import scala.concurrent.TimeoutException
 
@@ -27,10 +26,10 @@ case class HttpRouter
   private val requestListeners: List[RequestListener]
 ) extends LogSupport {
 
-  private val handlersGroup: EventLoopGroup = new NioEventLoopGroup(workerThreads)
+  private val handlersGroup: WorkerExecutor = WorkerExecutor("http-workers", workerThreads)
 
   def close(): Unit = {
-    handlersGroup.shutdownGracefully
+    handlersGroup.shutdownGracefully()
   }
 
   private[scala] def process(httpRequest: HttpRequest): HttpResponse = {

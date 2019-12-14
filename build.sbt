@@ -62,13 +62,16 @@ lazy val root = (project in file("."))
   .aggregate(
     core,
     serverCore,
+    serverProviderNetty,
+    serverProviderJetty,
     serverConverterJsonJackson,
     serverConverterJsonSpray,
     serverConverterTemplateFreemarker,
     serverConverterTemplateThymeleaf,
     serverConverterTemplateTwirl,
     serverSupportSwagger,
-    serverExample
+    serverExampleNetty,
+    serverExampleJetty
   )
 
 lazy val core = (project in file("core"))
@@ -77,7 +80,6 @@ lazy val core = (project in file("core"))
     commonSettings,
     libraryDependencies ++= Seq(
       "com.github.acsgh.common.scala" %% "core" % "1.2.15",
-      "io.netty" % "netty-all" % "4.1.37.Final"
     )
   )
 
@@ -91,6 +93,28 @@ lazy val serverCore = (project in file("server/core"))
     )
   )
   .dependsOn(core)
+
+lazy val serverProviderNetty = (project in file("server/provider/netty"))
+  .settings(
+    organization := "com.github.acsgh.mad.scala.server.provider",
+    name := "netty",
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "io.netty" % "netty-all" % "4.1.37.Final"
+    )
+  )
+  .dependsOn(serverCore)
+
+lazy val serverProviderJetty = (project in file("server/provider/jetty"))
+  .settings(
+    organization := "com.github.acsgh.mad.scala.server.provider",
+    name := "jetty",
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "io.netty" % "netty-all" % "4.1.37.Final"
+    )
+  )
+  .dependsOn(serverCore)
 
 lazy val serverConverterJsonJackson = (project in file("server/converter/json/jackson"))
   .settings(
@@ -166,17 +190,32 @@ lazy val serverSupportSwagger = (project in file("server/support/swagger"))
   )
   .dependsOn(serverCore)
 
-lazy val serverExample = (project in file("examples/server"))
+lazy val serverExampleNetty = (project in file("examples/server/netty"))
   .settings(
     organization := "com.github.acsgh.mad.scala.examples.server",
-    name := "server",
+    name := "netty",
     commonSettings,
     libraryDependencies ++= Seq(
       "org.webjars" % "bootstrap" % "3.3.7-1",
       "ch.qos.logback" % "logback-classic" % "1.1.7",
     )
   )
-  .dependsOn(serverCore)
+  .dependsOn(serverProviderNetty)
+  .dependsOn(serverConverterTemplateThymeleaf)
+  .dependsOn(serverConverterJsonSpray)
+  .dependsOn(serverSupportSwagger)
+
+lazy val serverExampleJetty = (project in file("examples/server/jetty"))
+  .settings(
+    organization := "com.github.acsgh.mad.scala.examples.server",
+    name := "jetty",
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "org.webjars" % "bootstrap" % "3.3.7-1",
+      "ch.qos.logback" % "logback-classic" % "1.1.7",
+    )
+  )
+  .dependsOn(serverProviderJetty)
   .dependsOn(serverConverterTemplateThymeleaf)
   .dependsOn(serverConverterJsonSpray)
   .dependsOn(serverSupportSwagger)

@@ -60,7 +60,6 @@ abstract class FileFilter(val uri: String, cacheDuration: Duration = 1 minute) e
       case Some(a) => Some(a)
       case None =>
         log.debug("File info not found loading from file: {}", uri)
-        val t1 = System.currentTimeMillis()
         getFileInfo(uri) match {
           case Some(a) =>
             cache.put(uri, a)

@@ -6,10 +6,12 @@ trait ServerApp extends App {
 
   protected var server: Server = _
 
+  protected def newServerBuilder():ServerBuilder
+
   protected def buildServer(builder: ServerBuilder): Server
 
   onConfigure {
-    val builder = new ServerBuilder()
+    val builder = newServerBuilder()
     builder.name(name)
     server = buildServer(builder)
   }

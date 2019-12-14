@@ -4,62 +4,39 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 import acsgh.mad.scala.server.router.http.HttpRouter
 import acsgh.mad.scala.server.router.ws.WSRouter
-import acsgh.mad.scala.server.provider.NettyServer
 import com.acsgh.common.scala.log.LogSupport
 
-case class Server
-(
-  name: String,
-  productionMode: Boolean,
-  ipAddress: String,
-  httpPort: Option[Int],
-  httpsPort: Option[Int],
-  sslConfig: Option[SSLConfig],
-  readerIdleTimeSeconds: Int,
-  writerIdleTimeSeconds: Int,
-  httpRouter: HttpRouter,
-  wsRouter: WSRouter
-) extends LogSupport {
+trait Server extends LogSupport {
+  val name: String
+  val productionMode: Boolean
+  val ipAddress: String
+  val httpPort: Option[Int]
+  val httpsPort: Option[Int]
+  val sslConfig: Option[SSLConfig]
+  val readerIdleTimeSeconds: Int
+  val writerIdleTimeSeconds: Int
+  val httpRouter: HttpRouter
+  val wsRouter: WSRouter
 
   private val _started = new AtomicBoolean(false)
-
-  private var httpServer: Option[NettyServer] = None
-  private var httpsServer: Option[NettyServer] = None
 
   def started: Boolean = _started.get()
 
   def start(): Unit = {
-    val workerThreads = httpRouter.workerThreads + wsRouter.workerThreads
-
     if (_started.compareAndSet(false, true)) {
-      httpPort.foreach { port =>
-        log.info(s"$name server is listening in http://$ipAddress:$port")
-        httpServer = Some(
-          new NettyServer(ipAddress, port, None, httpRouter, wsRouter, workerThreads, readerIdleTimeSeconds, writerIdleTimeSeconds)
-        )
-      }
-
-      httpsPort.foreach { port =>
-        log.info(s"$name server is listening in https://$ipAddress:$port")
-        val sslContext = sslConfig.fold(SSLConfig.DEFAULT)(_.sslContext)
-        httpsServer = Some(
-          new NettyServer(ipAddress, port, Some(sslContext), httpRouter, wsRouter, workerThreads, readerIdleTimeSeconds, writerIdleTimeSeconds)
-        )
-      }
-
-      httpServer.foreach(_.start())
-      httpsServer.foreach(_.start())
+      doStart()
     }
   }
 
   def stop(): Unit = {
     if (_started.compareAndSet(true, false)) {
-      httpServer.foreach(_.stop())
-      httpsServer.foreach(_.stop())
+      doStop()
       httpRouter.close()
       wsRouter.close()
-      httpServer = None
-      httpsServer = None
     }
   }
+
+  protected def doStart(): Unit
+
+  protected def doStop(): Unit
 }

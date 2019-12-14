@@ -3,33 +3,21 @@ package acsgh.mad.scala.server
 import acsgh.mad.scala.server.router.http.HttpRouterBuilder
 import acsgh.mad.scala.server.router.ws.WSRouterBuilder
 
-class ServerBuilder() {
+abstract class ServerBuilder() {
 
-  private var _name = "Mad Server"
-  private var _productionMode: Boolean = false
-  private var _ipAddress: String = "0.0.0.0"
-  private var _httpPort: Option[Int] = Some(6080)
-  private var _httpsPort: Option[Int] = None
-  private var _sslConfig: Option[SSLConfig] = None
-  private var _workerThreads: Int = 30
-  private var _readerIdleTimeSeconds: Int = 60
-  private var _writerIdleTimeSeconds: Int = 30
+  protected var _name = "Mad Server"
+  protected var _productionMode: Boolean = false
+  protected var _ipAddress: String = "0.0.0.0"
+  protected var _httpPort: Option[Int] = Some(6080)
+  protected var _httpsPort: Option[Int] = None
+  protected var _sslConfig: Option[SSLConfig] = None
+  protected var _readerIdleTimeSeconds: Int = 60
+  protected var _writerIdleTimeSeconds: Int = 30
 
-  private val httpRouterBuilder: HttpRouterBuilder = new HttpRouterBuilder()
-  private val wsRouterBuilder: WSRouterBuilder = new WSRouterBuilder()
+  protected val httpRouterBuilder: HttpRouterBuilder = new HttpRouterBuilder()
+  protected val wsRouterBuilder: WSRouterBuilder = new WSRouterBuilder()
 
-  def build(): Server = Server(
-    _name,
-    _productionMode,
-    _ipAddress,
-    _httpPort,
-    _httpsPort,
-    _sslConfig,
-    _readerIdleTimeSeconds,
-    _writerIdleTimeSeconds,
-    httpRouterBuilder.build(_name, _productionMode),
-    wsRouterBuilder.build(_name, _productionMode)
-  )
+  def build(): Server
 
   def http: HttpRouterBuilder = httpRouterBuilder
 

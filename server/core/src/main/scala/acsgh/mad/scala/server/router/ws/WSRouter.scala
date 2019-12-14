@@ -2,13 +2,12 @@ package acsgh.mad.scala.server.router.ws
 
 import java.util.concurrent.TimeUnit
 
+import acsgh.mad.scala.core.WorkerExecutor
 import acsgh.mad.scala.core.ws.model._
 import acsgh.mad.scala.server.router.ws.listener.WSRequestListener
 import acsgh.mad.scala.server.router.ws.model._
 import com.acsgh.common.scala.log.LogSupport
 import com.acsgh.common.scala.time.TimerSplitter
-import io.netty.channel.EventLoopGroup
-import io.netty.channel.nio.NioEventLoopGroup
 
 import scala.concurrent.TimeoutException
 
@@ -23,10 +22,10 @@ case class WSRouter
   private val requestListeners: List[WSRequestListener]
 ) extends LogSupport {
 
-  private val handlersGroup: EventLoopGroup = new NioEventLoopGroup(workerThreads)
+  private val handlersGroup: WorkerExecutor = WorkerExecutor("ws-workers", workerThreads)
 
   def close(): Unit = {
-    handlersGroup.shutdownGracefully
+    handlersGroup.shutdownGracefully()
   }
 
   private[scala] def process(request: WSRequest): Option[WSResponse] = {
