@@ -11,6 +11,11 @@ body {
     margin-left: 20px;
 }
 
+.left-menu {
+    position: fixed;
+    top: 80px;
+}
+
 footer {
     position: fixed;
     height: 60px;

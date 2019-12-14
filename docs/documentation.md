@@ -1,45 +1,53 @@
 ---
-current_version: '0.10.1'
 title: 'Documentation'
+container_class: 'container-fluid'
 ---
 {::options parse_block_html="true" /}
+<div class="row">
+<div class="col-3 left-menu">
 Table of content:
 {:.no_toc}
 * Will be replaced with the ToC, excluding the "Contents" header
 {:toc}
-<br/>
-<hr/>
-## 1. Modules
-### 1.1. Router
+</div>
+<div class="col-9 offset-md-3">
+
+## Modules
+
+The library is slitted in several modules in order to you choose the one that more fits into your needs and reduce the dependencies
+
+### Common
+#### Core
+This module contains the basic model for HTTP and WS. This model is later user by the server and client
+
+```
+libraryDependencies += "com.github.acsgh.mad.scala" %% "core" % "{{ site.current_version }}"
+``` 
+
+### Server
 Contains the basic routing logic it has two submodules, one to handle only http and other that give WS support
 
-#### 1.1.1 HTTP
-##### 1.1.1.1 Dependencies
-<ul class="nav nav-tabs" id="myTab" role="tablist">
-  <li class="nav-item">
-    <a class="nav-link active" id="maven-tab" data-toggle="tab" href="#http-maven" role="tab" aria-controls="home" aria-selected="true">Maven</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#http-gradle" role="tab" aria-controls="profile" aria-selected="false">Gradle</a>
-  </li>
-</ul>
-<div class="tab-content" id="http-tabs">
-  <div class="tab-pane fade show active" id="http-maven" role="tabpanel" aria-labelledby="maven-tab">
-  ```
-  <dependency>
-    <groupId>com.github.acsgh.mad.scala.server.router</groupId>
-    <artifactId>http_2.12</artifactId>
-    <version>{{ page.current_version}}</version>
-    <type>pom</type>
-  </dependency>
-  ``` 
-  </div>
-  <div class="tab-pane fade" id="http-gradle" role="tabpanel" aria-labelledby="profile-tab">
-  ```
-  implementation 'com.github.acsgh.mad.scala.server.router:http_2.12:{{ page.current_version}}'
-  ``` 
-  </div>
-</div>
+#### Core
+##### HTTP
+##### WS
 
-##### 1.1.1.2 Usage
-The main class in this module is the class **HttpRouter**. Any server contains one and it is an abstraction of all the routes an application holds.
+#### Converters
+
+##### JSON
+###### Jackson
+###### Spray
+##### Templates
+###### Freemarker
+###### Thymeleaf
+###### Twirl
+
+#### Provider
+##### Netty
+##### Jetty
+
+#### Support
+##### Swagger
+
+</div>
+</div>
+<br/>

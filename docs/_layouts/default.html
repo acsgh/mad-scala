@@ -28,9 +28,9 @@
                 <li class="nav-item {% if page.path=='getting-started.md' %}active{% endif %}">
                     <a class="nav-link" href="getting-started">Getting Started</a>
                 </li>
-                <li class="nav-item {% if page.path=='examples.md' %}active{% endif %}">
-                    <a class="nav-link" href="examples">Examples</a>
-                </li>
+<!--                <li class="nav-item {% if page.path=='examples.md' %}active{% endif %}">-->
+<!--                    <a class="nav-link" href="examples">Examples</a>-->
+<!--                </li>-->
                 <li class="nav-item {% if page.path=='documentation.md' %}active{% endif %}">
                     <a class="nav-link" href="documentation">Documentation</a>
                 </li>
@@ -59,7 +59,7 @@
 
 <!-- MAIN CONTENT -->
 <main role="main" class="flex-shrink-0">
-    <div class="container">
+    <div class="{{ page.container_class | default: 'container' }}">
         <section id="main_content" class="inner">
             {{ content }}
         </section>

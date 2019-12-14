@@ -1,5 +1,4 @@
 ---
-current_version: '0.8.0'
 title: 'Getting stated'
 ---
 
@@ -8,8 +7,7 @@ title: 'Getting stated'
 In order to start add into your sbt dependencies the followings:
 
 ```
-libraryDependencies += "com.github.acsgh.mad.scala.server.provider" %% "jetty" % "{{ page.current_version}}"
-libraryDependencies += "com.github.acsgh.mad.scala.server.provider" %% "jetty" % "{{ latest_release}}"
+libraryDependencies += "com.github.acsgh.mad.scala.server.provider" %% "jetty" % "{{ site.current_version }}"
 ``` 
 
 The initial hello word example goes as:

@@ -13,8 +13,6 @@
 <br/>
 ## Links
 <ul class="list">
-  <li><a href="installation">Installation</a></li>
   <li><a href="getting-started">Getting Started</a></li>
   <li><a href="documentation">Documentation</a></li>
-  <li><a href="examples">Examples</a></li>
 </ul>
