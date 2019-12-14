@@ -63,6 +63,7 @@ lazy val root = (project in file("."))
     core,
     serverCore,
     serverProviderNetty,
+    serverProviderServlet,
     serverProviderJetty,
     serverConverterJsonJackson,
     serverConverterJsonSpray,
@@ -105,16 +106,32 @@ lazy val serverProviderNetty = (project in file("server/provider/netty"))
   )
   .dependsOn(serverCore)
 
+lazy val serverProviderServlet = (project in file("server/provider/servlet"))
+  .settings(
+    organization := "com.github.acsgh.mad.scala.server.provider",
+    name := "servlet",
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "javax.servlet" % "javax.servlet-api" % "4.0.1"
+    )
+  )
+  .dependsOn(serverCore)
+
+val jettyVersion = "9.4.24.v20191120"
+
 lazy val serverProviderJetty = (project in file("server/provider/jetty"))
   .settings(
     organization := "com.github.acsgh.mad.scala.server.provider",
     name := "jetty",
     commonSettings,
     libraryDependencies ++= Seq(
-      "io.netty" % "netty-all" % "4.1.37.Final"
+      "org.eclipse.jetty" % "jetty-server" % jettyVersion,
+      "org.eclipse.jetty" % "jetty-webapp" % jettyVersion,
+      "org.eclipse.jetty.websocket" % "websocket-server" % jettyVersion,
+      "org.eclipse.jetty.websocket" % "websocket-servlet" % jettyVersion
     )
   )
-  .dependsOn(serverCore)
+  .dependsOn(serverProviderServlet)
 
 lazy val serverConverterJsonJackson = (project in file("server/converter/json/jackson"))
   .settings(

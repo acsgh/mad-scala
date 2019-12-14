@@ -4,18 +4,24 @@ import java.util.UUID
 
 sealed trait WSResponse {
   val id: UUID = UUID.randomUUID()
+
+  def close: Boolean
 }
 
 case class WSResponseClose
 (
-) extends WSResponse
+) extends WSResponse {
+  val close = true
+}
 
 case class WSResponseBinary
 (
-  bytes: Array[Byte]
+  bytes: Array[Byte],
+  close: Boolean = false
 ) extends WSResponse
 
 case class WSResponseText
 (
-  text: String
+  text: String,
+  close: Boolean = false
 ) extends WSResponse

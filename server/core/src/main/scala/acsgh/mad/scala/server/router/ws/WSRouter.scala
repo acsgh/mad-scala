@@ -16,7 +16,7 @@ case class WSRouter
   serverName: String,
   productionMode: Boolean,
   workerThreads: Int,
-  private val workerTimeoutSeconds: Int,
+   workerTimeoutSeconds: Int,
   wsRoutes: Map[String, WSRoute],
   private val defaultHandler: WSRouteAction,
   private val requestListeners: List[WSRequestListener]

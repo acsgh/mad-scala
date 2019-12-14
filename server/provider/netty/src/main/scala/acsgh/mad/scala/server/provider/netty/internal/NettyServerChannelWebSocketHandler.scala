@@ -24,7 +24,7 @@ private[netty] class NettyServerChannelWebSocketHandler
 
     if (connected) {
       wsRouter.process(toWebSocketDisconnectedRequest(ctx)).foreach { response =>
-        if (response.isInstanceOf[WSResponseClose]) {
+        if (response.close) {
           ctx.close
         }
       }
@@ -35,7 +35,7 @@ private[netty] class NettyServerChannelWebSocketHandler
   override protected def decode(ctx: ChannelHandlerContext, frame: WebSocketFrame, out: util.List[AnyRef]): Unit = {
     if (!connected) {
       wsRouter.process(toWebSocketConnectedRequest(ctx)).foreach { response =>
-        if (response.isInstanceOf[WSResponseClose]) {
+        if (response.close) {
           ctx.close
         }
       }
@@ -44,6 +44,10 @@ private[netty] class NettyServerChannelWebSocketHandler
     getWebSocketRequest(ctx, frame).fold(super.decode(ctx, frame, out)) { r =>
       wsRouter.process(r).foreach { response =>
         toWebSocketFrame(response).foreach(ctx.channel.writeAndFlush)
+
+        if (response.close) {
+          ctx.close
+        }
       }
     }
   }
