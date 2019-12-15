@@ -107,6 +107,9 @@ case class PersonRoutes(builder: ServerBuilder) extends ControllerSwagger with J
       BAD_REQUEST -> ApiResponse("Invalid request")
     )
   )) { implicit context =>
+    requestBody[String] { asd=>
+
+
     requestParam("id".as[Long]) { id =>
       requestJson(classOf[Person]) { personNew =>
         persons.get(id).fold(error(NO_CONTENT)) { personOld =>
@@ -116,7 +119,7 @@ case class PersonRoutes(builder: ServerBuilder) extends ControllerSwagger with J
         }
       }
     }
-  }
+  }}
 
   get("/persons/{id}", Operation(
     operationId = "getPerson",

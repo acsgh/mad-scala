@@ -9,6 +9,11 @@ trait HttpDefaultFormats {
 
   implicit def builderToResponse(response: HttpResponseBuilder): HttpResponse = response.build
 
+  implicit object HtmlBodyReader extends HttpBodyReader[String] {
+
+    override def read(body: Array[Byte])(implicit context: HttpRequestContext): String = new String(body, "UTF-8")
+  }
+
   implicit object HtmlBodyWriter extends HttpBodyWriter[String] {
     override val contentType: String = "text/html; charset=UTF-8"
 
