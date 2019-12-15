@@ -20,14 +20,31 @@ The library is slitted in several modules in order to you choose the one that mo
 #### Core
 This module contains the basic model for HTTP and WS. This model is later user by the server and client
 
-```
-libraryDependencies += "com.github.acsgh.mad.scala" %% "core" % "{{ site.current_version }}"
-``` 
+<ul>
+<li>
+<a href="https://mvnrepository.com/artifact/com.github.acsgh.mad.scala/core_2.13/{{ site.current_version }}" target="_blank">Maven Central</a>
+</li>
+<li>
+<a href="https://javadoc.io/doc/com.github.acsgh.mad.scala/core_2.13/latest/acsgh/mad/scala/core/index.html" target="_blank">Javadoc</a>
+</li>
+</ul>
 
 ### Server
 Contains the basic routing logic it has two submodules, one to handle only http and other that give WS support
 
 #### Core
+
+
+<ul>
+<li>
+<a href="https://mvnrepository.com/artifact/com.github.acsgh.mad.scala.server/core_2.13/{{ site.current_version }}" target="_blank">Maven Central</a>
+</li>
+<li>
+<a href="https://javadoc.io/doc/com.github.acsgh.mad.scala.server/core_2.13/latest/acsgh/mad/scala/server/index.html" target="_blank">Javadoc</a>
+</li>
+</ul>
+
+
 ##### HTTP
 ##### WS
 
@@ -35,19 +52,94 @@ Contains the basic routing logic it has two submodules, one to handle only http 
 
 ##### JSON
 ###### Jackson
+
+<ul>
+<li>
+<a href="https://mvnrepository.com/artifact/com.github.acsgh.mad.scala.server.converter.json/jackson_2.13/{{ site.current_version }}" target="_blank">Maven Central</a>
+</li>
+<li>
+<a href="https://javadoc.io/doc/com.github.acsgh.mad.scala.server.converter.json/jackson_2.13/latest/acsgh/mad/scala/server/converter/json/jackson/index.html" target="_blank">Javadoc</a>
+</li>
+</ul>
 ###### Spray
+<ul>
+<li>
+<a href="https://mvnrepository.com/artifact/com.github.acsgh.mad.scala.server.converter.json/spray_2.13/{{ site.current_version }}" target="_blank">Maven Central</a>
+</li>
+<li>
+<a href="https://javadoc.io/doc/com.github.acsgh.mad.scala.server.converter.json/spray_2.13/latest/acsgh/mad/scala/server/converter/json/spray/index.html" target="_blank">Javadoc</a>
+</li>
+</ul>
 ##### Templates
 ###### Freemarker
+<ul>
+<li>
+<a href="https://mvnrepository.com/artifact/com.github.acsgh.mad.scala.server.converter.template/freemarker_2.13/{{ site.current_version }}" target="_blank">Maven Central</a>
+</li>
+<li>
+<a href="https://javadoc.io/doc/com.github.acsgh.mad.scala.server.converter.template/freemarker_2.13/latest/acsgh/mad/scala/server/converter/template/freemarker/index.html" target="_blank">Javadoc</a>
+</li>
+</ul>
 ###### Thymeleaf
+<ul>
+<li>
+<a href="https://mvnrepository.com/artifact/com.github.acsgh.mad.scala.server.converter.template/thymeleaf_2.13/{{ site.current_version }}" target="_blank">Maven Central</a>
+</li>
+<li>
+<a href="https://javadoc.io/doc/com.github.acsgh.mad.scala.server.converter.template/thymeleaf_2.13/latest/acsgh/mad/scala/server/converter/template/thymeleaf/index.html" target="_blank">Javadoc</a>
+</li>
+</ul>
 ###### Twirl
+<ul>
+<li>
+<a href="https://mvnrepository.com/artifact/com.github.acsgh.mad.scala.server.converter.template/twirl_2.13/{{ site.current_version }}" target="_blank">Maven Central</a>
+</li>
+<li>
+<a href="https://javadoc.io/doc/com.github.acsgh.mad.scala.server.converter.template/twirl_2.13/latest/acsgh/mad/scala/server/converter/template/twirl/index.html" target="_blank">Javadoc</a>
+</li>
+</ul>
 
 #### Provider
 ##### Netty
+<ul>
+<li>
+<a href="https://mvnrepository.com/artifact/com.github.acsgh.mad.scala.server.provider/netty_2.13/{{ site.current_version }}" target="_blank">Maven Central</a>
+</li>
+<li>
+<a href="https://javadoc.io/doc/com.github.acsgh.mad.scala.server.provider/netty_2.13/latest/acsgh/mad/scala/server/provider/netty/index.html" target="_blank">Javadoc</a>
+</li>
+</ul>
+
+##### Servlet
+<ul>
+<li>
+<a href="https://mvnrepository.com/artifact/com.github.acsgh.mad.scala.server.provider/servlet_2.13/{{ site.current_version }}" target="_blank">Maven Central</a>
+</li>
+<li>
+<a href="https://javadoc.io/doc/com.github.acsgh.mad.scala.server.provider/servlet_2.13/latest/acsgh/mad/scala/server/provider/servlet/index.html" target="_blank">Javadoc</a>
+</li>
+</ul>
+
 ##### Jetty
+<ul>
+<li>
+<a href="https://mvnrepository.com/artifact/com.github.acsgh.mad.scala.server.provider/jetty_2.13/{{ site.current_version }}" target="_blank">Maven Central</a>
+</li>
+<li>
+<a href="https://javadoc.io/doc/com.github.acsgh.mad.scala.server.provider/jetty_2.13/latest/acsgh/mad/scala/server/provider/jetty/index.html" target="_blank">Javadoc</a>
+</li>
+</ul>
 
 #### Support
 ##### Swagger
+<ul>
+<li>
+<a href="https://mvnrepository.com/artifact/com.github.acsgh.mad.scala.server.support/swagger_2.13/{{ site.current_version }}" target="_blank">Maven Central</a>
+</li>
+<li>
+<a href="https://javadoc.io/doc/com.github.acsgh.mad.scala.server.support/swagger_2.13/latest/acsgh/mad/scala/server/support/swagger/index.html" target="_blank">Javadoc</a>
+</li>
+</ul>
 
 </div>
 </div>
-<br/>

@@ -3,7 +3,7 @@ package acsgh.mad.scala.server
 import acsgh.mad.scala.server.router.http.HttpRouterBuilder
 import acsgh.mad.scala.server.router.ws.WSRouterBuilder
 
-abstract class ServerBuilder() {
+abstract class ServerBuilder() extends Controller {
 
   protected var _name = "Mad Server"
   protected var _productionMode: Boolean = false
@@ -16,6 +16,8 @@ abstract class ServerBuilder() {
 
   protected val httpRouterBuilder: HttpRouterBuilder = new HttpRouterBuilder()
   protected val wsRouterBuilder: WSRouterBuilder = new WSRouterBuilder()
+
+  protected val builder: ServerBuilder = this
 
   def build(): Server
 

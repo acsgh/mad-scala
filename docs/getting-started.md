@@ -10,7 +10,22 @@ In order to start add into your sbt dependencies the followings:
 libraryDependencies += "com.github.acsgh.mad.scala.server.provider" %% "jetty" % "{{ site.current_version }}"
 ``` 
 
-The initial hello word example goes as:
+The initial hello word examples goes as:
+
+``` scala
+import acsgh.mad.scala.server.provider.jetty.JettyServerBuilder
+import acsgh.mad.scala.server.{Controller, ServerBuilder}
+
+object HelloWorld extends Controller with App {
+  val builder: ServerBuilder = new JettyServerBuilder
+
+  get("/") { implicit ctx =>
+    responseBody("Hello world!")
+  }
+
+  builder.build().start()
+}
+```
 
 ``` scala
 import acsgh.mad.scala.server.provider.jetty.JettyServerApp
@@ -38,6 +53,8 @@ case class HelloWorldRoutes(builder: ServerBuilder) extends Controller {
   }
 }
 ``` 
+
+If you go to [http://localhost:6080/](http://localhost:6080/) you will see the server running
 
 You have more completed examples in:
 [here](https://github.com/acsgh/mad-scala/tree/master/examples/server)

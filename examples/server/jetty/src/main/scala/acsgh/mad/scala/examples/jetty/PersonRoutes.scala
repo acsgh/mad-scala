@@ -19,8 +19,8 @@ case class PersonRoutes(builder: ServerBuilder) extends ControllerSwagger with J
 
   implicit protected val openAPi: OpenAPI = OpenAPI(
     info = Info(
-      title = "Netty Example",
-      description = "Netty example rest api example",
+      title = "Jetty Example",
+      description = "Jetty example rest api example",
       version = "1.0",
       contact = Contact(
         email = "dummy@asd.com"
