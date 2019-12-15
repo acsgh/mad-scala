@@ -51,6 +51,20 @@ Contains the basic routing logic it has two submodules, one to handle only http 
 #### Converters
 
 ##### JSON
+
+###### Spray
+<ul>
+<li>
+<a href="https://mvnrepository.com/artifact/com.github.acsgh.mad.scala.server.converter.json/spray_2.13/{{ site.current_version }}" target="_blank">Maven Central</a>
+</li>
+<li>
+<a href="https://javadoc.io/doc/com.github.acsgh.mad.scala.server.converter.json/spray_2.13/latest/acsgh/mad/scala/server/converter/json/spray/index.html" target="_blank">Javadoc</a>
+</li>
+<li>
+<a href="https://github.com/spray/spray-json" target="_blank">Spray Json Documentation</a>
+</li>
+</ul>
+
 ###### Jackson
 
 <ul>
@@ -60,16 +74,11 @@ Contains the basic routing logic it has two submodules, one to handle only http 
 <li>
 <a href="https://javadoc.io/doc/com.github.acsgh.mad.scala.server.converter.json/jackson_2.13/latest/acsgh/mad/scala/server/converter/json/jackson/index.html" target="_blank">Javadoc</a>
 </li>
-</ul>
-###### Spray
-<ul>
 <li>
-<a href="https://mvnrepository.com/artifact/com.github.acsgh.mad.scala.server.converter.json/spray_2.13/{{ site.current_version }}" target="_blank">Maven Central</a>
-</li>
-<li>
-<a href="https://javadoc.io/doc/com.github.acsgh.mad.scala.server.converter.json/spray_2.13/latest/acsgh/mad/scala/server/converter/json/spray/index.html" target="_blank">Javadoc</a>
+<a href="https://github.com/FasterXML/jackson" target="_blank">Jackson Documentation</a>
 </li>
 </ul>
+
 ##### Templates
 ###### Freemarker
 <ul>
@@ -79,7 +88,11 @@ Contains the basic routing logic it has two submodules, one to handle only http 
 <li>
 <a href="https://javadoc.io/doc/com.github.acsgh.mad.scala.server.converter.template/freemarker_2.13/latest/acsgh/mad/scala/server/converter/template/freemarker/index.html" target="_blank">Javadoc</a>
 </li>
+<li>
+<a href="https://freemarker.apache.org/" target="_blank">Freemarker Documentation</a>
+</li>
 </ul>
+
 ###### Thymeleaf
 <ul>
 <li>
@@ -88,7 +101,11 @@ Contains the basic routing logic it has two submodules, one to handle only http 
 <li>
 <a href="https://javadoc.io/doc/com.github.acsgh.mad.scala.server.converter.template/thymeleaf_2.13/latest/acsgh/mad/scala/server/converter/template/thymeleaf/index.html" target="_blank">Javadoc</a>
 </li>
+<li>
+<a href="https://www.thymeleaf.org/index.html" target="_blank">Thymeleaf Documentation</a>
+</li>
 </ul>
+
 ###### Twirl
 <ul>
 <li>
@@ -96,6 +113,9 @@ Contains the basic routing logic it has two submodules, one to handle only http 
 </li>
 <li>
 <a href="https://javadoc.io/doc/com.github.acsgh.mad.scala.server.converter.template/twirl_2.13/latest/acsgh/mad/scala/server/converter/template/twirl/index.html" target="_blank">Javadoc</a>
+</li>
+<li>
+<a href="https://github.com/playframework/twirl" target="_blank">Twirl Documentation</a>
 </li>
 </ul>
 
@@ -108,6 +128,9 @@ Contains the basic routing logic it has two submodules, one to handle only http 
 <li>
 <a href="https://javadoc.io/doc/com.github.acsgh.mad.scala.server.provider/netty_2.13/latest/acsgh/mad/scala/server/provider/netty/index.html" target="_blank">Javadoc</a>
 </li>
+<li>
+<a href="https://netty.io/" target="_blank">Netty Documentation</a>
+</li>
 </ul>
 
 ##### Servlet
@@ -117,6 +140,9 @@ Contains the basic routing logic it has two submodules, one to handle only http 
 </li>
 <li>
 <a href="https://javadoc.io/doc/com.github.acsgh.mad.scala.server.provider/servlet_2.13/latest/acsgh/mad/scala/server/provider/servlet/index.html" target="_blank">Javadoc</a>
+</li>
+<li>
+<a href="https://www.oracle.com/technetwork/java/index-jsp-135475.html" target="_blank">Servlet Documentation</a>
 </li>
 </ul>
 
@@ -128,6 +154,9 @@ Contains the basic routing logic it has two submodules, one to handle only http 
 <li>
 <a href="https://javadoc.io/doc/com.github.acsgh.mad.scala.server.provider/jetty_2.13/latest/acsgh/mad/scala/server/provider/jetty/index.html" target="_blank">Javadoc</a>
 </li>
+<li>
+<a href="https://www.eclipse.org/jetty/" target="_blank">Jetty Documentation</a>
+</li>
 </ul>
 
 #### Support
@@ -138,6 +167,9 @@ Contains the basic routing logic it has two submodules, one to handle only http 
 </li>
 <li>
 <a href="https://javadoc.io/doc/com.github.acsgh.mad.scala.server.support/swagger_2.13/latest/acsgh/mad/scala/server/support/swagger/index.html" target="_blank">Javadoc</a>
+</li>
+<li>
+<a href="https://swagger.io/" target="_blank">Swagger Documentation</a>
 </li>
 </ul>
 
