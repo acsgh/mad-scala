@@ -140,7 +140,7 @@ builder.get("/") { implicit ctx =>
 
 you can interact with the HttpRequestContext but in order to make it easy we have created directives that allow you to extract information from the request and modify the response
 
-#### Directives
+#### HttpDirectives
 
 ##### requestBody
 
@@ -185,6 +185,280 @@ get("/") { implicit ctx =>
     serve("/index.html")
 }
 ```
+
+##### requestParam
+Extract from 1 to 15 path params from the url. The key is non case sensitive.
+
+``` scala
+get("/{id1}") { implicit ctx =>
+    requestParam("id1"){ id1 =>
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+
+get("/{id2}/{id2}") { implicit ctx =>
+    requestParam("id2", "id2"){ (id1, id2) =>
+        responseBody(s"Param id1 is ${id1}, Param id2 is ${id2}")
+    }
+}
+```
+
+If the param is not present, a 400 Bad Request will be returned
+
+The path param by default is required, it could be optional, have a default value
+
+``` scala
+get("/{id1}") { implicit ctx =>
+    requestParam("id1".opt){ id1 =>
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+
+get("/{id1}") { implicit ctx =>
+    requestParam("id1".default("1234")){ id1 =>
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+```
+
+By default all params are String, but we can convert them for you. Convert to T needs an implicit HttpParamReader[T] in its context. The conversion can by mix with other methods
+
+``` scala
+get("/{id1}") { implicit ctx =>
+    requestParam("id1".as(Long)){ id1 => // Long
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+
+get("/{id1}") { implicit ctx =>
+    requestParam("id1".as(Long).opt){ id1 => // Optional[Long]
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+
+get("/{id1}") { implicit ctx =>
+    requestParam("id1".as(Long).default(1234)){ id1 => // Optional[Long]
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+```
+
+If the param cannot be converted, a 400 Bad Request will be returned
+
+##### requestQuery
+Extract from 1 to 15 query params from the url. Keep in mind that a query param can be repeated. The key is non case sensitive.
+
+``` scala
+get("/") { implicit ctx =>
+    requestQuery("id1"){ id1 =>
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+
+get("/") { implicit ctx =>
+    requestQuery("id2", "id2"){ (id1, id2) =>
+        responseBody(s"Param id1 is ${id1}, Param id2 is ${id2}")
+    }
+}
+```
+
+If the param is not present, a 400 Bad Request will be returned
+
+The path param by default is required, it could be optional, have a default value or be a list
+
+``` scala
+get("/") { implicit ctx =>
+    requestQuery("id1".opt){ id1 =>
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+
+get("/{id1}") { implicit ctx =>
+    requestQuery("id1".default("1234")){ id1 =>
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+
+get("/{id1}") { implicit ctx =>
+    requestQuery("id1".list){ id1 =>
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+```
+
+By default all params are String, but we can convert them for you. Convert to T needs an implicit HttpParamReader[T] in its context. The conversion can by mix with other methods
+                                                                                                                                   
+``` scala
+get("/{id1}") { implicit ctx =>
+    requestQuery("id1".as(Long)){ id1 => // Long
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+
+get("/{id1}") { implicit ctx =>
+    requestQuery("id1".as(Long).opt){ id1 => // Optional[Long]
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+
+get("/{id1}") { implicit ctx =>
+    requestQuery("id1".as(Long).default(1234)){ id1 => // Optional[Long]
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+
+
+get("/{id1}") { implicit ctx =>
+    requestQuery("id1".as(Long).list){ id1 => // List[Long]
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+```
+
+##### requestHeader
+Extract from 1 to 15 a header params from the request. Keep in mind that a header can be repeated. The key is non case sensitive.
+
+``` scala
+get("/") { implicit ctx =>
+    requestHeader("id1"){ id1 =>
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+
+get("/") { implicit ctx =>
+    requestHeader("id2", "id2"){ (id1, id2) =>
+        responseBody(s"Param id1 is ${id1}, Param id2 is ${id2}")
+    }
+}
+```
+
+If the param is not present, a 400 Bad Request will be returned
+
+The path param by default is required, it could be optional, have a default value or be a list
+
+``` scala
+get("/") { implicit ctx =>
+    requestHeader("id1".opt){ id1 =>
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+
+get("/{id1}") { implicit ctx =>
+    requestHeader("id1".default("1234")){ id1 =>
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+
+get("/{id1}") { implicit ctx =>
+    requestHeader("id1".list){ id1 =>
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+```
+
+By default all params are String, but we can convert them for you. Convert to T needs an implicit HttpParamReader[T] in its context. The conversion can by mix with other methods
+                                                                                                                                   
+``` scala
+get("/{id1}") { implicit ctx =>
+    requestHeader("id1".as(Long)){ id1 => // Long
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+
+get("/{id1}") { implicit ctx =>
+    requestHeader("id1".as(Long).opt){ id1 => // Optional[Long]
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+
+get("/{id1}") { implicit ctx =>
+    requestHeader("id1".as(Long).default(1234)){ id1 => // Optional[Long]
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+
+
+get("/{id1}") { implicit ctx =>
+    requestHeader("id1".as(Long).list){ id1 => // List[Long]
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+```
+
+If the param cannot be converted, a 400 Bad Request will be returned
+
+
+##### requestCookie
+Extract from 1 to 15 cookie value from he request. Keep in mind that a cookie can be repeated. The key is non case sensitive.
+
+``` scala
+get("/") { implicit ctx =>
+    requestCookie("id1"){ id1 =>
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+
+get("/") { implicit ctx =>
+    requestCookie("id2", "id2"){ (id1, id2) =>
+        responseBody(s"Param id1 is ${id1}, Param id2 is ${id2}")
+    }
+}
+```
+
+If the param is not present, a 400 Bad Request will be returned
+
+The path param by default is required, it could be optional, have a default value or be a list
+
+``` scala
+get("/") { implicit ctx =>
+    requestCookie("id1".opt){ id1 =>
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+
+get("/{id1}") { implicit ctx =>
+    requestCookie("id1".default("1234")){ id1 =>
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+
+get("/{id1}") { implicit ctx =>
+    requestCookie("id1".list){ id1 =>
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+```
+
+By default all params are String, but we can convert them for you. Convert to T needs an implicit HttpParamReader[T] in its context. The conversion can by mix with other methods
+                                                                                                                                   
+``` scala
+get("/{id1}") { implicit ctx =>
+    requestCookie("id1".as(Long)){ id1 => // Long
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+
+get("/{id1}") { implicit ctx =>
+    requestCookie("id1".as(Long).opt){ id1 => // Optional[Long]
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+
+get("/{id1}") { implicit ctx =>
+    requestCookie("id1".as(Long).default(1234)){ id1 => // Optional[Long]
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+
+
+get("/{id1}") { implicit ctx =>
+    requestCookie("id1".as(Long).list){ id1 => // List[Long]
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+```
+
+If the param cannot be converted, a 400 Bad Request will be returned
   
 ### WS
 

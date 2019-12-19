@@ -110,7 +110,7 @@ case class PersonRoutes(builder: ServerBuilder) extends ControllerSwagger with J
     requestBody[String] { asd=>
 
 
-    requestParam("id".as[Long]) { id =>
+    requestParam("id".as[Long].list) { id =>
       requestJson(classOf[Person]) { personNew =>
         persons.get(id).fold(error(NO_CONTENT)) { personOld =>
           val result = personNew.copy(id = id)
