@@ -130,10 +130,22 @@ The HttpRequestContext has:
 <li>Route: The current route, it can be used to have more internal information</li>
 </ul>
 
-The routes are added to the builder calling different http method like
+The routes are added to the builder calling different http method like. It also supports wildcards
 
 ``` scala
 builder.get("/") { implicit ctx =>
+    responseBody("Hello world!")
+}
+
+builder.get("/{id}") { implicit ctx => Match /asd, /1234 but no /asd/123
+    responseBody("Hello world!")
+}
+
+builder.get("/{path+}") { implicit ctx => // Matchs /hello and /hello/world
+    responseBody("Hello world!")
+}
+
+builder.get("/*/id") { implicit ctx => // Matchs /person/id and /dog/id
     responseBody("Hello world!")
 }
 ```
