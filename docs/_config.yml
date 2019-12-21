@@ -3,3 +3,4 @@ current_version: '0.8.0'
 
 kramdown:
   parse_block_html: true
+  toc_levels: 1..4

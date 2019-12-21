@@ -5,7 +5,6 @@ container_class: 'container-fluid'
 {::options parse_block_html="true" /}
 <div class="row">
 <div class="col-3 left-menu">
-Table of content:
 {:.no_toc}
 * Will be replaced with the ToC, excluding the "Contents" header
 {:toc}
@@ -688,6 +687,83 @@ The default error code handler will just show the exception message and the stac
 
 ### WS
 
+#### Route
+
+A Websocket route is defined as a function that receive an WSRequestContext and return an Optional[WSResponse].
+The WSRequestContext has The original request received
+
+``` scala
+ws("/echo") { implicit context =>
+    wsRequest[String] { input =>
+        wsResponse(s"You said: $input")
+    }
+}
+```
+
+You can define the dafault route in tu builder by builder.ws.defaultHandler(WSRequestContext => Optional[WSResponse])
+
+#### WSDirectives
+
+##### wsRequest
+
+Read the websocket request into the desired format. If you want to convert the body to anything but String, you need to have an implicit WSBodyReader[T] in the context
+``` scala
+wsRequest[T] { bytes =>
+}
+```
+
+##### wsResponse
+
+Write the websocket response into the desired format. If you want to convert the body to anything but String, you need to have an implicit WSBodyWriter[T] in the context. 
+You can indicate if you want to close the connection after the response is send
+``` scala
+wsResponse("Hello world!")
+
+wsResponse("Hello world!", close = true)
+```
+
+##### close
+
+Close the connection.
+
+``` scala
+close()
+```
+
+
+#### RequestListener
+
+We provide a listener that inform any actions around the request
+
+``` scala
+import acsgh.mad.scala.server.router.ws.listener.WSRequestListener
+
+object MyRequestListener extends WSRequestListener {
+   def onStart()(implicit ctx: WSRequestContext): Unit = {
+     log.debug(s"WS Request:  ${ctx.request.uri}")
+   }
+ 
+   def onStop(response: Option[WSResponse])(implicit ctx: WSRequestContext): Unit = {
+     val duration = System.currentTimeMillis() - ctx.request.starTime
+ 
+     log.info(s"WS Response: ${ctx.request.uri} in ${TimerSplitter.getIntervalInfo(duration, TimeUnit.MILLISECONDS)}")
+   }
+ 
+   override def onTimeout()(implicit ctx: WSRequestContext): Unit = {
+     log.error(s"WS Timeout during request: ${ctx.request.uri} - Body: '${body(ctx.request)}'")
+   }
+ 
+   def onException(exception: Exception)(implicit ctx: WSRequestContext): Unit = {
+     log.error(s"WS Error during request: ${ctx.request.uri} - Body: '${body(ctx.request)}'", exception)
+   }
+}
+
+builder.ws.addRequestListeners(listener)
+```
+
+There is a default log implementation called: acsgh.mad.scala.server.router.ws.listener.WSLoggingEventListener
+
+
 ## Converters
 
 ### JSON
@@ -705,6 +781,81 @@ The default error code handler will just show the exception message and the stac
 </li>
 </ul>
 
+Add Json support using spray json as a marshaller. You controller needs to implement SprayDirectives.
+
+After that you have two directives to use:
+
+##### requestJson 
+Reads the request body and parse into an object of type T. It requires an implicit JsonReader[T] in the context
+
+``` scala
+import acsgh.mad.scala.server.Controller
+import acsgh.mad.scala.server.ServerBuilder
+import acsgh.mad.scala.server.converter.json.spray.SprayDirective
+import spray.json._
+
+case class Person(name:String)
+
+class MyController(builder:ServerBuilder) extends Controller with SprayDirective with DefaultJsonProtocol {
+
+    implicit val personFormat: RootJsonFormat[Person] = jsonFormat1(Person)
+
+    get("/") { implicit ctx =>
+        requestJson(classOf[Person]) { person =>
+        }
+    }
+}
+```
+
+##### responseJson 
+Write the object of type T into a Json response body. It requires an implicit JsonWriter[T] in the context. If the server is in production mode the json will be compact.
+
+``` scala
+import acsgh.mad.scala.server.Controller
+import acsgh.mad.scala.server.ServerBuilder
+import acsgh.mad.scala.server.converter.json.spray.SprayDirective
+import spray.json._
+
+case class Person(name:String)
+
+class MyController(builder:ServerBuilder) extends Controller with SprayDirective with DefaultJsonProtocol {
+
+    implicit val personFormat: RootJsonFormat[Person] = jsonFormat1(Person)
+
+    get("/") { implicit ctx =>
+        val person = Person("Jonh Doe")
+        responseJson(person)
+    }
+}
+```
+
+##### Json Error Code handler and Exception handler
+It provides you a json response if the accept Content-Type is json. So your response is coherent. They need to be added to the builder
+
+``` scala
+import acsgh.mad.scala.server.Controller
+import acsgh.mad.scala.server.ServerBuilder
+import acsgh.mad.scala.server.converter.json.spray.SprayDirective
+import spray.json._
+import acsgh.mad.scala.server.converter.json.spray.JsonErrorCodeHandler
+import acsgh.mad.scala.server.converter.json.spray.JsonExceptionHandler
+
+case class Person(name:String)
+
+class MyController(builder:ServerBuilder) extends Controller with SprayDirective with DefaultJsonProtocol {
+
+    builder.http.defaultErrorCodeHandler(new JsonErrorCodeHandler())
+    builder.http.exceptionHandler(new JsonExceptionHandler())
+
+    implicit val personFormat: RootJsonFormat[Person] = jsonFormat1(Person)
+
+    get("/") { implicit ctx =>
+        val person = Person("Jonh Doe")
+        responseJson(person)
+    }
+}
+```
+
 #### Jackson
 
 <ul>
@@ -718,6 +869,84 @@ The default error code handler will just show the exception message and the stac
 <a href="https://github.com/FasterXML/jackson" target="_blank">Jackson Documentation</a>
 </li>
 </ul>
+
+Add Json support using jackson as a marshaller. You controller needs to implement JacksonDirectives.
+
+After that you have two directives to use:
+
+##### requestJson 
+Reads the request body and parse into an object of type T. It requires an implicit ObjectMapper in the context
+
+``` scala
+import acsgh.mad.scala.server.Controller
+import acsgh.mad.scala.server.ServerBuilder
+import acsgh.mad.scala.server.converter.json.jackson.JacksonDirectives
+import acsgh.mad.scala.server.converter.json.jackson.JacksonObjectMapperProvider
+import com.fasterxml.jackson.databind.ObjectMapper
+
+case class Person(name:String)
+
+class MyController(builder:ServerBuilder) extends Controller with JacksonDirectives with DefaultJsonProtocol {
+
+    implicit val objectMapper: ObjectMapper = JacksonObjectMapperProvider.build(builder.productionMode)
+
+    get("/") { implicit ctx =>
+        requestJson(classOf[Person]) { person =>
+        }
+    }
+}
+```
+
+##### responseJson 
+Write the object of type T into a Json response body. It requires an implicit ObjectMapper in the context. If the server is in production mode the json will be compact.
+
+``` scala
+import acsgh.mad.scala.server.Controller
+import acsgh.mad.scala.server.ServerBuilder
+import acsgh.mad.scala.server.converter.json.jackson.JacksonDirectives
+import acsgh.mad.scala.server.converter.json.jackson.JacksonObjectMapperProvider
+import com.fasterxml.jackson.databind.ObjectMapper
+
+case class Person(name:String)
+
+class MyController(builder:ServerBuilder) extends Controller with JacksonDirectives with DefaultJsonProtocol {
+
+    implicit val objectMapper: ObjectMapper = JacksonObjectMapperProvider.build(builder.productionMode)
+
+    get("/") { implicit ctx =>
+        val person = Person("Jonh Doe")
+        responseJson(person)
+    }
+}
+```
+
+##### Json Error Code handler and Exception handler
+It provides you a json response if the accept Content-Type is json. So your response is coherent. They need to be added to the builder
+
+``` scala
+import acsgh.mad.scala.server.converter.json.jackson.JsonErrorCodeHandler
+import acsgh.mad.scala.server.converter.json.jackson.JsonExceptionHandler
+import acsgh.mad.scala.server.Controller
+import acsgh.mad.scala.server.ServerBuilder
+import acsgh.mad.scala.server.converter.json.jackson.JacksonDirectives
+import acsgh.mad.scala.server.converter.json.jackson.JacksonObjectMapperProvider
+import com.fasterxml.jackson.databind.ObjectMapper
+
+case class Person(name:String)
+
+class MyController(builder:ServerBuilder) extends Controller with JacksonDirectives with DefaultJsonProtocol {
+
+    implicit val objectMapper: ObjectMapper = JacksonObjectMapperProvider.build(builder.productionMode)
+
+    builder.http.defaultErrorCodeHandler(new JsonErrorCodeHandler())
+    builder.http.exceptionHandler(new JsonExceptionHandler())
+
+    get("/") { implicit ctx =>
+        val person = Person("Jonh Doe")
+        responseJson(person)
+    }
+}
+```
 
 ### Templates
 #### Freemarker
