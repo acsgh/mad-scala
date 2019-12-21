@@ -168,7 +168,8 @@ requestBody[T] { bytes =>
 }
 ```
 
-But keep in mind that for that to work, it need an implicit HttpBodyReader[T] in the scope. We provide the String handler but the rest of readers is on your side
+But keep in mind that for that to work, it need an implicit HttpBodyReader[T] in the scope. We provide the String handler 
+but the rest of readers is on your side. The reader also has a parameter called strictContentTypes, so if it true, and the content types received are not the one expected an 405 will be returned
 
 ##### redirect
 Redirect one request into another location. The redirection could be in several ways provided by the RedirectStatus enum
@@ -472,6 +473,219 @@ get("/{id1}") { implicit ctx =>
 
 If the param cannot be converted, a 400 Bad Request will be returned
   
+##### responseHeader
+
+Add a header into the response, by default it is a String if you want to add any object different from it you need to add an implicit HttpParamWriter[T] in your scope.
+ 
+ ``` scala
+ get("/") { implicit ctx =>
+     responseHeader("Content-Type", "Greetings"){
+         responseBody(s"Hello world!}")
+     }
+ }
+```
+  
+##### responseStatus
+
+Add a response status into the response
+ 
+ ``` scala
+import acsgh.mad.scala.core.http.model.ResponseStatus._
+
+ get("/") { implicit ctx =>
+     responseStatus(NO_CONTENT){
+         responseBody(s"Hello world!}")
+     }
+ }
+```
+  
+##### responseCookie
+
+Add a response cookie into the response
+ 
+ ``` scala
+import acsgh.mad.scala.core.http.model.HttpCookie
+
+ get("/") { implicit ctx =>
+     responseCookie(HttpCookie("sessionId", "123456")){
+         responseBody(s"Hello world!}")
+     }
+ }
+```
+
+you can customize the returned cookie using:
+<table class="table">
+<tr>
+<th>Property name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default Value</th>
+</tr>
+<tr>
+<td>name</td>
+<td>String</td>
+<td>Indicate the cookie key</td>
+<td>-</td>
+</tr>
+<tr>
+<td>value</td>
+<td>String</td>
+<td>Indicate the cookie value</td>
+<td>-</td>
+</tr>
+<tr>
+<td>expires</td>
+<td>Option[LocalDateTime]</td>
+<td>Indicate the cookie expiration time</td>
+<td>None</td>
+</tr>
+<tr>
+<td>maxAge</td>
+<td>Option[Long]</td>
+<td>Indicate the cookie max age ni seconds</td>
+<td>None</td>
+</tr>
+<tr>
+<td>domain</td>
+<td>Option[String]</td>
+<td>Indicate the cookie domain where it is going to be applied</td>
+<td>None</td>
+</tr>
+<tr>
+<td>path</td>
+<td>Option[String]</td>
+<td>Indicate the cookie path where it is going to be applied</td>
+<td>None</td>
+</tr>
+<tr>
+<td>secure</td>
+<td>Boolean</td>
+<td>Indicate the cookie is secure meaning only send by https</td>
+<td>false</td>
+</tr>
+<tr>
+<td>httpOnly</td>
+<td>Boolean</td>
+<td>Indicate the cookie is only sent by http calls and not ajax</td>
+<td>false</td>
+</tr>
+</table>
+
+##### responseVersion
+
+Indicate the protocol version of the response
+ 
+ ``` scala
+import acsgh.mad.scala.core.http.model.ProtocolVersion._
+
+ get("/") { implicit ctx =>
+     responseVersion(HTTP_1_1){
+         responseBody(s"Hello world!}")
+     }
+ }
+```
+
+##### responseBody
+
+Set up the response body bytes. The directive has also a way to write content into something more manageable
+``` scala
+get("/") { implicit ctx =>
+    responseBody(byte)
+}
+```
+
+If you want to convert the body from an object you can use:
+``` scala
+get("/") { implicit ctx =>
+    responseBody(T)
+}
+```
+
+But keep in mind that for that to work, it need an implicit HttpBodyWriter[T] in the scope. We provide the String handler 
+but the rest of readers is on your side. The reader also has a parameter called contentType, that is going to be added into 
+the response except Content-Type header is setup already
+
+##### noBody
+
+Utility method to not return any response body
+``` scala
+get("/") { implicit ctx =>
+    noBody()
+}
+```
+
+#### RequestListener
+
+We provide a listener that inform any actions around the request
+
+``` scala
+import acsgh.mad.scala.server.router.http.listener.RequestListener
+
+object MyRequestListener extends RequestListener {
+  def onStart()(implicit ctx: HttpRequestContext): Unit = {
+    log.debug(s"Request:  ${ctx.request.method} ${ctx.request.uri}")
+  }
+
+  def onStop()(implicit ctx: HttpRequestContext): Unit = {
+    val duration = System.currentTimeMillis() - ctx.request.starTime
+
+    log.info(s"Response: ${ctx.request.method} ${ctx.request.uri} with ${ctx.response.status.code} in ${TimerSplitter.getIntervalInfo(duration, TimeUnit.MILLISECONDS)}")
+  }
+
+  override def onTimeout()(implicit ctx: HttpRequestContext): Unit = {
+    log.error(s"Timeout during request: ${ctx.request.method}: ${ctx.request.uri} - Body: '${new String(ctx.request.bodyBytes, "UTF-8")}'")
+  }
+
+  def onException(exception: Exception)(implicit ctx: HttpRequestContext): Unit = {
+    log.error(s"Error during request: ${ctx.request.method}: ${ctx.request.uri} - Body: '${new String(ctx.request.bodyBytes, "UTF-8")}'", exception)
+  }
+}
+
+builder.http.addRequestListeners(listener)
+```
+
+There is a default log implementation called: acsgh.mad.scala.server.router.http.listener.LoggingEventListener
+
+#### ErrorCodeHandler
+
+The error handler render the response when some error happens, so you can customize the response. You can configure by one specific response code or for all of them. This is called when you call the directive error. 
+If can also called by the library in other situations, in case of exceptions another handler will be called.
+
+``` scala
+import acsgh.mad.scala.core.http.model.ResponseStatus._
+import acsgh.mad.scala.server.router.http.handler.ErrorCodeHandler
+
+object MyErrorCodeHandler extends ErrorCodeHandler {
+  def handle(responseStatus: ResponseStatus, message: Option[String])(implicit requestContext: HttpRequestContext): HttpResponse = {
+    responseBody("Page not found :(")
+  }
+}
+
+builder.http.errorCodeHandlers(NOT_FOUND, MyErrorCodeHandler)
+builder.http.defaultErrorCodeHandler(MyErrorCodeHandler)
+```
+
+The default error code handler will just show the error code and the message. You do not need to set up one.
+
+#### ExceptionHandler
+
+The exception handler render the response when some an unexpected exception happens, so you can customize the response.
+
+``` scala
+import acsgh.mad.scala.core.http.model.ResponseStatus._
+import acsgh.mad.scala.server.router.http.handler.ExceptionHandler
+
+object MyExceptionHandler extends ExceptionHandler {
+  def handle(throwable: Throwable)(implicit requestContext: HttpRequestContext): HttpResponse = {
+    responseBody(s"Something bad happens: ${throwable.getMessage()}")
+  }
+}
+
+builder.http.exceptionHandler(MyExceptionHandler)
+```
+
+The default error code handler will just show the exception message and the stacktrace when the server is not in production mode. You do not need to set up one.
+
 ### WS
 
 ## Converters
