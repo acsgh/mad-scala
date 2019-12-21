@@ -786,7 +786,7 @@ Add Json support using spray json as a marshaller. You controller needs to imple
 After that you have two directives to use:
 
 ##### requestJson 
-Reads the request body and parse into an object of type T. It requires an implicit JsonReader[T] in the context
+Reads the request body and parse into an object of type T. It requires an implicit JsonReader[T] in the context. If the format is incorrect a 400 Bad Request will be returned.
 
 ``` scala
 import acsgh.mad.scala.server.Controller
@@ -875,7 +875,7 @@ Add Json support using jackson as a marshaller. You controller needs to implemen
 After that you have two directives to use:
 
 ##### requestJson 
-Reads the request body and parse into an object of type T. It requires an implicit ObjectMapper in the context
+Reads the request body and parse into an object of type T. It requires an implicit ObjectMapper in the context. If the format is incorrect a 400 Bad Request will be returned.
 
 ``` scala
 import acsgh.mad.scala.server.Controller
