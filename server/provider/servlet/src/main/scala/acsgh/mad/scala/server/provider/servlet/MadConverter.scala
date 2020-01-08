@@ -11,9 +11,9 @@ import scala.io.Source
 
 trait MadConverter {
   protected def transferParams(madResponse: HttpResponse, response: HttpServletResponse): Unit = {
+    response.setStatus(madResponse.responseStatus.code)
     madResponse.headers.foreach(header => header._2.foreach(value => response.addHeader(header._1, value)))
     response.getOutputStream.write(madResponse.bodyBytes)
-    response.setStatus(madResponse.responseStatus.code)
   }
 
   protected def toMadRequest(request: HttpServletRequest): HttpRequest = HttpRequest(
