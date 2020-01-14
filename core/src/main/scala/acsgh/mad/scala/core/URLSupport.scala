@@ -26,9 +26,15 @@ trait URLSupport extends LogSupport {
     params
   }
 
-  protected def extractCookie(input: String): (String, String) = {
+  protected def extractCookie(input: String): Option[(String, String)] = {
     val parts = input.trim.split("=")
-    (parts(0), parts(1))
+
+    if (parts.length == 2) {
+      Some((parts(0), parts(1)))
+    } else {
+      log.warn("Illegal cookie input: {}", input)
+      None
+    }
   }
 
   protected def extractQueryParam(requestUri: URI): Map[String, List[String]] = {
@@ -36,7 +42,7 @@ trait URLSupport extends LogSupport {
     if (query == null) {
       Map()
     } else {
-      query.split("&").flatMap(toMapEntry _).groupBy(_._1).mapValues(_.map(_._2).toList).toMap
+      query.split("&").flatMap(toMapEntry).groupBy(_._1).mapValues(_.map(_._2).toList).toMap
     }
   }
 
