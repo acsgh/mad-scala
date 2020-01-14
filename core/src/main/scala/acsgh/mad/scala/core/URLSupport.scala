@@ -31,8 +31,9 @@ trait URLSupport extends LogSupport {
 
     if (parts.length == 2) {
       Some((parts(0), parts(1)))
+    } else if (parts.length == 1) {
+      Some((parts(0), ""))
     } else {
-      log.warn("Illegal cookie input: {}", input)
       None
     }
   }
