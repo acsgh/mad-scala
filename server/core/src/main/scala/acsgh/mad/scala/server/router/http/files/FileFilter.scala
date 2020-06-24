@@ -5,6 +5,7 @@ import java.math.BigInteger
 import java.net.URLConnection
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 import acsgh.mad.scala.core.http.model.ResponseStatus.{NOT_FOUND, NOT_MODIFIED}
@@ -25,6 +26,7 @@ abstract class FileFilter(val uri: String, cacheDuration: Duration = 1 minute) e
 
 
   private val cache: Cache[String, FileInfo] = new Cache2kBuilder[String, FileInfo]() {}
+    .name(UUID.randomUUID().toString)
     .expireAfterWrite(cacheDuration.toSeconds, TimeUnit.SECONDS)
     .permitNullValues(true)
     .build

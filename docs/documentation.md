@@ -237,19 +237,19 @@ By default all params are String, but we can convert them for you. Convert to T 
 
 ``` scala
 get("/{id1}") { implicit ctx =>
-    requestParam("id1".as(Long)){ id1 => // Long
+    requestParam("id1".as[Long]){ id1 => // Long
         responseBody(s"Param id1 is ${id1}")
     }
 }
 
 get("/{id1}") { implicit ctx =>
-    requestParam("id1".as(Long).opt){ id1 => // Optional[Long]
+    requestParam("id1".as[Long].opt){ id1 => // Optional[Long]
         responseBody(s"Param id1 is ${id1}")
     }
 }
 
 get("/{id1}") { implicit ctx =>
-    requestParam("id1".as(Long).default(1234)){ id1 => // Optional[Long]
+    requestParam("id1".as[Long].default(1234)){ id1 => // Optional[Long]
         responseBody(s"Param id1 is ${id1}")
     }
 }
@@ -276,7 +276,7 @@ get("/") { implicit ctx =>
 
 If the param is not present, a 400 Bad Request will be returned
 
-The path param by default is required, it could be optional, have a default value or be a list
+The path param is required by default, it could be optional, have a default value or be a list
 
 ``` scala
 get("/") { implicit ctx =>
@@ -302,26 +302,96 @@ By default all params are String, but we can convert them for you. Convert to T 
                                                                                                                                    
 ``` scala
 get("/{id1}") { implicit ctx =>
-    requestQuery("id1".as(Long)){ id1 => // Long
+    requestQuery("id1".as[Long]){ id1 => // Long
         responseBody(s"Param id1 is ${id1}")
     }
 }
 
 get("/{id1}") { implicit ctx =>
-    requestQuery("id1".as(Long).opt){ id1 => // Optional[Long]
+    requestQuery("id1".as[Long].opt){ id1 => // Optional[Long]
         responseBody(s"Param id1 is ${id1}")
     }
 }
 
 get("/{id1}") { implicit ctx =>
-    requestQuery("id1".as(Long).default(1234)){ id1 => // Optional[Long]
+    requestQuery("id1".as[Long].default(1234)){ id1 => // Optional[Long]
         responseBody(s"Param id1 is ${id1}")
     }
 }
 
 
 get("/{id1}") { implicit ctx =>
-    requestQuery("id1".as(Long).list){ id1 => // List[Long]
+    requestQuery("id1".as[Long].list){ id1 => // List[Long]
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+```
+
+##### requestBodyParam
+Extract from 1 to 15 url form encoded params from the body. Keep in mind that a body param can be repeated. The key is non case sensitive.
+
+``` scala
+get("/") { implicit ctx =>
+    requestBodyParam("id1"){ id1 =>
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+
+get("/") { implicit ctx =>
+    requestBodyParam("id2", "id2"){ (id1, id2) =>
+        responseBody(s"Param id1 is ${id1}, Param id2 is ${id2}")
+    }
+}
+```
+
+If the param is not present, a 400 Bad Request will be returned
+
+The body param is required by default, it could be optional, have a default value or be a list
+
+``` scala
+get("/") { implicit ctx =>
+    requestBodyParam("id1".opt){ id1 =>
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+
+get("/{id1}") { implicit ctx =>
+    requestBodyParam("id1".default("1234")){ id1 =>
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+
+get("/{id1}") { implicit ctx =>
+    requestBodyParam("id1".list){ id1 =>
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+```
+
+By default all params are String, but we can convert them for you. Convert to T needs an implicit HttpParamReader[T] in its context. The conversion can by mix with other methods
+                                                                                                                                   
+``` scala
+get("/{id1}") { implicit ctx =>
+    requestBodyParam("id1".as[Long]){ id1 => // Long
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+
+get("/{id1}") { implicit ctx =>
+    requestBodyParam("id1".as[Long].opt){ id1 => // Optional[Long]
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+
+get("/{id1}") { implicit ctx =>
+    requestBodyParam("id1".as[Long].default(1234)){ id1 => // Optional[Long]
+        responseBody(s"Param id1 is ${id1}")
+    }
+}
+
+
+get("/{id1}") { implicit ctx =>
+    requestBodyParam("id1".as[Long].list){ id1 => // List[Long]
         responseBody(s"Param id1 is ${id1}")
     }
 }
@@ -372,26 +442,26 @@ By default all params are String, but we can convert them for you. Convert to T 
                                                                                                                                    
 ``` scala
 get("/{id1}") { implicit ctx =>
-    requestHeader("id1".as(Long)){ id1 => // Long
+    requestHeader("id1".as[Long]){ id1 => // Long
         responseBody(s"Param id1 is ${id1}")
     }
 }
 
 get("/{id1}") { implicit ctx =>
-    requestHeader("id1".as(Long).opt){ id1 => // Optional[Long]
+    requestHeader("id1".as[Long].opt){ id1 => // Optional[Long]
         responseBody(s"Param id1 is ${id1}")
     }
 }
 
 get("/{id1}") { implicit ctx =>
-    requestHeader("id1".as(Long).default(1234)){ id1 => // Optional[Long]
+    requestHeader("id1".as[Long].default(1234)){ id1 => // Optional[Long]
         responseBody(s"Param id1 is ${id1}")
     }
 }
 
 
 get("/{id1}") { implicit ctx =>
-    requestHeader("id1".as(Long).list){ id1 => // List[Long]
+    requestHeader("id1".as[Long].list){ id1 => // List[Long]
         responseBody(s"Param id1 is ${id1}")
     }
 }
@@ -445,26 +515,26 @@ By default all params are String, but we can convert them for you. Convert to T 
                                                                                                                                    
 ``` scala
 get("/{id1}") { implicit ctx =>
-    requestCookie("id1".as(Long)){ id1 => // Long
+    requestCookie("id1".as[Long]){ id1 => // Long
         responseBody(s"Param id1 is ${id1}")
     }
 }
 
 get("/{id1}") { implicit ctx =>
-    requestCookie("id1".as(Long).opt){ id1 => // Optional[Long]
+    requestCookie("id1".as[Long].opt){ id1 => // Optional[Long]
         responseBody(s"Param id1 is ${id1}")
     }
 }
 
 get("/{id1}") { implicit ctx =>
-    requestCookie("id1".as(Long).default(1234)){ id1 => // Optional[Long]
+    requestCookie("id1".as[Long].default(1234)){ id1 => // Optional[Long]
         responseBody(s"Param id1 is ${id1}")
     }
 }
 
 
 get("/{id1}") { implicit ctx =>
-    requestCookie("id1".as(Long).list){ id1 => // List[Long]
+    requestCookie("id1".as[Long].list){ id1 => // List[Long]
         responseBody(s"Param id1 is ${id1}")
     }
 }

@@ -1,5 +1,5 @@
 ThisBuild / organization := "com.github.acsgh.mad.scala"
-ThisBuild / scalaVersion := "2.13.1"
+ThisBuild / scalaVersion := "2.13.2"
 
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 
@@ -21,17 +21,17 @@ lazy val commonSettings = Seq(
     commitNextVersion,
     pushChanges
   ),
-  crossScalaVersions := List("2.12.10", "2.13.1"),
+  crossScalaVersions := List("2.12.11", "2.13.2"),
   releaseCrossBuild := true,
   releasePublishArtifactsAction := PgpKeys.publishSigned.value,
   libraryDependencies ++= Seq(
-    "com.beachape" %% "enumeratum" % "1.5.13",
+    "com.beachape" %% "enumeratum" % "1.6.1",
     "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
-    "org.slf4j" % "slf4j-api" % "1.7.21",
-    "ch.qos.logback" % "logback-classic" % "1.1.7",
-    "org.scalatest" %% "scalatest" % "3.0.8" % Test,
-    "org.scalacheck" %% "scalacheck" % "1.14.2" % Test,
-    "org.pegdown" % "pegdown" % "1.4.2" % Test,
+    "org.slf4j" % "slf4j-api" % "1.7.30",
+    "ch.qos.logback" % "logback-classic" % "1.2.3",
+    "org.scalatest" %% "scalatest" % "3.2.0" % Test,
+    "org.scalacheck" %% "scalacheck" % "1.14.3" % Test,
+    "org.pegdown" % "pegdown" % "1.6.0" % Test,
     "org.scalamock" %% "scalamock" % "4.4.0" % Test,
   ),
   homepage := Some(url("https://github.com/acsgh/mad-scala")),
@@ -80,7 +80,7 @@ lazy val core = (project in file("core"))
     name := "core",
     commonSettings,
     libraryDependencies ++= Seq(
-      "com.github.acsgh.common.scala" %% "core" % "1.2.15",
+      "com.github.acsgh.common.scala" %% "core" % "1.2.16",
     )
   )
 

@@ -10,21 +10,21 @@ import org.scalatest.matchers.should.Matchers
 
 import scala.language.reflectiveCalls
 
-class RequestQueryDirectiveTest extends AnyFlatSpec with Matchers with HttpDefaultFormats with HttpDirectives {
+class HttpRequestBodyParamDirectivesTest extends AnyFlatSpec with Matchers with HttpDefaultFormats with HttpDirectives {
 
-  "RequestQueryDirective" should "return 400 if no query" in {
+  "HttpRequestBodyParamDirectives" should "return 400 if no body param" in {
     val router = new HttpRouterBuilder()
 
     val request = HttpRequest(
       RequestMethod.GET,
       URI.create("/"),
       ProtocolVersion.HTTP_1_1,
-      Map(),
-      new Array[Byte](0)
+      Map("Content-Type" -> List("application/x-www-form-urlencoded")),
+      "".getBytes("UTF-8")
     )
 
     router.get("/") { implicit ctx =>
-      requestParam("SessionId") { query =>
+      requestBodyParam("SessionId") { query =>
         responseBody(query)
       }
     }
@@ -34,19 +34,19 @@ class RequestQueryDirectiveTest extends AnyFlatSpec with Matchers with HttpDefau
     response.responseStatus should be(ResponseStatus.BAD_REQUEST)
   }
 
-  it should "return 200 if query" in {
+  it should "return 200 if body param" in {
     val router = new HttpRouterBuilder()
 
     val request = HttpRequest(
       RequestMethod.GET,
-      URI.create("/?SessionId=1234"),
+      URI.create("/"),
       ProtocolVersion.HTTP_1_1,
-      Map(),
-      new Array[Byte](0)
+      Map("Content-Type" -> List("application/x-www-form-urlencoded")),
+      "SessionId=1234".getBytes("UTF-8")
     )
 
     router.get("/") { implicit ctx =>
-      requestQuery("SessionId") { query =>
+      requestBodyParam("SessionId") { query =>
         responseBody(query)
       }
     }
@@ -62,14 +62,14 @@ class RequestQueryDirectiveTest extends AnyFlatSpec with Matchers with HttpDefau
 
     val request = HttpRequest(
       RequestMethod.GET,
-      URI.create("/?SessionId=1234"),
+      URI.create("/"),
       ProtocolVersion.HTTP_1_1,
-      Map(),
-      new Array[Byte](0)
+      Map("Content-Type" -> List("application/x-www-form-urlencoded")),
+      "SessionId=1234".getBytes("UTF-8")
     )
 
     router.get("/") { implicit ctx =>
-      requestQuery("SessionId".as[Long]) { query =>
+      requestBodyParam("SessionId".as[Long]) { query =>
         responseBody(query.toString)
       }
     }
@@ -87,12 +87,12 @@ class RequestQueryDirectiveTest extends AnyFlatSpec with Matchers with HttpDefau
       RequestMethod.GET,
       URI.create("/"),
       ProtocolVersion.HTTP_1_1,
-      Map(),
-      new Array[Byte](0)
+      Map("Content-Type" -> List("application/x-www-form-urlencoded")),
+      "".getBytes("UTF-8")
     )
 
     router.get("/") { implicit ctx =>
-      requestQuery("SessionId".list) { query =>
+      requestBodyParam("SessionId".list) { query =>
         responseBody(query.toString)
       }
     }
@@ -108,14 +108,14 @@ class RequestQueryDirectiveTest extends AnyFlatSpec with Matchers with HttpDefau
 
     val request = HttpRequest(
       RequestMethod.GET,
-      URI.create("/?SessionId=1234&SessionId=1235"),
+      URI.create("/"),
       ProtocolVersion.HTTP_1_1,
-      Map(),
-      new Array[Byte](0)
+      Map("Content-Type" -> List("application/x-www-form-urlencoded")),
+      "SessionId=1234&SessionId=1235".getBytes("UTF-8")
     )
 
     router.get("/") { implicit ctx =>
-      requestQuery("SessionId".list) { query =>
+      requestBodyParam("SessionId".list) { query =>
         responseBody(query.toString)
       }
     }
@@ -126,19 +126,19 @@ class RequestQueryDirectiveTest extends AnyFlatSpec with Matchers with HttpDefau
     new String(response.bodyBytes, "UTf-8") should be("List(1234, 1235)")
   }
 
-  it should "return 200 if two query" in {
+  it should "return 200 if two body param" in {
     val router = new HttpRouterBuilder()
 
     val request = HttpRequest(
       RequestMethod.GET,
-      URI.create("/?SessionId1=1234&SessionId2=1235"),
+      URI.create("/"),
       ProtocolVersion.HTTP_1_1,
-      Map(),
-      new Array[Byte](0)
+      Map("Content-Type" -> List("application/x-www-form-urlencoded")),
+      "SessionId1=1234&SessionId2=1235".getBytes("UTF-8")
     )
 
     router.get("/") { implicit ctx =>
-      requestQuery("SessionId1", "SessionId2") { (query1, query2) =>
+      requestBodyParam("SessionId1", "SessionId2") { (query1, query2) =>
         responseBody(List(query1, query2).toString)
       }
     }
@@ -149,19 +149,19 @@ class RequestQueryDirectiveTest extends AnyFlatSpec with Matchers with HttpDefau
     new String(response.bodyBytes, "UTf-8") should be("List(1234, 1235)")
   }
 
-  it should "return 200 if default query" in {
+  it should "return 200 if default body param" in {
     val router = new HttpRouterBuilder()
 
     val request = HttpRequest(
       RequestMethod.GET,
       URI.create("/"),
       ProtocolVersion.HTTP_1_1,
-      Map(),
-      new Array[Byte](0)
+      Map("Content-Type" -> List("application/x-www-form-urlencoded")),
+      "".getBytes("UTF-8")
     )
 
     router.get("/") { implicit ctx =>
-      requestQuery("SessionId".default("1234")) { query =>
+      requestBodyParam("SessionId".default("1234")) { query =>
         responseBody(query.toString)
       }
     }
@@ -172,19 +172,19 @@ class RequestQueryDirectiveTest extends AnyFlatSpec with Matchers with HttpDefau
     new String(response.bodyBytes, "UTf-8") should be("1234")
   }
 
-  it should "return 200 if optional query" in {
+  it should "return 200 if optional body param" in {
     val router = new HttpRouterBuilder()
 
     val request = HttpRequest(
       RequestMethod.GET,
       URI.create("/"),
       ProtocolVersion.HTTP_1_1,
-      Map(),
-      new Array[Byte](0)
+      Map("Content-Type" -> List("application/x-www-form-urlencoded")),
+      "".getBytes("UTF-8")
     )
 
     router.get("/") { implicit ctx =>
-      requestQuery("SessionId".opt) { query =>
+      requestBodyParam("SessionId".opt) { query =>
         responseBody(query.toString)
       }
     }
@@ -200,14 +200,14 @@ class RequestQueryDirectiveTest extends AnyFlatSpec with Matchers with HttpDefau
 
     val request = HttpRequest(
       RequestMethod.GET,
-      URI.create("/?SessionId=1234a"),
+      URI.create("/"),
       ProtocolVersion.HTTP_1_1,
-      Map(),
-      new Array[Byte](0)
+      Map("Content-Type" -> List("application/x-www-form-urlencoded")),
+      "SessionId=1234a".getBytes("UTF-8")
     )
 
     router.get("/") { implicit ctx =>
-      requestQuery("SessionId".as[Long]) { query =>
+      requestBodyParam("SessionId".as[Long]) { query =>
         responseBody(query.toString)
       }
     }

@@ -1,0 +1,55 @@
+<html>
+<head>
+    <title>Mad Server: Web Socket Test!!</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/3.3.7-1/css/bootstrap.css">
+</head>
+<body>
+<div class="container">
+    <div class="col-md-12">
+        <h1>Mad Server: Forms Test</h1>
+    </div>
+    <div class="col-md-6">
+        <h2>Regular form</h2>
+
+        <form action="/forms/regular" method="POST">
+            <label for="fname">First name:</label><br>
+            <input type="text" id="fname" name="fname" value="John"><br>
+            <label for="lname">Last name:</label><br>
+            <input type="text" id="lname" name="lname" value="Doe"><br><br>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+    <div class="col-md-6">
+        <h2>Multipart form</h2>
+
+        <form action="/forms/multipart" method="POST" enctype="multipart/form-data">
+            <label for="fname2">First name:</label><br>
+            <input type="text" id="fname2" name="fname" value="John"><br>
+            <label for="lname2">Last name:</label><br>
+            <input type="text" id="lname2" name="lname" value="Doe"><br><br>
+            <label for="fileupload"> Select a file to upload</label>
+            <input type="file" name="fileupload" value="fileupload" id="fileupload"><br><br>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+    <div class="col-md-12" th:if="${fname}">
+        <h1>Forms sent data</h1>
+        <table class="table">
+            <tr>
+                <th>First name:</th>
+                <td>[[${fname}]]</td>
+            </tr>
+            <tr>
+                <th>Last name:</th>
+                <td>[[${lname}]]</td>
+            </tr>
+            <tr th:if="${fileSize}">
+                <th>File Size:</th>
+                <td>[[${fileSize}]]</td>
+            </tr>
+        </table>
+    </div>
+</div>
+<script type="javascript" src="/webjars/bootstrap/3.3.7-1/js/bootstrap.min.js"></script>
+</body>
+</html>

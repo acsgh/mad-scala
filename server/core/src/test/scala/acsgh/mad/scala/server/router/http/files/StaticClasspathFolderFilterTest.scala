@@ -5,11 +5,12 @@ import java.net.URI
 import acsgh.mad.scala.core.http.model.{HttpRequest, ProtocolVersion, RequestMethod, ResponseStatus}
 import acsgh.mad.scala.server.router.http.HttpRouterBuilder
 import acsgh.mad.scala.server.router.http.convertions.HttpDefaultFormats
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 import scala.language.reflectiveCalls
 
-class StaticClasspathFolderFilterTest extends FlatSpec with Matchers with HttpDefaultFormats {
+class StaticClasspathFolderFilterTest extends AnyFlatSpec with Matchers with HttpDefaultFormats {
 
   val baseFolder = "assets"
 
@@ -47,7 +48,7 @@ class StaticClasspathFolderFilterTest extends FlatSpec with Matchers with HttpDe
     response.responseStatus should be(ResponseStatus.OK)
     new String(response.bodyBytes, "UTF-8") should be("Hi there!")
     response.headers("ETag") should be(List("396199333EDBF40AD43E62A1C1397793"))
-    response.headers.get("Last-Modified").isDefined should be(true)
+    response.headers.contains("Last-Modified") should be(true)
   }
 
   it should "return 304 if file not modifier, etag" in {
@@ -66,10 +67,10 @@ class StaticClasspathFolderFilterTest extends FlatSpec with Matchers with HttpDe
     response.protocolVersion should be(request.protocolVersion)
     response.responseStatus should be(ResponseStatus.NOT_MODIFIED)
     response.headers("ETag") should be(List("396199333EDBF40AD43E62A1C1397793"))
-    response.headers.get("Last-Modified").isDefined should be(true)
+    response.headers.contains("Last-Modified") should be(true)
   }
 
-  it should "return 304 if file not modifier, date" in {
+  it should "return 304 if file not modifie, date" in {
     val router = new HttpRouterBuilder()
 
     router.resourceFolder("/", baseFolder)
@@ -85,6 +86,6 @@ class StaticClasspathFolderFilterTest extends FlatSpec with Matchers with HttpDe
     response.protocolVersion should be(request.protocolVersion)
     response.responseStatus should be(ResponseStatus.NOT_MODIFIED)
     response.headers("ETag") should be(List("396199333EDBF40AD43E62A1C1397793"))
-    response.headers.get("Last-Modified").isDefined should be(true)
+    response.headers.contains("Last-Modified") should be(true)
   }
 }

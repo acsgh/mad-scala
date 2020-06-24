@@ -44,6 +44,11 @@ trait HttpDefaultParamHandling {
   }
 
   implicit class ParamsEnhanced[P, R](param: Param[P, R]) {
+    def bodyValue(implicit context: HttpRequestContext, bodyContent: UrlFormEncodedBody): R = {
+      val value = bodyContent.params.find(_._1.equalsIgnoreCase(param.name)).map(_._2).getOrElse(List())
+      param("Body", value)
+    }
+
     def queryValue(implicit context: HttpRequestContext): R = {
       val value = context.request.queryParams.find(_._1.equalsIgnoreCase(param.name)).map(_._2).getOrElse(List())
       param("Query", value)

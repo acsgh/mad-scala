@@ -6,16 +6,14 @@ import java.util.concurrent.atomic.AtomicLong
 import acsgh.mad.scala.core.http.model.ResponseStatus._
 import acsgh.mad.scala.server.ServerBuilder
 import acsgh.mad.scala.server.converter.json.spray.SprayDirectives
-import acsgh.mad.scala.server.converter.template.thymeleaf.{ThymeleafDirectives, ThymeleafEngineProvider, ThymeleafTemplate}
+import acsgh.mad.scala.server.converter.template.thymeleaf.{ThymeleafDirectives, ThymeleafTemplate}
 import acsgh.mad.scala.server.support.swagger.ControllerSwagger
 import com.acsgh.common.scala.time.TimerSplitter
 import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.media.NumberSchema
 import org.thymeleaf.TemplateEngine
 
-case class PersonRoutes(builder: ServerBuilder) extends ControllerSwagger with JsonProtocol with ThymeleafDirectives with SprayDirectives {
-
-  implicit protected val thymeleafEngine: TemplateEngine = ThymeleafEngineProvider.build("/templates/")
+case class PersonRoutes(builder: ServerBuilder)(implicit protected val thymeleafEngine: TemplateEngine) extends ControllerSwagger with JsonProtocol with ThymeleafDirectives with SprayDirectives {
 
   implicit protected val openAPi: OpenAPI = OpenAPI(
     info = Info(
