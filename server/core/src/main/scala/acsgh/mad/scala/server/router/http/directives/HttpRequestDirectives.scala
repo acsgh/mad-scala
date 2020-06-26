@@ -8,6 +8,7 @@ trait HttpRequestDirectives extends HttpDefaultParamHandling
   with HttpRequestHeaderDirectives
   with HttpRequestQueryDirectives
   with HttpRequestCookieDirectives
-  with HttpRequestBodyParamDirectives
+  with HttpRequestFormDirectives
+  with HttpRequestMultipartParamDirectives
   with HttpRouteDirectives
   with HttpRequestBody

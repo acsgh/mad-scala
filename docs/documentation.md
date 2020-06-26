@@ -327,18 +327,18 @@ get("/{id1}") { implicit ctx =>
 }
 ```
 
-##### requestBodyParam
+##### requestFormParam
 Extract from 1 to 15 url form encoded params from the body. Keep in mind that a body param can be repeated. The key is non case sensitive.
 
 ``` scala
 get("/") { implicit ctx =>
-    requestBodyParam("id1"){ id1 =>
+    requestFormParam("id1"){ id1 =>
         responseBody(s"Param id1 is ${id1}")
     }
 }
 
 get("/") { implicit ctx =>
-    requestBodyParam("id2", "id2"){ (id1, id2) =>
+    requestFormParam("id2", "id2"){ (id1, id2) =>
         responseBody(s"Param id1 is ${id1}, Param id2 is ${id2}")
     }
 }
@@ -350,19 +350,19 @@ The body param is required by default, it could be optional, have a default valu
 
 ``` scala
 get("/") { implicit ctx =>
-    requestBodyParam("id1".opt){ id1 =>
+    requestFormParam("id1".opt){ id1 =>
         responseBody(s"Param id1 is ${id1}")
     }
 }
 
 get("/{id1}") { implicit ctx =>
-    requestBodyParam("id1".default("1234")){ id1 =>
+    requestFormParam("id1".default("1234")){ id1 =>
         responseBody(s"Param id1 is ${id1}")
     }
 }
 
 get("/{id1}") { implicit ctx =>
-    requestBodyParam("id1".list){ id1 =>
+    requestFormParam("id1".list){ id1 =>
         responseBody(s"Param id1 is ${id1}")
     }
 }
@@ -372,26 +372,26 @@ By default all params are String, but we can convert them for you. Convert to T 
                                                                                                                                    
 ``` scala
 get("/{id1}") { implicit ctx =>
-    requestBodyParam("id1".as[Long]){ id1 => // Long
+    requestFormParam("id1".as[Long]){ id1 => // Long
         responseBody(s"Param id1 is ${id1}")
     }
 }
 
 get("/{id1}") { implicit ctx =>
-    requestBodyParam("id1".as[Long].opt){ id1 => // Optional[Long]
+    requestFormParam("id1".as[Long].opt){ id1 => // Optional[Long]
         responseBody(s"Param id1 is ${id1}")
     }
 }
 
 get("/{id1}") { implicit ctx =>
-    requestBodyParam("id1".as[Long].default(1234)){ id1 => // Optional[Long]
+    requestFormParam("id1".as[Long].default(1234)){ id1 => // Optional[Long]
         responseBody(s"Param id1 is ${id1}")
     }
 }
 
 
 get("/{id1}") { implicit ctx =>
-    requestBodyParam("id1".as[Long].list){ id1 => // List[Long]
+    requestFormParam("id1".as[Long].list){ id1 => // List[Long]
         responseBody(s"Param id1 is ${id1}")
     }
 }

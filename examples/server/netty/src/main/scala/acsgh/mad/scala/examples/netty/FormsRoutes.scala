@@ -15,7 +15,16 @@ case class FormsRoutes(builder: ServerBuilder)(implicit protected val thymeleafE
   }
 
   post("/forms/regular") { implicit context =>
-    requestBodyParam("fname", "lname") { (fname, lname) =>
+    requestFormParam("fname", "lname") { (fname, lname) =>
+      responseBody(ThymeleafTemplate("forms", Map(
+        "fname" -> fname,
+        "lname" -> lname,
+      )))
+    }
+  }
+
+  post("/forms/multipart") { implicit context =>
+    requestMultipartParam("fname", "lname") { (fname, lname) =>
       responseBody(ThymeleafTemplate("forms", Map(
         "fname" -> fname,
         "lname" -> lname,

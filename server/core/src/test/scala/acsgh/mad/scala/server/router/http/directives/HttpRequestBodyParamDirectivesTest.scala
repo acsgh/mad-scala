@@ -10,9 +10,9 @@ import org.scalatest.matchers.should.Matchers
 
 import scala.language.reflectiveCalls
 
-class HttpRequestBodyParamDirectivesTest extends AnyFlatSpec with Matchers with HttpDefaultFormats with HttpDirectives {
+class HttprequestFormParamDirectivesTest extends AnyFlatSpec with Matchers with HttpDefaultFormats with HttpDirectives {
 
-  "HttpRequestBodyParamDirectives" should "return 400 if no body param" in {
+  "HttprequestFormParamDirectives" should "return 400 if no body param" in {
     val router = new HttpRouterBuilder()
 
     val request = HttpRequest(
@@ -24,7 +24,7 @@ class HttpRequestBodyParamDirectivesTest extends AnyFlatSpec with Matchers with 
     )
 
     router.get("/") { implicit ctx =>
-      requestBodyParam("SessionId") { query =>
+      requestFormParam("SessionId") { query =>
         responseBody(query)
       }
     }
@@ -46,7 +46,7 @@ class HttpRequestBodyParamDirectivesTest extends AnyFlatSpec with Matchers with 
     )
 
     router.get("/") { implicit ctx =>
-      requestBodyParam("SessionId") { query =>
+      requestFormParam("SessionId") { query =>
         responseBody(query)
       }
     }
@@ -69,7 +69,7 @@ class HttpRequestBodyParamDirectivesTest extends AnyFlatSpec with Matchers with 
     )
 
     router.get("/") { implicit ctx =>
-      requestBodyParam("SessionId".as[Long]) { query =>
+      requestFormParam("SessionId".as[Long]) { query =>
         responseBody(query.toString)
       }
     }
@@ -92,7 +92,7 @@ class HttpRequestBodyParamDirectivesTest extends AnyFlatSpec with Matchers with 
     )
 
     router.get("/") { implicit ctx =>
-      requestBodyParam("SessionId".list) { query =>
+      requestFormParam("SessionId".list) { query =>
         responseBody(query.toString)
       }
     }
@@ -115,7 +115,7 @@ class HttpRequestBodyParamDirectivesTest extends AnyFlatSpec with Matchers with 
     )
 
     router.get("/") { implicit ctx =>
-      requestBodyParam("SessionId".list) { query =>
+      requestFormParam("SessionId".list) { query =>
         responseBody(query.toString)
       }
     }
@@ -138,7 +138,7 @@ class HttpRequestBodyParamDirectivesTest extends AnyFlatSpec with Matchers with 
     )
 
     router.get("/") { implicit ctx =>
-      requestBodyParam("SessionId1", "SessionId2") { (query1, query2) =>
+      requestFormParam("SessionId1", "SessionId2") { (query1, query2) =>
         responseBody(List(query1, query2).toString)
       }
     }
@@ -161,7 +161,7 @@ class HttpRequestBodyParamDirectivesTest extends AnyFlatSpec with Matchers with 
     )
 
     router.get("/") { implicit ctx =>
-      requestBodyParam("SessionId".default("1234")) { query =>
+      requestFormParam("SessionId".default("1234")) { query =>
         responseBody(query.toString)
       }
     }
@@ -184,7 +184,7 @@ class HttpRequestBodyParamDirectivesTest extends AnyFlatSpec with Matchers with 
     )
 
     router.get("/") { implicit ctx =>
-      requestBodyParam("SessionId".opt) { query =>
+      requestFormParam("SessionId".opt) { query =>
         responseBody(query.toString)
       }
     }
@@ -207,7 +207,7 @@ class HttpRequestBodyParamDirectivesTest extends AnyFlatSpec with Matchers with 
     )
 
     router.get("/") { implicit ctx =>
-      requestBodyParam("SessionId".as[Long]) { query =>
+      requestFormParam("SessionId".as[Long]) { query =>
         responseBody(query.toString)
       }
     }

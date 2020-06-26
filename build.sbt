@@ -101,7 +101,7 @@ lazy val serverProviderNetty = (project in file("server/provider/netty"))
     name := "netty",
     commonSettings,
     libraryDependencies ++= Seq(
-      "io.netty" % "netty-all" % "4.1.37.Final"
+      "io.netty" % "netty-all" % "4.1.50.Final"
     )
   )
   .dependsOn(serverCore)
@@ -117,7 +117,7 @@ lazy val serverProviderServlet = (project in file("server/provider/servlet"))
   )
   .dependsOn(serverCore)
 
-val jettyVersion = "9.4.24.v20191120"
+val jettyVersion = "9.4.30.v20200611"
 
 lazy val serverProviderJetty = (project in file("server/provider/jetty"))
   .settings(
