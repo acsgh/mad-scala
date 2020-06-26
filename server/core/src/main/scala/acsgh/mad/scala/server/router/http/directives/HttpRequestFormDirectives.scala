@@ -29,6 +29,7 @@ trait HttpRequestFormDirectives extends HttpDefaultParamHandling with HttpDefaul
             None
           }
         }.groupBy { case (key, _) => key }
+        .view
         .mapValues(_.map { case (_, value) => value }.toList)
         .toMap
 

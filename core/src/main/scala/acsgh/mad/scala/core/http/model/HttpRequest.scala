@@ -25,7 +25,7 @@ case class HttpRequest
 
   val queryParams: Map[String, List[String]] = extractQueryParam(uri)
 
-  val cookieParams: Map[String, List[String]] = headers.getOrElse("Cookie", List()).flatMap(_.split(";")).flatMap(extractCookie).groupBy(_._1).mapValues(_.map(_._2).toList).toMap
+  val cookieParams: Map[String, List[String]] = headers.getOrElse("Cookie", List()).flatMap(_.split(";")).flatMap(extractCookie).groupBy(_._1).view.mapValues(_.map(_._2).toList).toMap
 
   private[scala] def validContentType(contentTypes: Set[String], contentType: String) = contentTypes.isEmpty || contentTypes.exists(t => contentType.toLowerCase.startsWith(t.toLowerCase))
 }
