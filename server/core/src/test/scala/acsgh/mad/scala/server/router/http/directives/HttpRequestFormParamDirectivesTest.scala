@@ -4,13 +4,14 @@ import java.net.URI
 
 import acsgh.mad.scala.core.http.model.{HttpRequest, ProtocolVersion, RequestMethod, ResponseStatus}
 import acsgh.mad.scala.server.router.http.HttpRouterBuilder
+import acsgh.mad.scala.server.router.http.body.writer.default._
 import acsgh.mad.scala.server.router.http.convertions.HttpDefaultFormats
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 import scala.language.reflectiveCalls
 
-class HttprequestFormParamDirectivesTest extends AnyFlatSpec with Matchers with HttpDefaultFormats with HttpDirectives {
+class HttpRequestFormParamDirectivesTest extends AnyFlatSpec with Matchers with HttpDefaultFormats with HttpDirectives {
 
   "HttprequestFormParamDirectives" should "return 400 if no body param" in {
     val router = new HttpRouterBuilder()

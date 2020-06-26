@@ -12,6 +12,7 @@ import com.acsgh.common.scala.time.TimerSplitter
 import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.media.NumberSchema
 import org.thymeleaf.TemplateEngine
+import acsgh.mad.scala.server.router.http.body.writer.default._
 
 case class PersonRoutes(builder: ServerBuilder)(implicit protected val thymeleafEngine: TemplateEngine) extends ControllerSwagger with JsonProtocol with ThymeleafDirectives with SprayDirectives {
 

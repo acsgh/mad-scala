@@ -3,6 +3,7 @@ package acsgh.mad.scala.server.support.swagger
 import acsgh.mad.scala.core.http.model.RequestMethod
 import acsgh.mad.scala.core.http.model.RequestMethod._
 import acsgh.mad.scala.server.Controller
+import acsgh.mad.scala.server.router.http.body.writer.default._
 import acsgh.mad.scala.server.router.http.model.HttpRouteAction
 import acsgh.mad.scala.server.support.swagger.dsl.OpenApiBuilder
 import com.acsgh.common.scala.log.LogSupport

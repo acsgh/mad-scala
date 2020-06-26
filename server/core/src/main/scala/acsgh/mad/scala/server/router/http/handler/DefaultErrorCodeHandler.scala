@@ -1,6 +1,7 @@
 package acsgh.mad.scala.server.router.http.handler
 
 import acsgh.mad.scala.core.http.model.{HttpResponse, ResponseStatus}
+import acsgh.mad.scala.server.router.http.body.writer.default._
 import acsgh.mad.scala.server.router.http.model.HttpRequestContext
 
 class DefaultErrorCodeHandler extends ErrorCodeHandler {

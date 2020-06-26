@@ -1,5 +1,7 @@
 package acsgh.mad.scala.server.router.http.convertions
 
+import acsgh.mad.scala.server.router.http.body.reader.multipart.Multipart
+import acsgh.mad.scala.server.router.http.body.reader.urlFormEncoded.UrlFormEncodedBody
 import acsgh.mad.scala.server.router.http.directives._
 import acsgh.mad.scala.server.router.http.model.HttpRequestContext
 
@@ -48,6 +50,7 @@ trait HttpDefaultParamHandling {
       val value = bodyContent.parts.find(_.name.equalsIgnoreCase(param.name)).map(part => List(part.content)).getOrElse(List())
       param("Multipart", value)
     }
+
     def formValue(implicit context: HttpRequestContext, bodyContent: UrlFormEncodedBody): R = {
       val value = bodyContent.params.find(_._1.equalsIgnoreCase(param.name)).map(_._2).getOrElse(List())
       param("Form", value)

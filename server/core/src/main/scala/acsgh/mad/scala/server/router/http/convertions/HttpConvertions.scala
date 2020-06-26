@@ -9,17 +9,3 @@ trait HttpParamReader[T] {
 trait HttpParamWriter[T] {
   def write(input: T): String
 }
-
-trait HttpBodyReader[T] {
-  val contentTypes: Set[String] = Set()
-
-  val strictContentTypes: Boolean = false
-
-  def read(body: Array[Byte])(implicit context: HttpRequestContext): T
-}
-
-trait HttpBodyWriter[T] {
-  val contentType: String = "text/html"
-
-  def write(body: T)(implicit context: HttpRequestContext): Array[Byte]
-}

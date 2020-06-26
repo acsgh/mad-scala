@@ -3,6 +3,7 @@ package acsgh.mad.scala.server.converter.json.spray
 import acsgh.mad.scala.core.http.model.{HttpResponse, ResponseStatus}
 import acsgh.mad.scala.server.router.http.handler.DefaultErrorCodeHandler
 import acsgh.mad.scala.server.router.http.model.HttpRequestContext
+import acsgh.mad.scala.server.router.http.body.writer.default._
 
 class JsonErrorCodeHandler extends DefaultErrorCodeHandler with SprayDirectives with JsonErrorCodeFormat {
 

@@ -7,6 +7,8 @@ import acsgh.mad.scala.core.http.model.ResponseStatus._
 import acsgh.mad.scala.server.ServerBuilder
 import acsgh.mad.scala.server.converter.json.spray.SprayDirectives
 import acsgh.mad.scala.server.converter.template.thymeleaf.{ThymeleafDirectives, ThymeleafEngineProvider, ThymeleafTemplate}
+import acsgh.mad.scala.server.router.http.body.reader.default._
+import acsgh.mad.scala.server.router.http.body.writer.default._
 import acsgh.mad.scala.server.support.swagger.ControllerSwagger
 import com.acsgh.common.scala.time.TimerSplitter
 import io.swagger.v3.oas.models.OpenAPI
@@ -107,19 +109,20 @@ case class PersonRoutes(builder: ServerBuilder) extends ControllerSwagger with J
       BAD_REQUEST -> ApiResponse("Invalid request")
     )
   )) { implicit context =>
-    requestBody[String] { asd=>
+    requestBody[String] { asd =>
 
 
       requestParam("id".as[Long]) { id =>
-      requestJson(classOf[Person]) { personNew =>
-        persons.get(id).fold(error(NO_CONTENT)) { personOld =>
-          val result = personNew.copy(id = id)
-          persons = persons + (result.id -> result)
-          responseJson(result)
+        requestJson(classOf[Person]) { personNew =>
+          persons.get(id).fold(error(NO_CONTENT)) { personOld =>
+            val result = personNew.copy(id = id)
+            persons = persons + (result.id -> result)
+            responseJson(result)
+          }
         }
       }
     }
-  }}
+  }
 
   get("/persons/{id}", Operation(
     operationId = "getPerson",

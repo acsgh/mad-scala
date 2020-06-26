@@ -3,6 +3,7 @@ package acsgh.mad.scala.server.converter.json.spray
 import acsgh.mad.scala.core.http.exception.BadRequestException
 import acsgh.mad.scala.core.http.model.HttpResponse
 import acsgh.mad.scala.core.http.model.ResponseStatus.{BAD_REQUEST, INTERNAL_SERVER_ERROR}
+import acsgh.mad.scala.server.router.http.body.writer.default._
 import acsgh.mad.scala.server.router.http.handler.DefaultExceptionHandler
 import acsgh.mad.scala.server.router.http.model.HttpRequestContext
 
