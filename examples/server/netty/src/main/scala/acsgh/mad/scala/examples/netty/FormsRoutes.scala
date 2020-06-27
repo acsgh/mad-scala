@@ -1,6 +1,7 @@
 package acsgh.mad.scala.examples.netty
 
 import acsgh.mad.scala.server.converter.template.thymeleaf.{ThymeleafDirectives, ThymeleafTemplate}
+import acsgh.mad.scala.server.router.http.params.reader.default._
 import acsgh.mad.scala.server.{Controller, ServerBuilder}
 import org.thymeleaf.TemplateEngine
 

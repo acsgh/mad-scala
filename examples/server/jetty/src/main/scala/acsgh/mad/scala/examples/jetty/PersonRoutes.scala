@@ -9,6 +9,7 @@ import acsgh.mad.scala.server.converter.json.spray.SprayDirectives
 import acsgh.mad.scala.server.converter.template.thymeleaf.{ThymeleafDirectives, ThymeleafEngineProvider, ThymeleafTemplate}
 import acsgh.mad.scala.server.router.http.body.reader.default._
 import acsgh.mad.scala.server.router.http.body.writer.default._
+import acsgh.mad.scala.server.router.http.params.reader.default._
 import acsgh.mad.scala.server.support.swagger.ControllerSwagger
 import com.acsgh.common.scala.time.TimerSplitter
 import io.swagger.v3.oas.models.OpenAPI

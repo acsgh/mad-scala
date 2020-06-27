@@ -3,8 +3,11 @@ package acsgh.mad.scala.server.router.http.directives
 import acsgh.mad.scala.core.http.model.{HttpCookie, HttpResponse, ProtocolVersion, ResponseStatus}
 import acsgh.mad.scala.server.router.http.body.writer.HttpBodyWriter
 import acsgh.mad.scala.server.router.http.body.writer.default._
-import acsgh.mad.scala.server.router.http.convertions.{HttpDefaultFormats, HttpDefaultParamHandling, HttpParamWriter}
+import acsgh.mad.scala.server.router.http.convertions.HttpDefaultFormats
 import acsgh.mad.scala.server.router.http.model.HttpRequestContext
+import acsgh.mad.scala.server.router.http.params.HttpDefaultParamHandling
+import acsgh.mad.scala.server.router.http.params.writer.HttpParamWriter
+import acsgh.mad.scala.server.router.http.params.writer.default._
 
 trait HttpResponseDirectives extends HttpDefaultParamHandling with HttpDefaultFormats {
 

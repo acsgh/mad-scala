@@ -8,6 +8,7 @@ import acsgh.mad.scala.server.router.http.body.writer.default._
 import acsgh.mad.scala.server.router.http.convertions.HttpDefaultFormats
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import acsgh.mad.scala.server.router.http.params.reader.default._
 
 import scala.language.reflectiveCalls
 

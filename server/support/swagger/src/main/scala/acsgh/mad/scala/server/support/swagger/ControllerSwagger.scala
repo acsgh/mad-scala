@@ -9,6 +9,7 @@ import acsgh.mad.scala.server.support.swagger.dsl.OpenApiBuilder
 import com.acsgh.common.scala.log.LogSupport
 import io.swagger.v3.core.util.{Json, Yaml}
 import io.swagger.v3.oas.models.{OpenAPI, Operation, PathItem, Paths}
+import acsgh.mad.scala.server.router.http.params.writer.default._
 
 trait ControllerSwagger extends Controller with OpenApiBuilder with LogSupport {
 

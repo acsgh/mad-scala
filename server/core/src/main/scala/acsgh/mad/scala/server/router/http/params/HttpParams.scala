@@ -1,7 +1,7 @@
-package acsgh.mad.scala.server.router.http.directives
+package acsgh.mad.scala.server.router.http.params
 
 import acsgh.mad.scala.core.http.exception.BadRequestException
-import acsgh.mad.scala.server.router.http.convertions.HttpParamReader
+import acsgh.mad.scala.server.router.http.params.reader.HttpParamReader
 
 trait Param[I, O, R] {
 

@@ -1,29 +1,13 @@
-package acsgh.mad.scala.server.router.http.convertions
+package acsgh.mad.scala.server.router.http.params
 
 import acsgh.mad.scala.server.router.http.body.reader.multipart.Multipart
 import acsgh.mad.scala.server.router.http.body.reader.urlFormEncoded.UrlFormEncodedBody
-import acsgh.mad.scala.server.router.http.directives._
 import acsgh.mad.scala.server.router.http.model.HttpRequestContext
-
-import scala.language.implicitConversions
+import acsgh.mad.scala.server.router.http.params.reader.HttpParamReader
+import acsgh.mad.scala.server.router.http.params.reader.default._
 
 trait HttpDefaultParamHandling {
 
-  implicit object StringWriter extends HttpParamWriter[String, String] {
-    override def write(input: String): String = input
-  }
-
-  implicit object StringReader extends HttpParamReader[String, String] {
-    override def read(input: String): String = input
-  }
-
-  implicit object LongWriter extends HttpParamWriter[Long, String] {
-    override def write(input: Long): String = input.toString
-  }
-
-  implicit object LongReader extends HttpParamReader[String, Long] {
-    override def read(input: String): Long = input.toLong
-  }
 
   implicit def string2Param(name: String)(implicit reader: HttpParamReader[String, String]): Param[String, String, String] = SingleParam[String, String](name)
 

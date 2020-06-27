@@ -3,8 +3,10 @@ package acsgh.mad.scala.server.router.http.directives
 import acsgh.mad.scala.core.http.model.HttpResponse
 import acsgh.mad.scala.core.http.model.ResponseStatus.UNSUPPORTED_MEDIA_TYPE
 import acsgh.mad.scala.server.router.http.body.reader.HttpBodyReader
-import acsgh.mad.scala.server.router.http.convertions.{HttpDefaultFormats, HttpDefaultParamHandling}
+import acsgh.mad.scala.server.router.http.convertions.HttpDefaultFormats
 import acsgh.mad.scala.server.router.http.model.HttpRequestContext
+import acsgh.mad.scala.server.router.http.params.HttpDefaultParamHandling
+import acsgh.mad.scala.server.router.http.params.reader.default._
 
 trait HttpRequestBody extends HttpDefaultParamHandling
   with HttpDefaultFormats

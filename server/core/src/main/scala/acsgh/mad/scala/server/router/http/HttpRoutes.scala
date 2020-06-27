@@ -3,11 +3,12 @@ package acsgh.mad.scala.server.router.http
 import java.io.File
 
 import acsgh.mad.scala.core.http.model.RequestMethod
-import acsgh.mad.scala.server.router.http.convertions.{HttpDefaultFormats, HttpDefaultParamHandling}
+import acsgh.mad.scala.server.router.http.convertions.HttpDefaultFormats
 import acsgh.mad.scala.server.router.http.directives.HttpDirectives
 import acsgh.mad.scala.server.router.http.files.{StaticClasspathFolderFilter, StaticFilesystemFolderFilter}
 import acsgh.mad.scala.core.http.model.RequestMethod._
-import acsgh.mad.scala.server.router.http.model.{HttpFilterAction, HttpRoute, Route, HttpRouteAction}
+import acsgh.mad.scala.server.router.http.model.{HttpFilterAction, HttpRoute, HttpRouteAction, Route}
+import acsgh.mad.scala.server.router.http.params.HttpDefaultParamHandling
 
 trait HttpRoutes extends HttpDefaultFormats with HttpDefaultParamHandling with HttpDirectives {
 

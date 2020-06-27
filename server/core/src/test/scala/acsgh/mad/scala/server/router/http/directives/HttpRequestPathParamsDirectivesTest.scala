@@ -6,6 +6,7 @@ import acsgh.mad.scala.core.http.model.{HttpRequest, ProtocolVersion, RequestMet
 import acsgh.mad.scala.server.router.http.HttpRouterBuilder
 import acsgh.mad.scala.server.router.http.body.writer.default._
 import acsgh.mad.scala.server.router.http.convertions.HttpDefaultFormats
+import acsgh.mad.scala.server.router.http.params.reader.default._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 

@@ -3,6 +3,7 @@ package acsgh.mad.scala.server.router.http.body.reader
 import acsgh.mad.scala.core.http.exception.BadRequestException
 import acsgh.mad.scala.server.router.http.directives.HttpRequestHeaderDirectives._
 import acsgh.mad.scala.server.router.http.model.HttpRequestContext
+import acsgh.mad.scala.server.router.http.params.reader.default._
 
 package object multipart {
 
