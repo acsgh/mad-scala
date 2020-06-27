@@ -3,14 +3,13 @@ package acsgh.mad.scala.server.router.http
 import java.io.File
 
 import acsgh.mad.scala.core.http.model.RequestMethod
-import acsgh.mad.scala.server.router.http.convertions.HttpDefaultFormats
-import acsgh.mad.scala.server.router.http.directives.HttpDirectives
+import acsgh.mad.scala.server.router.http.directives.{HttpDirectives, HttpDirectivesBase}
 import acsgh.mad.scala.server.router.http.files.{StaticClasspathFolderFilter, StaticFilesystemFolderFilter}
 import acsgh.mad.scala.core.http.model.RequestMethod._
 import acsgh.mad.scala.server.router.http.model.{HttpFilterAction, HttpRoute, HttpRouteAction, Route}
 import acsgh.mad.scala.server.router.http.params.HttpDefaultParamHandling
 
-trait HttpRoutes extends HttpDefaultFormats with HttpDefaultParamHandling with HttpDirectives {
+trait HttpRoutes extends HttpDirectivesBase with HttpDefaultParamHandling with HttpDirectives {
 
   def options(uri: String)(action: HttpRouteAction): Unit = servlet(uri, OPTIONS)(action)
 

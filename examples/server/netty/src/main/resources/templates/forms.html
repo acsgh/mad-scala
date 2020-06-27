@@ -13,9 +13,9 @@
 
         <form action="/forms" method="POST">
             <label for="fname">First name:</label><br>
-            <input type="text" id="fname" name="fname" value="John"><br>
+            <input type="text" id="fname" name="fname" th:value="${fname}"><br>
             <label for="lname">Last name:</label><br>
-            <input type="text" id="lname" name="lname" value="Doe"><br><br>
+            <input type="text" id="lname" name="lname" th:value="${lname}"><br><br>
             <input type="submit" value="Submit">
         </form>
     </div>
@@ -24,9 +24,9 @@
 
         <form action="/forms" method="POST" enctype="multipart/form-data">
             <label for="fname2">First name:</label><br>
-            <input type="text" id="fname2" name="fname" value="John"><br>
+            <input type="text" id="fname2" name="fname" th:value="${fname}"><br>
             <label for="lname2">Last name:</label><br>
-            <input type="text" id="lname2" name="lname" value="Doe"><br><br>
+            <input type="text" id="lname2" name="lname" th:value="${lname}"><br>
             <label for="fileupload"> Select a file to upload</label>
             <input type="file" name="fileupload" value="fileupload" id="fileupload"><br><br>
             <input type="submit" value="Submit">

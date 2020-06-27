@@ -5,14 +5,13 @@ import java.net.URI
 import acsgh.mad.scala.core.http.model.{HttpRequest, ProtocolVersion, RequestMethod, ResponseStatus}
 import acsgh.mad.scala.server.router.http.HttpRouterBuilder
 import acsgh.mad.scala.server.router.http.body.writer.default._
-import acsgh.mad.scala.server.router.http.convertions.HttpDefaultFormats
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import acsgh.mad.scala.server.router.http.params.reader.default._
 
 import scala.language.reflectiveCalls
 
-class RequestCookieDirectiveTest extends AnyFlatSpec with Matchers with HttpDefaultFormats with HttpDirectives {
+class RequestCookieDirectiveTest extends AnyFlatSpec with Matchers with HttpDirectivesBase with HttpDirectives {
 
   "RequestCookieDirective" should "return 400 if no cookie" in {
     val router = new HttpRouterBuilder()

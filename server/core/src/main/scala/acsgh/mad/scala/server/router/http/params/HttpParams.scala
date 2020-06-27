@@ -3,14 +3,14 @@ package acsgh.mad.scala.server.router.http.params
 import acsgh.mad.scala.core.http.exception.BadRequestException
 import acsgh.mad.scala.server.router.http.params.reader.HttpParamReader
 
-trait Param[I, O, R] {
+trait HttpParam[I, O, R] {
 
   val name: String
 
   def apply(paramType: String, input: List[I]): R
 }
 
-case class SingleParam[I, O](name: String)(implicit reader: HttpParamReader[I, O]) extends Param[I, O, O] {
+case class SingleHttpParam[I, O](name: String)(implicit reader: HttpParamReader[I, O]) extends HttpParam[I, O, O] {
   override def apply(paramType: String, input: List[I]): O = {
     try {
       input.headOption.map(reader.read) match {
@@ -25,7 +25,7 @@ case class SingleParam[I, O](name: String)(implicit reader: HttpParamReader[I, O
   }
 }
 
-case class DefaultParam[I, O](name: String, defaultValue: O)(implicit reader: HttpParamReader[I, O]) extends Param[I, O, O] {
+case class DefaultHttpParam[I, O](name: String, defaultValue: O)(implicit reader: HttpParamReader[I, O]) extends HttpParam[I, O, O] {
   override def apply(paramType: String, input: List[I]): O = {
     try {
       input.headOption.map(reader.read) match {
@@ -40,7 +40,7 @@ case class DefaultParam[I, O](name: String, defaultValue: O)(implicit reader: Ht
   }
 }
 
-case class OptionParam[I, O](name: String)(implicit reader: HttpParamReader[I, O]) extends Param[I, O, Option[O]] {
+case class OptionHttpParam[I, O](name: String)(implicit reader: HttpParamReader[I, O]) extends HttpParam[I, O, Option[O]] {
   override def apply(paramType: String, input: List[I]): Option[O] = {
     try {
       input.headOption.map(reader.read)
@@ -51,7 +51,7 @@ case class OptionParam[I, O](name: String)(implicit reader: HttpParamReader[I, O
   }
 }
 
-case class ListParam[I, O](name: String)(implicit reader: HttpParamReader[I, O]) extends Param[I, O, List[O]] {
+case class ListHttpParam[I, O](name: String)(implicit reader: HttpParamReader[I, O]) extends HttpParam[I, O, List[O]] {
   override def apply(paramType: String, input: List[I]): List[O] = {
     try {
       input.map(reader.read)

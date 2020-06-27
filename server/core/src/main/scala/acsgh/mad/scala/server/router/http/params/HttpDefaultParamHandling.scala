@@ -8,36 +8,39 @@ import acsgh.mad.scala.server.router.http.params.reader.default._
 
 trait HttpDefaultParamHandling {
 
-
-  implicit def string2Param(name: String)(implicit reader: HttpParamReader[String, String]): Param[String, String, String] = SingleParam[String, String](name)
+  implicit def string2Param(name: String)(implicit reader: HttpParamReader[String, String]): HttpParam[String, String, String] = SingleHttpParam[String, String](name)
 
   implicit class StringParamsEnhanced(name: String) {
-    def as[T](implicit reader: HttpParamReader[String, T]): SingleParam[String, T] = SingleParam[String, T](name)
+    def as[T](implicit reader: HttpParamReader[String, T]): SingleHttpParam[String, T] = SingleHttpParam[String, T](name)
 
-    def opt: OptionParam[String, String] = OptionParam[String, String](name)
+    def opt: OptionHttpParam[String, String] = OptionHttpParam[String, String](name)
 
-    def default(defaultValue: String): DefaultParam[String, String] = DefaultParam[String, String](name, defaultValue)
+    def default(defaultValue: String): DefaultHttpParam[String, String] = DefaultHttpParam[String, String](name, defaultValue)
 
-    def list: ListParam[String, String] = ListParam[String, String](name)
+    def list: ListHttpParam[String, String] = ListHttpParam[String, String](name)
   }
 
-  implicit class SingleParamEnhanced[I, P](param: SingleParam[I, P])(implicit reader: HttpParamReader[I, P]) {
-    def opt: OptionParam[I, P] = OptionParam[I, P](param.name)
+  implicit class SingleParamEnhanced[I, P](param: SingleHttpParam[I, P])(implicit reader: HttpParamReader[I, P]) {
+    def opt: OptionHttpParam[I, P] = OptionHttpParam[I, P](param.name)
 
-    def default(defaultValue: P): DefaultParam[I, P] = DefaultParam[I, P](param.name, defaultValue)
+    def default(defaultValue: P): DefaultHttpParam[I, P] = DefaultHttpParam[I, P](param.name, defaultValue)
 
-    def list: ListParam[I, P] = ListParam[I, P](param.name)
+    def list: ListHttpParam[I, P] = ListHttpParam[I, P](param.name)
   }
 
-  implicit class ParamsEnhanced[O, R](param: Param[String, O, R]) {
+  implicit class ParamsEnhanced[O, R](param: HttpParam[String, O, R]) {
     def multipartValue(implicit context: HttpRequestContext, bodyContent: Multipart): R = {
       val value = bodyContent.parts.find(_.name.equalsIgnoreCase(param.name)).map(part => List(part.content)).getOrElse(List())
       param("Multipart", value)
     }
 
-    def formValue(implicit context: HttpRequestContext, bodyContent: UrlFormEncodedBody): R = {
-      val value = bodyContent.params.find(_._1.equalsIgnoreCase(param.name)).map(_._2).getOrElse(List())
-      param("Form", value)
+    def formValue(implicit context: HttpRequestContext, urlFormEncodedBody: Option[UrlFormEncodedBody], multipart: Option[Multipart]): R = {
+      val queryValues = context.request.queryParams.find(_._1.equalsIgnoreCase(param.name)).map(_._2).getOrElse(List())
+      val urlFormValues = urlFormEncodedBody.map(_.params.find(_._1.equalsIgnoreCase(param.name)).map(_._2).getOrElse(List())).getOrElse(List())
+      val multipartValues = multipart.map(_.parts.find(_.name.equalsIgnoreCase(param.name)).map(part => List(part.content)).getOrElse(List())).getOrElse(List())
+
+      val values = queryValues ++ urlFormValues ++ multipartValues
+      param("Form", values)
     }
 
     def queryValue(implicit context: HttpRequestContext): R = {
