@@ -9,43 +9,43 @@ import scala.language.implicitConversions
 
 trait HttpDefaultParamHandling {
 
-  implicit object StringWriter extends HttpParamWriter[String] {
+  implicit object StringWriter extends HttpParamWriter[String, String] {
     override def write(input: String): String = input
   }
 
-  implicit object StringReader extends HttpParamReader[String] {
+  implicit object StringReader extends HttpParamReader[String, String] {
     override def read(input: String): String = input
   }
 
-  implicit object LongWriter extends HttpParamWriter[Long] {
+  implicit object LongWriter extends HttpParamWriter[Long, String] {
     override def write(input: Long): String = input.toString
   }
 
-  implicit object LongReader extends HttpParamReader[Long] {
+  implicit object LongReader extends HttpParamReader[String, Long] {
     override def read(input: String): Long = input.toLong
   }
 
-  implicit def string2Param(name: String)(implicit reader: HttpParamReader[String]): Param[String, String] = SingleParam[String](name)
+  implicit def string2Param(name: String)(implicit reader: HttpParamReader[String, String]): Param[String, String, String] = SingleParam[String, String](name)
 
   implicit class StringParamsEnhanced(name: String) {
-    def as[T](implicit reader: HttpParamReader[T]): SingleParam[T] = SingleParam[T](name)
+    def as[T](implicit reader: HttpParamReader[String, T]): SingleParam[String, T] = SingleParam[String, T](name)
 
-    def opt: OptionParam[String] = OptionParam[String](name)
+    def opt: OptionParam[String, String] = OptionParam[String, String](name)
 
-    def default(defaultValue: String): DefaultParam[String] = DefaultParam[String](name, defaultValue)
+    def default(defaultValue: String): DefaultParam[String, String] = DefaultParam[String, String](name, defaultValue)
 
-    def list: ListParam[String] = ListParam[String](name)
+    def list: ListParam[String, String] = ListParam[String, String](name)
   }
 
-  implicit class SingleParamEnhanced[P](param: SingleParam[P])(implicit reader: HttpParamReader[P]) {
-    def opt: OptionParam[P] = OptionParam[P](param.name)
+  implicit class SingleParamEnhanced[I, P](param: SingleParam[I, P])(implicit reader: HttpParamReader[I, P]) {
+    def opt: OptionParam[I, P] = OptionParam[I, P](param.name)
 
-    def default(defaultValue: P): DefaultParam[P] = DefaultParam[P](param.name, defaultValue)
+    def default(defaultValue: P): DefaultParam[I, P] = DefaultParam[I, P](param.name, defaultValue)
 
-    def list: ListParam[P] = ListParam[P](param.name)
+    def list: ListParam[I, P] = ListParam[I, P](param.name)
   }
 
-  implicit class ParamsEnhanced[P, R](param: Param[P, R]) {
+  implicit class ParamsEnhanced[O, R](param: Param[String, O, R]) {
     def multipartValue(implicit context: HttpRequestContext, bodyContent: Multipart): R = {
       val value = bodyContent.parts.find(_.name.equalsIgnoreCase(param.name)).map(part => List(part.content)).getOrElse(List())
       param("Multipart", value)

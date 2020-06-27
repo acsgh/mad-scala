@@ -11,9 +11,9 @@ import org.scalatest.matchers.should.Matchers
 
 import scala.language.reflectiveCalls
 
-class RequestParamDirectiveTest extends AnyFlatSpec with Matchers with HttpDefaultFormats with HttpDirectives {
+class HttpRequestPathParamsDirectivesTest extends AnyFlatSpec with Matchers with HttpDefaultFormats with HttpDirectives {
 
-  "RequestParamDirective" should "return 400 if no path" in {
+  "pathParamDirective" should "return 400 if no path" in {
     val router = new HttpRouterBuilder()
 
     val request = HttpRequest(
@@ -25,7 +25,7 @@ class RequestParamDirectiveTest extends AnyFlatSpec with Matchers with HttpDefau
     )
 
     router.get("/{id}") { implicit ctx =>
-      requestParam("id") { path =>
+      pathParam("id") { path =>
         responseBody(path)
       }
     }
@@ -48,7 +48,7 @@ class RequestParamDirectiveTest extends AnyFlatSpec with Matchers with HttpDefau
     )
 
     router.get("/{id}") { implicit ctx =>
-      requestParam("id") { path =>
+      pathParam("id") { path =>
         responseBody(path)
       }
     }
@@ -71,7 +71,7 @@ class RequestParamDirectiveTest extends AnyFlatSpec with Matchers with HttpDefau
     )
 
     router.get("/{id}") { implicit ctx =>
-      requestParam("id".as[Long]) { path =>
+      pathParam("id".as[Long]) { path =>
         responseBody(path.toString)
       }
     }
@@ -94,7 +94,7 @@ class RequestParamDirectiveTest extends AnyFlatSpec with Matchers with HttpDefau
     )
 
     router.get("/{id}") { implicit ctx =>
-      requestParam("id".list) { path =>
+      pathParam("id".list) { path =>
         responseBody(path.toString)
       }
     }
@@ -117,7 +117,7 @@ class RequestParamDirectiveTest extends AnyFlatSpec with Matchers with HttpDefau
     )
 
     router.get("/{id}") { implicit ctx =>
-      requestParam("id".list) { path =>
+      pathParam("id".list) { path =>
         responseBody(path.toString)
       }
     }
@@ -140,7 +140,7 @@ class RequestParamDirectiveTest extends AnyFlatSpec with Matchers with HttpDefau
     )
 
     router.get("/{id1}/{id2}") { implicit ctx =>
-      requestParam("id1", "id2") { (path1, path2) =>
+      pathParam("id1", "id2") { (path1, path2) =>
         responseBody(List(path1, path2).toString)
       }
     }
@@ -163,7 +163,7 @@ class RequestParamDirectiveTest extends AnyFlatSpec with Matchers with HttpDefau
     )
 
     router.get("/") { implicit ctx =>
-      requestParam("id".default("1234")) { path =>
+      pathParam("id".default("1234")) { path =>
         responseBody(path.toString)
       }
     }
@@ -186,7 +186,7 @@ class RequestParamDirectiveTest extends AnyFlatSpec with Matchers with HttpDefau
     )
 
     router.get("/") { implicit ctx =>
-      requestParam("id".opt) { path =>
+      pathParam("id".opt) { path =>
         responseBody(path.toString)
       }
     }
@@ -209,7 +209,7 @@ class RequestParamDirectiveTest extends AnyFlatSpec with Matchers with HttpDefau
     )
 
     router.get("/") { implicit ctx =>
-      requestParam("id".as[Long]) { path =>
+      pathParam("id".as[Long]) { path =>
         responseBody(path.toString)
       }
     }

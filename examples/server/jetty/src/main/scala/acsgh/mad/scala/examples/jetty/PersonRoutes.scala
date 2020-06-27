@@ -46,7 +46,7 @@ case class PersonRoutes(builder: ServerBuilder) extends ControllerSwagger with J
   webjars()
 
   get("/") { implicit context =>
-    requestQuery("name".default("Jonh Doe")) { name =>
+    formParam("name".default("Jonh Doe")) { name =>
       responseBody(ThymeleafTemplate("index", Map("name" -> name)))
     }
   }
@@ -112,7 +112,7 @@ case class PersonRoutes(builder: ServerBuilder) extends ControllerSwagger with J
     requestBody[String] { asd =>
 
 
-      requestParam("id".as[Long]) { id =>
+      pathParam("id".as[Long]) { id =>
         requestJson(classOf[Person]) { personNew =>
           persons.get(id).fold(error(NO_CONTENT)) { personOld =>
             val result = personNew.copy(id = id)
@@ -136,7 +136,7 @@ case class PersonRoutes(builder: ServerBuilder) extends ControllerSwagger with J
       BAD_REQUEST -> ApiResponse("Invalid request")
     )
   )) { implicit context =>
-    requestParam("id".as[Long]) { id =>
+    pathParam("id".as[Long]) { id =>
       persons.get(id).fold(error(NO_CONTENT)) { personOld =>
         responseJson(personOld)
       }
@@ -155,7 +155,7 @@ case class PersonRoutes(builder: ServerBuilder) extends ControllerSwagger with J
       BAD_REQUEST -> ApiResponse("Invalid request")
     )
   )) { implicit context =>
-    requestParam("id".as[Long]) { id =>
+    pathParam("id".as[Long]) { id =>
       persons.get(id).fold(error(NO_CONTENT)) { personOld =>
         persons = persons - id
         responseJson(personOld)
@@ -173,7 +173,7 @@ case class PersonRoutes(builder: ServerBuilder) extends ControllerSwagger with J
       OK -> ApiResponseJson(classOf[Person], "The response"),
     )
   )) { implicit context =>
-    requestQuery("time".as[Long].default(100)) { time =>
+    pathParam("time".as[Long].default(100)) { time =>
       Thread.sleep(time)
       responseBody(s"Response took: ${TimerSplitter.getIntervalInfo(System.currentTimeMillis() - context.request.starTime, TimeUnit.MILLISECONDS)}")
     }

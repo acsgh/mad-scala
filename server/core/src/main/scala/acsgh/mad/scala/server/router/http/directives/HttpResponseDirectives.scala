@@ -8,7 +8,7 @@ import acsgh.mad.scala.server.router.http.model.HttpRequestContext
 
 trait HttpResponseDirectives extends HttpDefaultParamHandling with HttpDefaultFormats {
 
-  def responseHeader[T](name: String, value: T)(action: => HttpResponse)(implicit context: HttpRequestContext, converter: HttpParamWriter[T]): HttpResponse = {
+  def responseHeader[T](name: String, value: T)(action: => HttpResponse)(implicit context: HttpRequestContext, converter: HttpParamWriter[T, String]): HttpResponse = {
     context.response.header(name, converter.write(value))
     action
   }

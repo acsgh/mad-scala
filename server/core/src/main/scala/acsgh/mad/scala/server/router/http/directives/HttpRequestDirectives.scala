@@ -4,11 +4,9 @@ import acsgh.mad.scala.server.router.http.convertions.{HttpDefaultFormats, HttpD
 
 trait HttpRequestDirectives extends HttpDefaultParamHandling
   with HttpDefaultFormats
-  with HttpRequestParamsDirectives
+  with HttpRequestPathParamsDirectives
   with HttpRequestHeaderDirectives
-  with HttpRequestQueryDirectives
   with HttpRequestCookieDirectives
   with HttpRequestFormDirectives
-  with HttpRequestMultipartParamDirectives
   with HttpRouteDirectives
   with HttpRequestBody
