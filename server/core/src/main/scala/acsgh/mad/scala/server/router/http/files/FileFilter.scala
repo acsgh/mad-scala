@@ -12,6 +12,7 @@ import acsgh.mad.scala.core.http.model.ResponseStatus.{NOT_FOUND, NOT_MODIFIED}
 import acsgh.mad.scala.core.http.model.{HttpRequest, RequestMethod}
 import acsgh.mad.scala.server.router.http.directives.HttpDirectives
 import acsgh.mad.scala.server.router.http.model._
+import acsgh.mad.scala.server.router.http.params.writer.default._
 import org.cache2k.{Cache, Cache2kBuilder}
 
 import scala.concurrent.duration.{Duration, DurationInt}
@@ -106,7 +107,7 @@ abstract class FileFilter(val uri: String, cacheDuration: Duration = 1 minute) e
     try {
       val buffer = new Array[Byte](1024)
 
-      Stream.continually(input.read(buffer))
+      LazyList.continually(input.read(buffer))
         .takeWhile(_ != -1)
         .foreach(output.write(buffer, 0, _))
 

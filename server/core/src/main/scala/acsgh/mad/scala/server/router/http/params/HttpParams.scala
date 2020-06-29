@@ -1,17 +1,17 @@
-package acsgh.mad.scala.server.router.http.directives
+package acsgh.mad.scala.server.router.http.params
 
 import acsgh.mad.scala.core.http.exception.BadRequestException
-import acsgh.mad.scala.server.router.http.convertions.HttpParamReader
+import acsgh.mad.scala.server.router.http.params.reader.HttpParamReader
 
-trait Param[P, R] {
+trait HttpParam[I, O, R] {
 
   val name: String
 
-  def apply(paramType: String, input: List[String]): R
+  def apply(paramType: String, input: List[I]): R
 }
 
-case class SingleParam[P](name: String)(implicit reader: HttpParamReader[P]) extends Param[P, P] {
-  override def apply(paramType: String, input: List[String]): P = {
+case class SingleHttpParam[I, O](name: String)(implicit reader: HttpParamReader[I, O]) extends HttpParam[I, O, O] {
+  override def apply(paramType: String, input: List[I]): O = {
     try {
       input.headOption.map(reader.read) match {
         case Some(v) => v
@@ -25,8 +25,8 @@ case class SingleParam[P](name: String)(implicit reader: HttpParamReader[P]) ext
   }
 }
 
-case class DefaultParam[P](name: String, defaultValue: P)(implicit reader: HttpParamReader[P]) extends Param[P, P] {
-  override def apply(paramType: String, input: List[String]): P = {
+case class DefaultHttpParam[I, O](name: String, defaultValue: O)(implicit reader: HttpParamReader[I, O]) extends HttpParam[I, O, O] {
+  override def apply(paramType: String, input: List[I]): O = {
     try {
       input.headOption.map(reader.read) match {
         case Some(v) => v
@@ -40,8 +40,8 @@ case class DefaultParam[P](name: String, defaultValue: P)(implicit reader: HttpP
   }
 }
 
-case class OptionParam[P](name: String)(implicit reader: HttpParamReader[P]) extends Param[P, Option[P]] {
-  override def apply(paramType: String, input: List[String]): Option[P] = {
+case class OptionHttpParam[I, O](name: String)(implicit reader: HttpParamReader[I, O]) extends HttpParam[I, O, Option[O]] {
+  override def apply(paramType: String, input: List[I]): Option[O] = {
     try {
       input.headOption.map(reader.read)
     } catch {
@@ -51,8 +51,8 @@ case class OptionParam[P](name: String)(implicit reader: HttpParamReader[P]) ext
   }
 }
 
-case class ListParam[P](name: String)(implicit reader: HttpParamReader[P]) extends Param[P, List[P]] {
-  override def apply(paramType: String, input: List[String]): List[P] = {
+case class ListHttpParam[I, O](name: String)(implicit reader: HttpParamReader[I, O]) extends HttpParam[I, O, List[O]] {
+  override def apply(paramType: String, input: List[I]): List[O] = {
     try {
       input.map(reader.read)
     } catch {

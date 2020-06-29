@@ -4,7 +4,8 @@ import java.io.ByteArrayOutputStream
 
 import acsgh.mad.scala.core.http.exception.BadRequestException
 import acsgh.mad.scala.core.http.model.HttpResponse
-import acsgh.mad.scala.server.router.http.convertions.{HttpBodyReader, HttpBodyWriter}
+import acsgh.mad.scala.server.router.http.body.reader._
+import acsgh.mad.scala.server.router.http.body.writer._
 import acsgh.mad.scala.server.router.http.directives.HttpDirectives
 import acsgh.mad.scala.server.router.http.model.HttpRequestContext
 import com.fasterxml.jackson.databind.ObjectMapper

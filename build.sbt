@@ -21,7 +21,7 @@ lazy val commonSettings = Seq(
     commitNextVersion,
     pushChanges
   ),
-  crossScalaVersions := List("2.12.11", "2.13.2"),
+  crossScalaVersions := List("2.13.2"),
   releaseCrossBuild := true,
   releasePublishArtifactsAction := PgpKeys.publishSigned.value,
   libraryDependencies ++= Seq(
@@ -90,7 +90,8 @@ lazy val serverCore = (project in file("server/core"))
     name := "core",
     commonSettings,
     libraryDependencies ++= Seq(
-      "org.cache2k" % "cache2k-core" % "1.2.4.Final"
+      "org.cache2k" % "cache2k-core" % "1.2.4.Final",
+      "commons-fileupload" % "commons-fileupload" % "1.4"
     )
   )
   .dependsOn(core)
@@ -101,7 +102,7 @@ lazy val serverProviderNetty = (project in file("server/provider/netty"))
     name := "netty",
     commonSettings,
     libraryDependencies ++= Seq(
-      "io.netty" % "netty-all" % "4.1.37.Final"
+      "io.netty" % "netty-all" % "4.1.50.Final"
     )
   )
   .dependsOn(serverCore)
@@ -117,7 +118,7 @@ lazy val serverProviderServlet = (project in file("server/provider/servlet"))
   )
   .dependsOn(serverCore)
 
-val jettyVersion = "9.4.24.v20191120"
+val jettyVersion = "9.4.30.v20200611"
 
 lazy val serverProviderJetty = (project in file("server/provider/jetty"))
   .settings(

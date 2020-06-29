@@ -15,6 +15,7 @@ The initial hello word examples goes as:
 ``` scala
 import acsgh.mad.scala.server.provider.jetty.JettyServerBuilder
 import acsgh.mad.scala.server.{Controller, ServerBuilder}
+import acsgh.mad.scala.server.router.http.body.writer.default._
 
 object HelloWorld extends Controller with App {
   val builder: ServerBuilder = new JettyServerBuilder
@@ -32,6 +33,7 @@ import acsgh.mad.scala.server.provider.jetty.JettyServerApp
 import acsgh.mad.scala.server.router.http.listener.LoggingEventListener
 import acsgh.mad.scala.server.router.ws.listener.WSLoggingEventListener
 import acsgh.mad.scala.server.{Controller, Server, ServerBuilder}
+import acsgh.mad.scala.server.router.http.body.writer.default._
 
 object HelloWorld extends JettyServerApp {
 

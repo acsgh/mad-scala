@@ -4,50 +4,52 @@ import java.net.URI
 
 import acsgh.mad.scala.core.http.model.{HttpRequest, ProtocolVersion, RequestMethod, ResponseStatus}
 import acsgh.mad.scala.server.router.http.HttpRouterBuilder
-import acsgh.mad.scala.server.router.http.convertions.HttpDefaultFormats
+import acsgh.mad.scala.server.router.http.body.writer.default._
+import acsgh.mad.scala.server.router.http.params.reader.default._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 import scala.language.reflectiveCalls
 
-class HttpRequestBodyParamDirectivesTest extends AnyFlatSpec with Matchers with HttpDefaultFormats with HttpDirectives {
+class HttpRequestPathParamsDirectivesTest extends AnyFlatSpec with Matchers with HttpDirectivesBase with HttpDirectives {
 
-  "HttpRequestBodyParamDirectives" should "return 400 if no body param" in {
+  "pathParamDirective" should "return 400 if no path" in {
     val router = new HttpRouterBuilder()
 
     val request = HttpRequest(
       RequestMethod.GET,
       URI.create("/"),
       ProtocolVersion.HTTP_1_1,
-      Map("Content-Type" -> List("application/x-www-form-urlencoded")),
-      "".getBytes("UTF-8")
+      Map(),
+      new Array[Byte](0)
     )
 
-    router.get("/") { implicit ctx =>
-      requestBodyParam("SessionId") { query =>
-        responseBody(query)
+    router.get("/{id}") { implicit ctx =>
+      pathParam("id") { path =>
+        responseBody(path)
       }
     }
 
     val response = router.build("test", productionMode = false).process(request)
 
-    response.responseStatus should be(ResponseStatus.BAD_REQUEST)
+    response.responseStatus should be(ResponseStatus.OK)
+    new String(response.bodyBytes, "UTf-8") should be("")
   }
 
-  it should "return 200 if body param" in {
+  it should "return 200 if path" in {
     val router = new HttpRouterBuilder()
 
     val request = HttpRequest(
       RequestMethod.GET,
-      URI.create("/"),
+      URI.create("/1234"),
       ProtocolVersion.HTTP_1_1,
-      Map("Content-Type" -> List("application/x-www-form-urlencoded")),
-      "SessionId=1234".getBytes("UTF-8")
+      Map(),
+      new Array[Byte](0)
     )
 
-    router.get("/") { implicit ctx =>
-      requestBodyParam("SessionId") { query =>
-        responseBody(query)
+    router.get("/{id}") { implicit ctx =>
+      pathParam("id") { path =>
+        responseBody(path)
       }
     }
 
@@ -57,20 +59,20 @@ class HttpRequestBodyParamDirectivesTest extends AnyFlatSpec with Matchers with 
     new String(response.bodyBytes, "UTf-8") should be("1234")
   }
 
-  it should "return 200 if query convert" in {
+  it should "return 200 if path convert" in {
     val router = new HttpRouterBuilder()
 
     val request = HttpRequest(
       RequestMethod.GET,
-      URI.create("/"),
+      URI.create("/1234"),
       ProtocolVersion.HTTP_1_1,
-      Map("Content-Type" -> List("application/x-www-form-urlencoded")),
-      "SessionId=1234".getBytes("UTF-8")
+      Map(),
+      new Array[Byte](0)
     )
 
-    router.get("/") { implicit ctx =>
-      requestBodyParam("SessionId".as[Long]) { query =>
-        responseBody(query.toString)
+    router.get("/{id}") { implicit ctx =>
+      pathParam("id".as[Long]) { path =>
+        responseBody(path.toString)
       }
     }
 
@@ -80,20 +82,20 @@ class HttpRequestBodyParamDirectivesTest extends AnyFlatSpec with Matchers with 
     new String(response.bodyBytes, "UTf-8") should be("1234")
   }
 
-  it should "return 200 if query list empty" in {
+  it should "return 200 if path list empty" in {
     val router = new HttpRouterBuilder()
 
     val request = HttpRequest(
       RequestMethod.GET,
       URI.create("/"),
       ProtocolVersion.HTTP_1_1,
-      Map("Content-Type" -> List("application/x-www-form-urlencoded")),
-      "".getBytes("UTF-8")
+      Map(),
+      new Array[Byte](0)
     )
 
-    router.get("/") { implicit ctx =>
-      requestBodyParam("SessionId".list) { query =>
-        responseBody(query.toString)
+    router.get("/{id}") { implicit ctx =>
+      pathParam("id".list) { path =>
+        responseBody(path.toString)
       }
     }
 
@@ -103,20 +105,43 @@ class HttpRequestBodyParamDirectivesTest extends AnyFlatSpec with Matchers with 
     new String(response.bodyBytes, "UTf-8") should be("List()")
   }
 
-  it should "return 200 if query list" in {
+  it should "return 200 if path list" in {
     val router = new HttpRouterBuilder()
 
     val request = HttpRequest(
       RequestMethod.GET,
-      URI.create("/"),
+      URI.create("/1234"),
       ProtocolVersion.HTTP_1_1,
-      Map("Content-Type" -> List("application/x-www-form-urlencoded")),
-      "SessionId=1234&SessionId=1235".getBytes("UTF-8")
+      Map(),
+      new Array[Byte](0)
     )
 
-    router.get("/") { implicit ctx =>
-      requestBodyParam("SessionId".list) { query =>
-        responseBody(query.toString)
+    router.get("/{id}") { implicit ctx =>
+      pathParam("id".list) { path =>
+        responseBody(path.toString)
+      }
+    }
+
+    val response = router.build("test", productionMode = false).process(request)
+
+    response.responseStatus should be(ResponseStatus.OK)
+    new String(response.bodyBytes, "UTf-8") should be("List(1234)")
+  }
+
+  it should "return 200 if two path" in {
+    val router = new HttpRouterBuilder()
+
+    val request = HttpRequest(
+      RequestMethod.GET,
+      URI.create("/1234/1235"),
+      ProtocolVersion.HTTP_1_1,
+      Map(),
+      new Array[Byte](0)
+    )
+
+    router.get("/{id1}/{id2}") { implicit ctx =>
+      pathParam("id1", "id2") { (path1, path2) =>
+        responseBody(List(path1, path2).toString)
       }
     }
 
@@ -126,43 +151,20 @@ class HttpRequestBodyParamDirectivesTest extends AnyFlatSpec with Matchers with 
     new String(response.bodyBytes, "UTf-8") should be("List(1234, 1235)")
   }
 
-  it should "return 200 if two body param" in {
+  it should "return 200 if default path" in {
     val router = new HttpRouterBuilder()
 
     val request = HttpRequest(
       RequestMethod.GET,
       URI.create("/"),
       ProtocolVersion.HTTP_1_1,
-      Map("Content-Type" -> List("application/x-www-form-urlencoded")),
-      "SessionId1=1234&SessionId2=1235".getBytes("UTF-8")
+      Map(),
+      new Array[Byte](0)
     )
 
     router.get("/") { implicit ctx =>
-      requestBodyParam("SessionId1", "SessionId2") { (query1, query2) =>
-        responseBody(List(query1, query2).toString)
-      }
-    }
-
-    val response = router.build("test", productionMode = false).process(request)
-
-    response.responseStatus should be(ResponseStatus.OK)
-    new String(response.bodyBytes, "UTf-8") should be("List(1234, 1235)")
-  }
-
-  it should "return 200 if default body param" in {
-    val router = new HttpRouterBuilder()
-
-    val request = HttpRequest(
-      RequestMethod.GET,
-      URI.create("/"),
-      ProtocolVersion.HTTP_1_1,
-      Map("Content-Type" -> List("application/x-www-form-urlencoded")),
-      "".getBytes("UTF-8")
-    )
-
-    router.get("/") { implicit ctx =>
-      requestBodyParam("SessionId".default("1234")) { query =>
-        responseBody(query.toString)
+      pathParam("id".default("1234")) { path =>
+        responseBody(path.toString)
       }
     }
 
@@ -172,20 +174,20 @@ class HttpRequestBodyParamDirectivesTest extends AnyFlatSpec with Matchers with 
     new String(response.bodyBytes, "UTf-8") should be("1234")
   }
 
-  it should "return 200 if optional body param" in {
+  it should "return 200 if optional path" in {
     val router = new HttpRouterBuilder()
 
     val request = HttpRequest(
       RequestMethod.GET,
       URI.create("/"),
       ProtocolVersion.HTTP_1_1,
-      Map("Content-Type" -> List("application/x-www-form-urlencoded")),
-      "".getBytes("UTF-8")
+      Map(),
+      new Array[Byte](0)
     )
 
     router.get("/") { implicit ctx =>
-      requestBodyParam("SessionId".opt) { query =>
-        responseBody(query.toString)
+      pathParam("id".opt) { path =>
+        responseBody(path.toString)
       }
     }
 
@@ -195,20 +197,20 @@ class HttpRequestBodyParamDirectivesTest extends AnyFlatSpec with Matchers with 
     new String(response.bodyBytes, "UTf-8") should be("None")
   }
 
-  it should "return 400 if no query convert" in {
+  it should "return 400 if no path convert" in {
     val router = new HttpRouterBuilder()
 
     val request = HttpRequest(
       RequestMethod.GET,
-      URI.create("/"),
+      URI.create("/?id=1234a"),
       ProtocolVersion.HTTP_1_1,
-      Map("Content-Type" -> List("application/x-www-form-urlencoded")),
-      "SessionId=1234a".getBytes("UTF-8")
+      Map(),
+      new Array[Byte](0)
     )
 
     router.get("/") { implicit ctx =>
-      requestBodyParam("SessionId".as[Long]) { query =>
-        responseBody(query.toString)
+      pathParam("id".as[Long]) { path =>
+        responseBody(path.toString)
       }
     }
 

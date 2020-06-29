@@ -1,8 +1,7 @@
 package acsgh.mad.scala.server.converter.json.jackson
 
-import acsgh.mad.scala.core.http.exception.BadRequestException
 import acsgh.mad.scala.core.http.model.HttpResponse
-import acsgh.mad.scala.core.http.model.ResponseStatus.{BAD_REQUEST, INTERNAL_SERVER_ERROR}
+import acsgh.mad.scala.server.router.http.body.writer.default._
 import acsgh.mad.scala.server.router.http.handler.DefaultExceptionHandler
 import acsgh.mad.scala.server.router.http.model.HttpRequestContext
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -10,8 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 class JsonExceptionHandler(implicit objectMapper: ObjectMapper) extends DefaultExceptionHandler with JacksonDirectives {
 
   override def handle(throwable: Throwable)(implicit ctx: HttpRequestContext): HttpResponse = {
-    val status = if (throwable.isInstanceOf[BadRequestException]) BAD_REQUEST else INTERNAL_SERVER_ERROR
-
+    val status = getStatus(throwable)
     requestHeader("Accept".opt, "Content-Type".opt) { (accept, contentType) =>
       responseStatus(status) {
         if (isJson(accept) || isJson(contentType)) {

@@ -1,6 +1,6 @@
 package acsgh.mad.scala.server.converter.template.twirl
 
-import acsgh.mad.scala.server.router.http.convertions.HttpBodyWriter
+import acsgh.mad.scala.server.router.http.body.writer._
 import acsgh.mad.scala.server.router.http.directives.HttpDirectives
 import acsgh.mad.scala.server.router.http.model.HttpRequestContext
 import com.googlecode.htmlcompressor.compressor.HtmlCompressor

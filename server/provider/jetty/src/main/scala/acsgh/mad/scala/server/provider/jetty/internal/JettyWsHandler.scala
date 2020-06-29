@@ -12,7 +12,7 @@ import org.eclipse.jetty.websocket.api.{Session, WebSocketAdapter}
 import org.eclipse.jetty.websocket.server.{NativeWebSocketConfiguration, WebSocketUpgradeFilter}
 import org.eclipse.jetty.websocket.servlet.{ServletUpgradeRequest, ServletUpgradeResponse, WebSocketCreator}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 private[jetty] object JettyWsHandler {
   def build(wsRouter: WSRouter): ServletContextHandler = {
@@ -118,6 +118,10 @@ private[jetty] class JettyWebSocketAdapter
       case m: WSResponseBinary =>
         getRemote.sendBytes(ByteBuffer.wrap(m.bytes))
 
+        if (m.close) {
+          getSession.close()
+        }
+      case m: WSResponseClose =>
         if (m.close) {
           getSession.close()
         }

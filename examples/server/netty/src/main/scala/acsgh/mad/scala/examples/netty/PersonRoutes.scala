@@ -12,6 +12,8 @@ import com.acsgh.common.scala.time.TimerSplitter
 import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.media.NumberSchema
 import org.thymeleaf.TemplateEngine
+import acsgh.mad.scala.server.router.http.body.writer.default._
+import acsgh.mad.scala.server.router.http.params.reader.default._
 
 case class PersonRoutes(builder: ServerBuilder)(implicit protected val thymeleafEngine: TemplateEngine) extends ControllerSwagger with JsonProtocol with ThymeleafDirectives with SprayDirectives {
 
@@ -42,7 +44,7 @@ case class PersonRoutes(builder: ServerBuilder)(implicit protected val thymeleaf
   webjars()
 
   get("/") { implicit context =>
-    requestQuery("name".default("Jonh Doe")) { name =>
+    formParam("name".default("Jonh Doe")) { name =>
       responseBody(ThymeleafTemplate("index", Map("name" -> name)))
     }
   }
@@ -105,7 +107,7 @@ case class PersonRoutes(builder: ServerBuilder)(implicit protected val thymeleaf
       BAD_REQUEST -> ApiResponse("Invalid request")
     )
   )) { implicit context =>
-    requestParam("id".as[Long]) { id =>
+    pathParam("id".as[Long]) { id =>
       requestJson(classOf[Person]) { personNew =>
         persons.get(id).fold(error(NO_CONTENT)) { personOld =>
           val result = personNew.copy(id = id)
@@ -128,7 +130,7 @@ case class PersonRoutes(builder: ServerBuilder)(implicit protected val thymeleaf
       BAD_REQUEST -> ApiResponse("Invalid request")
     )
   )) { implicit context =>
-    requestParam("id".as[Long]) { id =>
+    pathParam("id".as[Long]) { id =>
       persons.get(id).fold(error(NO_CONTENT)) { personOld =>
         responseJson(personOld)
       }
@@ -147,7 +149,7 @@ case class PersonRoutes(builder: ServerBuilder)(implicit protected val thymeleaf
       BAD_REQUEST -> ApiResponse("Invalid request")
     )
   )) { implicit context =>
-    requestParam("id".as[Long]) { id =>
+    pathParam("id".as[Long]) { id =>
       persons.get(id).fold(error(NO_CONTENT)) { personOld =>
         persons = persons - id
         responseJson(personOld)
@@ -165,7 +167,7 @@ case class PersonRoutes(builder: ServerBuilder)(implicit protected val thymeleaf
       OK -> ApiResponseJson(classOf[Person], "The response"),
     )
   )) { implicit context =>
-    requestQuery("time".as[Long].default(100)) { time =>
+    formParam("time".as[Long].default(100)) { time =>
       Thread.sleep(time)
       responseBody(s"Response took: ${TimerSplitter.getIntervalInfo(System.currentTimeMillis() - context.request.starTime, TimeUnit.MILLISECONDS)}")
     }

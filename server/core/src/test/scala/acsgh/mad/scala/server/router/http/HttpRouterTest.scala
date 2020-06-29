@@ -4,13 +4,13 @@ import java.net.URI
 
 import acsgh.mad.scala.core.http.exception.BadRequestException
 import acsgh.mad.scala.core.http.model.{HttpRequest, ProtocolVersion, RequestMethod, ResponseStatus}
-import acsgh.mad.scala.server.router.http.convertions.HttpDefaultFormats
+import acsgh.mad.scala.server.router.http.directives.HttpDirectivesBase
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 import scala.language.reflectiveCalls
 
-class HttpRouterTest extends AnyFlatSpec with Matchers with HttpDefaultFormats {
+class HttpRouterTest extends AnyFlatSpec with Matchers with HttpDirectivesBase {
 
   "HttpRouter" should "return 404 if no route" in {
     val router = new HttpRouterBuilder()

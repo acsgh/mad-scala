@@ -2,7 +2,7 @@ package acsgh.mad.scala.server.converter.template.freemarker
 
 import java.io.{ByteArrayOutputStream, PrintWriter}
 
-import acsgh.mad.scala.server.router.http.convertions.HttpBodyWriter
+import acsgh.mad.scala.server.router.http.body.writer.HttpBodyWriter
 import acsgh.mad.scala.server.router.http.directives.HttpDirectives
 import acsgh.mad.scala.server.router.http.model.HttpRequestContext
 import com.googlecode.htmlcompressor.compressor.HtmlCompressor

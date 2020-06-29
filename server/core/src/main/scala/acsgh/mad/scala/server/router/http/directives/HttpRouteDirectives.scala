@@ -4,6 +4,7 @@ import java.net.URI
 
 import acsgh.mad.scala.core.http.model.{HttpResponse, RedirectStatus, ResponseStatus}
 import acsgh.mad.scala.server.router.http.model.HttpRequestContext
+import acsgh.mad.scala.server.router.http.params.writer.default._
 
 trait HttpRouteDirectives extends HttpResponseDirectives {
 

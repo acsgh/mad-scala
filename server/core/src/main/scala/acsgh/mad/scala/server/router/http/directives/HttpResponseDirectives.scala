@@ -1,12 +1,16 @@
 package acsgh.mad.scala.server.router.http.directives
 
 import acsgh.mad.scala.core.http.model.{HttpCookie, HttpResponse, ProtocolVersion, ResponseStatus}
-import acsgh.mad.scala.server.router.http.convertions.{HttpBodyWriter, HttpDefaultFormats, HttpDefaultParamHandling, HttpParamWriter}
+import acsgh.mad.scala.server.router.http.body.writer.HttpBodyWriter
+import acsgh.mad.scala.server.router.http.body.writer.default._
 import acsgh.mad.scala.server.router.http.model.HttpRequestContext
+import acsgh.mad.scala.server.router.http.params.HttpDefaultParamHandling
+import acsgh.mad.scala.server.router.http.params.writer.HttpParamWriter
+import acsgh.mad.scala.server.router.http.params.writer.default._
 
-trait HttpResponseDirectives extends HttpDefaultParamHandling with HttpDefaultFormats {
+trait HttpResponseDirectives extends HttpDefaultParamHandling with HttpDirectivesBase {
 
-  def responseHeader[T](name: String, value: T)(action: => HttpResponse)(implicit context: HttpRequestContext, converter: HttpParamWriter[T]): HttpResponse = {
+  def responseHeader[T](name: String, value: T)(action: => HttpResponse)(implicit context: HttpRequestContext, converter: HttpParamWriter[T, String]): HttpResponse = {
     context.response.header(name, converter.write(value))
     action
   }

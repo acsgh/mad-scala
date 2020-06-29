@@ -1,1 +1,3 @@
+sudo apt-get install build-essential patch ruby-dev zlib1g-dev liblzma-dev
+bundle install
 bundle exec jekyll serve -w --incremental

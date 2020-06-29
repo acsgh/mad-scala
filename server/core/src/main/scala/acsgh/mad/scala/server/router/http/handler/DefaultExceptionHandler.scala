@@ -3,6 +3,7 @@ package acsgh.mad.scala.server.router.http.handler
 import acsgh.mad.scala.core.http.exception.BadRequestException
 import acsgh.mad.scala.core.http.model.ResponseStatus._
 import acsgh.mad.scala.core.http.model.{HttpResponse, ResponseStatus}
+import acsgh.mad.scala.server.router.http.body.writer.default._
 import acsgh.mad.scala.server.router.http.model.HttpRequestContext
 
 object DefaultExceptionHandler {
@@ -60,10 +61,15 @@ object DefaultExceptionHandler {
 
 class DefaultExceptionHandler() extends ExceptionHandler {
   override def handle(throwable: Throwable)(implicit ctx: HttpRequestContext): HttpResponse = {
-    val status = if (throwable.isInstanceOf[BadRequestException]) BAD_REQUEST else INTERNAL_SERVER_ERROR
+    val status: ResponseStatus = getStatus(throwable)
     responseStatus(status) {
       responseBody(getStatusBody(status, throwable))
     }
+  }
+
+  protected def getStatus(throwable: Throwable): ResponseStatus = {
+    val status = if (throwable.isInstanceOf[BadRequestException]) BAD_REQUEST else INTERNAL_SERVER_ERROR
+    status
   }
 
   protected def getStatusBody(status: ResponseStatus, throwable: Throwable)(implicit ctx: HttpRequestContext): String = {
