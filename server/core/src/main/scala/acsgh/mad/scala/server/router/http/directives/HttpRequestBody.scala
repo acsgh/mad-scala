@@ -34,22 +34,20 @@ trait HttpRequestBody extends HttpDefaultParamHandling
   }
 
   def requestBodyOpt[T, O](action: Option[T] => O)(implicit context: HttpRequestContext, reader: HttpBodyReader[T]): O = {
-    def nop() = action(None)
-
-    def read() = try {
-      action(Option(reader.read(context.request.bodyBytes)))
-    } catch {
-      case _: Exception => nop()
+    def read() = {
+      val result = try {
+        Option(reader.read(context.request.bodyBytes))
+      } catch {
+        case _: Exception => None
+      }
+      action(result)
     }
 
     if (reader.strictContentTypes) {
-      requestHeader("Content-Type") { contentType =>
+      requestHeader("Content-Type".opt) { contentType =>
 
-        if (!context.request.validContentType(reader.contentTypes, contentType)) {
-          nop()
-        } else {
-          read()
-        }
+        contentType.filter(context.request.validContentType(reader.contentTypes, _))
+          .fold{action(None)}{_ => read()}
       }
     } else {
       read()

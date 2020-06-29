@@ -61,10 +61,15 @@ object DefaultExceptionHandler {
 
 class DefaultExceptionHandler() extends ExceptionHandler {
   override def handle(throwable: Throwable)(implicit ctx: HttpRequestContext): HttpResponse = {
-    val status = if (throwable.isInstanceOf[BadRequestException]) BAD_REQUEST else INTERNAL_SERVER_ERROR
+    val status: ResponseStatus = getStatus(throwable)
     responseStatus(status) {
       responseBody(getStatusBody(status, throwable))
     }
+  }
+
+  protected def getStatus(throwable: Throwable): ResponseStatus = {
+    val status = if (throwable.isInstanceOf[BadRequestException]) BAD_REQUEST else INTERNAL_SERVER_ERROR
+    status
   }
 
   protected def getStatusBody(status: ResponseStatus, throwable: Throwable)(implicit ctx: HttpRequestContext): String = {

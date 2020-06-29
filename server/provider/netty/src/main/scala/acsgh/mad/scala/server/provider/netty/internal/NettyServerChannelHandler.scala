@@ -13,7 +13,7 @@ import io.netty.handler.codec.http.HttpVersion.HTTP_1_1
 import io.netty.handler.codec.http._
 import io.netty.util.ReferenceCountUtil
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 private[netty] class NettyServerChannelHandler
 (
@@ -74,6 +74,7 @@ private[netty] class NettyServerChannelHandler
   private def getHeaders(request: HttpRequest): Map[String, List[String]] = {
     request.headers.asScala.map(e => (e.getKey, e.getValue))
       .groupBy(_._1)
+      .view
       .mapValues(_.map(_._2).toList)
       .toMap
   }

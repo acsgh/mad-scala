@@ -1,4 +1,4 @@
-package acsgh.mad.scala.examples.netty
+package acsgh.mad.scala.examples.jetty
 
 import java.io.{BufferedOutputStream, FileOutputStream}
 

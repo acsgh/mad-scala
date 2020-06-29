@@ -6,8 +6,7 @@ import java.util.concurrent.atomic.AtomicLong
 import acsgh.mad.scala.core.http.model.ResponseStatus._
 import acsgh.mad.scala.server.ServerBuilder
 import acsgh.mad.scala.server.converter.json.spray.SprayDirectives
-import acsgh.mad.scala.server.converter.template.thymeleaf.{ThymeleafDirectives, ThymeleafEngineProvider, ThymeleafTemplate}
-import acsgh.mad.scala.server.router.http.body.reader.default._
+import acsgh.mad.scala.server.converter.template.thymeleaf.{ThymeleafDirectives, ThymeleafTemplate}
 import acsgh.mad.scala.server.router.http.body.writer.default._
 import acsgh.mad.scala.server.router.http.params.reader.default._
 import acsgh.mad.scala.server.support.swagger.ControllerSwagger
@@ -16,14 +15,12 @@ import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.media.NumberSchema
 import org.thymeleaf.TemplateEngine
 
-case class PersonRoutes(builder: ServerBuilder) extends ControllerSwagger with JsonProtocol with ThymeleafDirectives with SprayDirectives {
-
-  implicit protected val thymeleafEngine: TemplateEngine = ThymeleafEngineProvider.build("/templates/")
+case class PersonRoutes(builder: ServerBuilder)(implicit protected val thymeleafEngine: TemplateEngine) extends ControllerSwagger with JsonProtocol with ThymeleafDirectives with SprayDirectives {
 
   implicit protected val openAPi: OpenAPI = OpenAPI(
     info = Info(
-      title = "Jetty Example",
-      description = "Jetty example rest api example",
+      title = "Netty Example",
+      description = "Netty example rest api example",
       version = "1.0",
       contact = Contact(
         email = "dummy@asd.com"
@@ -110,16 +107,12 @@ case class PersonRoutes(builder: ServerBuilder) extends ControllerSwagger with J
       BAD_REQUEST -> ApiResponse("Invalid request")
     )
   )) { implicit context =>
-    requestBody[String] { asd =>
-
-
-      pathParam("id".as[Long]) { id =>
-        requestJson(classOf[Person]) { personNew =>
-          persons.get(id).fold(error(NO_CONTENT)) { personOld =>
-            val result = personNew.copy(id = id)
-            persons = persons + (result.id -> result)
-            responseJson(result)
-          }
+    pathParam("id".as[Long]) { id =>
+      requestJson(classOf[Person]) { personNew =>
+        persons.get(id).fold(error(NO_CONTENT)) { personOld =>
+          val result = personNew.copy(id = id)
+          persons = persons + (result.id -> result)
+          responseJson(result)
         }
       }
     }
@@ -174,7 +167,7 @@ case class PersonRoutes(builder: ServerBuilder) extends ControllerSwagger with J
       OK -> ApiResponseJson(classOf[Person], "The response"),
     )
   )) { implicit context =>
-    pathParam("time".as[Long].default(100)) { time =>
+    formParam("time".as[Long].default(100)) { time =>
       Thread.sleep(time)
       responseBody(s"Response took: ${TimerSplitter.getIntervalInfo(System.currentTimeMillis() - context.request.starTime, TimeUnit.MILLISECONDS)}")
     }

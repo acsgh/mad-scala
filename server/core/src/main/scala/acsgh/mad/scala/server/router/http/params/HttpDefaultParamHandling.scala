@@ -1,10 +1,12 @@
 package acsgh.mad.scala.server.router.http.params
 
-import acsgh.mad.scala.server.router.http.body.reader.multipart.Multipart
+import acsgh.mad.scala.server.router.http.body.reader.multipart.{Multipart, MultipartFile, MultipartPart}
 import acsgh.mad.scala.server.router.http.body.reader.urlFormEncoded.UrlFormEncodedBody
 import acsgh.mad.scala.server.router.http.model.HttpRequestContext
 import acsgh.mad.scala.server.router.http.params.reader.HttpParamReader
 import acsgh.mad.scala.server.router.http.params.reader.default._
+
+import scala.reflect.ClassTag
 
 trait HttpDefaultParamHandling {
 
@@ -12,6 +14,8 @@ trait HttpDefaultParamHandling {
 
   implicit class StringParamsEnhanced(name: String) {
     def as[T](implicit reader: HttpParamReader[String, T]): SingleHttpParam[String, T] = SingleHttpParam[String, T](name)
+
+    def multipartFile(implicit reader: HttpParamReader[MultipartPart, MultipartFile]): SingleHttpParam[MultipartPart, MultipartFile] = SingleHttpParam[MultipartPart, MultipartFile](name)
 
     def opt: OptionHttpParam[String, String] = OptionHttpParam[String, String](name)
 
@@ -29,20 +33,6 @@ trait HttpDefaultParamHandling {
   }
 
   implicit class ParamsEnhanced[O, R](param: HttpParam[String, O, R]) {
-    def multipartValue(implicit context: HttpRequestContext, bodyContent: Multipart): R = {
-      val value = bodyContent.parts.find(_.name.equalsIgnoreCase(param.name)).map(part => List(part.content)).getOrElse(List())
-      param("Multipart", value)
-    }
-
-    def formValue(implicit context: HttpRequestContext, urlFormEncodedBody: Option[UrlFormEncodedBody], multipart: Option[Multipart]): R = {
-      val queryValues = context.request.queryParams.find(_._1.equalsIgnoreCase(param.name)).map(_._2).getOrElse(List())
-      val urlFormValues = urlFormEncodedBody.map(_.params.find(_._1.equalsIgnoreCase(param.name)).map(_._2).getOrElse(List())).getOrElse(List())
-      val multipartValues = multipart.map(_.parts.find(_.name.equalsIgnoreCase(param.name)).map(part => List(part.content)).getOrElse(List())).getOrElse(List())
-
-      val values = queryValues ++ urlFormValues ++ multipartValues
-      param("Form", values)
-    }
-
     def queryValue(implicit context: HttpRequestContext): R = {
       val value = context.request.queryParams.find(_._1.equalsIgnoreCase(param.name)).map(_._2).getOrElse(List())
       param("Query", value)
@@ -61,6 +51,29 @@ trait HttpDefaultParamHandling {
     def headerValue(implicit context: HttpRequestContext): R = {
       val value = context.request.headers.find(_._1.equalsIgnoreCase(param.name)).map(_._2).getOrElse(List())
       param("Header", value)
+    }
+  }
+
+  implicit class FormParamsEnhanced[I, O, R](param: HttpParam[I, O, R])(implicit inputClass: ClassTag[I]) {
+    def formValue(implicit context: HttpRequestContext, urlFormEncodedBody: Option[UrlFormEncodedBody], multipart: Option[Multipart]): R = {
+      if (classOf[String] == inputClass.runtimeClass) {
+        val queryValues = context.request.queryParams.find(_._1.equalsIgnoreCase(param.name)).map(_._2).getOrElse(List())
+        val urlFormValues = urlFormEncodedBody.map(_.params.find(_._1.equalsIgnoreCase(param.name)).map(_._2).getOrElse(List())).getOrElse(List())
+        val multipartValues = multipart
+          .map(_.parts.find(_.name.equalsIgnoreCase(param.name)).filter(_.contentType.isEmpty).map(part => List(new String(part.content, "UTF-8"))).getOrElse(List()))
+          .getOrElse(List())
+
+        val values = queryValues ++ urlFormValues ++ multipartValues
+        param("Form", values.asInstanceOf[List[I]])
+      } else if (classOf[MultipartPart] == inputClass.runtimeClass) {
+        val multipartValues = multipart
+          .map(_.parts.find(_.name.equalsIgnoreCase(param.name)).filter(_.contentType.nonEmpty).map(part => List(part)).getOrElse(List()))
+          .getOrElse(List())
+
+        param("Form", multipartValues.asInstanceOf[List[I]])
+      } else {
+        throw new IllegalArgumentException(s"Class ${inputClass.runtimeClass.getName} not supported")
+      }
     }
   }
 

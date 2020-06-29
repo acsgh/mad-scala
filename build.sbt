@@ -90,7 +90,8 @@ lazy val serverCore = (project in file("server/core"))
     name := "core",
     commonSettings,
     libraryDependencies ++= Seq(
-      "org.cache2k" % "cache2k-core" % "1.2.4.Final"
+      "org.cache2k" % "cache2k-core" % "1.2.4.Final",
+      "commons-fileupload" % "commons-fileupload" % "1.4"
     )
   )
   .dependsOn(core)
