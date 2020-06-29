@@ -6,6 +6,7 @@ import acsgh.mad.scala.server.router.http.model.HttpRequestContext
 import acsgh.mad.scala.server.router.http.params.reader.HttpParamReader
 import acsgh.mad.scala.server.router.http.params.reader.default._
 
+import scala.language.implicitConversions
 import scala.reflect.ClassTag
 
 trait HttpDefaultParamHandling {
