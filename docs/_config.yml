@@ -1,5 +1,5 @@
 title: Mad Scala
-current_version: '0.8.0'
+current_version: '1.0.0'
 
 kramdown:
   parse_block_html: true

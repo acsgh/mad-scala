@@ -9,7 +9,7 @@ container_class: 'container-fluid'
 * Will be replaced with the ToC, excluding the "Contents" header
 {:toc}
 </div>
-<div class="col-9 offset-md-3">
+<div class="col-9">
 
 The library is slitted in several modules in order to you choose the one that more fits into your needs and reduce the dependencies
 
@@ -132,6 +132,8 @@ The HttpRequestContext has:
 The routes are added to the builder calling different http method like. It also supports wildcards
 
 ``` scala
+import acsgh.mad.scala.server.router.http.body.writer.default._
+
 builder.get("/") { implicit ctx =>
     responseBody("Hello world!")
 }
@@ -157,18 +159,22 @@ you can interact with the HttpRequestContext but in order to make it easy we hav
 
 Extract the request body bytes. The directive has also a way to parse content into something more manageable
 ``` scala
+import acsgh.mad.scala.server.router.http.body.reader.default._
+
 requestBody { bytes =>
 }
 ```
 
 If you want to convert the body you can use:
 ``` scala
+import acsgh.mad.scala.server.router.http.body.reader.default._
+
 requestBody[T] { bytes =>
 }
 ```
 
-But keep in mind that for that to work, it need an implicit HttpBodyReader[T] in the scope. We provide the String handler 
-but the rest of readers is on your side. The reader also has a parameter called strictContentTypes, so if it true, and the content types received are not the one expected an 405 will be returned
+Keep in mind that for that to work, it needs an implicit HttpBodyReader[T] in the scope. We provide a few handlers by importing: acsgh.mad.scala.server.router.http.body.reader.default._
+The reader also has a parameter called strictContentTypes, so if it true, and the content types received are not the one expected an 405 will be returned
 
 ##### redirect
 Redirect one request into another location. The redirection could be in several ways provided by the RedirectStatus enum
@@ -198,18 +204,20 @@ get("/") { implicit ctx =>
 }
 ```
 
-##### requestParam
-Extract from 1 to 15 path params from the url. The key is non case sensitive.
+##### pathParam
+Extract from 1 to 15 path params from the url. The key is case insensible.
 
 ``` scala
+import acsgh.mad.scala.server.router.http.params.reader.default._
+
 get("/{id1}") { implicit ctx =>
-    requestParam("id1"){ id1 =>
+    pathParam("id1"){ id1 =>
         responseBody(s"Param id1 is ${id1}")
     }
 }
 
 get("/{id2}/{id2}") { implicit ctx =>
-    requestParam("id2", "id2"){ (id1, id2) =>
+    pathParam("id2", "id2"){ (id1, id2) =>
         responseBody(s"Param id1 is ${id1}, Param id2 is ${id2}")
     }
 }
@@ -217,39 +225,43 @@ get("/{id2}/{id2}") { implicit ctx =>
 
 If the param is not present, a 400 Bad Request will be returned
 
-The path param by default is required, it could be optional, have a default value
+The path param is required by default, it could be also optional, or have a default value
 
 ``` scala
+import acsgh.mad.scala.server.router.http.params.reader.default._
+
 get("/{id1}") { implicit ctx =>
-    requestParam("id1".opt){ id1 =>
+    pathParam("id1".opt){ id1 =>
         responseBody(s"Param id1 is ${id1}")
     }
 }
 
 get("/{id1}") { implicit ctx =>
-    requestParam("id1".default("1234")){ id1 =>
+    pathParam("id1".default("1234")){ id1 =>
         responseBody(s"Param id1 is ${id1}")
     }
 }
 ```
 
-By default all params are String, but we can convert them for you. Convert to T needs an implicit HttpParamReader[T] in its context. The conversion can by mix with other methods
+By default, all params are String, but we can convert them for you. Convert to T needs an implicit HttpParamReader[T] in its context. The conversion can be mixed with other methods.
 
 ``` scala
+import acsgh.mad.scala.server.router.http.params.reader.default._
+
 get("/{id1}") { implicit ctx =>
-    requestParam("id1".as[Long]){ id1 => // Long
+    pathParam("id1".as[Long]){ id1 => // Long
         responseBody(s"Param id1 is ${id1}")
     }
 }
 
 get("/{id1}") { implicit ctx =>
-    requestParam("id1".as[Long].opt){ id1 => // Optional[Long]
+    pathParam("id1".as[Long].opt){ id1 => // Optional[Long]
         responseBody(s"Param id1 is ${id1}")
     }
 }
 
 get("/{id1}") { implicit ctx =>
-    requestParam("id1".as[Long].default(1234)){ id1 => // Optional[Long]
+    pathParam("id1".as[Long].default(1234)){ id1 => // Optional[Long]
         responseBody(s"Param id1 is ${id1}")
     }
 }
@@ -257,18 +269,22 @@ get("/{id1}") { implicit ctx =>
 
 If the param cannot be converted, a 400 Bad Request will be returned
 
-##### requestQuery
-Extract from 1 to 15 query params from the url. Keep in mind that a query param can be repeated. The key is non case sensitive.
+##### formParam
+Extract from 1 to 15 form params from the request. The key is case insensible.
+
+The form param can come from the URL query part and in case of POST request in the body as URL form encoded or multipart. We are getting the param automatically for you. As the param can be repeated we are aggregating all sources in just one.
 
 ``` scala
-get("/") { implicit ctx =>
-    requestQuery("id1"){ id1 =>
+import acsgh.mad.scala.server.router.http.params.reader.default._
+
+get("/") { implicit ctx => // /?id1=1
+    formParam("id1"){ id1 =>
         responseBody(s"Param id1 is ${id1}")
     }
 }
 
-get("/") { implicit ctx =>
-    requestQuery("id2", "id2"){ (id1, id2) =>
+get("/") { implicit ctx => /?id1=1&id2=2
+    formParam("id2", "id2"){ (id1, id2) =>
         responseBody(s"Param id1 is ${id1}, Param id2 is ${id2}")
     }
 }
@@ -279,128 +295,89 @@ If the param is not present, a 400 Bad Request will be returned
 The path param is required by default, it could be optional, have a default value or be a list
 
 ``` scala
+import acsgh.mad.scala.server.router.http.params.reader.default._
+
 get("/") { implicit ctx =>
-    requestQuery("id1".opt){ id1 =>
+    formParam("id1".opt){ id1 =>
         responseBody(s"Param id1 is ${id1}")
     }
 }
 
-get("/{id1}") { implicit ctx =>
-    requestQuery("id1".default("1234")){ id1 =>
+get("/") { implicit ctx =>
+    formParam("id1".default("1234")){ id1 =>
         responseBody(s"Param id1 is ${id1}")
     }
 }
 
-get("/{id1}") { implicit ctx =>
-    requestQuery("id1".list){ id1 =>
+get("/") { implicit ctx =>
+    formParam("id1".list){ id1 =>
         responseBody(s"Param id1 is ${id1}")
     }
 }
 ```
 
-By default all params are String, but we can convert them for you. Convert to T needs an implicit HttpParamReader[T] in its context. The conversion can by mix with other methods
+By default, all params are String, but we can convert them for you. Convert to T needs an implicit HttpParamReader[T] in its context. The conversion can by mix with other methods
                                                                                                                                    
 ``` scala
-get("/{id1}") { implicit ctx =>
-    requestQuery("id1".as[Long]){ id1 => // Long
-        responseBody(s"Param id1 is ${id1}")
-    }
-}
+import acsgh.mad.scala.server.router.http.params.reader.default._
 
-get("/{id1}") { implicit ctx =>
-    requestQuery("id1".as[Long].opt){ id1 => // Optional[Long]
-        responseBody(s"Param id1 is ${id1}")
-    }
-}
-
-get("/{id1}") { implicit ctx =>
-    requestQuery("id1".as[Long].default(1234)){ id1 => // Optional[Long]
-        responseBody(s"Param id1 is ${id1}")
-    }
-}
-
-
-get("/{id1}") { implicit ctx =>
-    requestQuery("id1".as[Long].list){ id1 => // List[Long]
-        responseBody(s"Param id1 is ${id1}")
-    }
-}
-```
-
-##### requestFormParam
-Extract from 1 to 15 url form encoded params from the body. Keep in mind that a body param can be repeated. The key is non case sensitive.
-
-``` scala
 get("/") { implicit ctx =>
-    requestFormParam("id1"){ id1 =>
+    formParam("id1".as[Long]){ id1 => // Long
         responseBody(s"Param id1 is ${id1}")
     }
 }
 
 get("/") { implicit ctx =>
-    requestFormParam("id2", "id2"){ (id1, id2) =>
-        responseBody(s"Param id1 is ${id1}, Param id2 is ${id2}")
+    formParam("id1".as[Long].opt){ id1 => // Optional[Long]
+        responseBody(s"Param id1 is ${id1}")
     }
 }
-```
 
-If the param is not present, a 400 Bad Request will be returned
-
-The body param is required by default, it could be optional, have a default value or be a list
-
-``` scala
 get("/") { implicit ctx =>
-    requestFormParam("id1".opt){ id1 =>
+    formParam("id1".as[Long].default(1234)){ id1 => // Optional[Long]
         responseBody(s"Param id1 is ${id1}")
     }
 }
 
-get("/{id1}") { implicit ctx =>
-    requestFormParam("id1".default("1234")){ id1 =>
-        responseBody(s"Param id1 is ${id1}")
-    }
-}
 
-get("/{id1}") { implicit ctx =>
-    requestFormParam("id1".list){ id1 =>
+get("/") { implicit ctx =>
+    formParam("id1".as[Long].list){ id1 => // List[Long]
         responseBody(s"Param id1 is ${id1}")
     }
 }
 ```
 
-By default all params are String, but we can convert them for you. Convert to T needs an implicit HttpParamReader[T] in its context. The conversion can by mix with other methods
-                                                                                                                                   
+In case you need to read a multipart file param you can convert the param like this:
+
+                                                                                                                            
 ``` scala
-get("/{id1}") { implicit ctx =>
-    requestFormParam("id1".as[Long]){ id1 => // Long
-        responseBody(s"Param id1 is ${id1}")
+import acsgh.mad.scala.server.router.http.params.reader.default._
+
+get("/") { implicit ctx =>
+    formParam("userPhoto".multipartFile){ userPhoto => // MultipartFile
+        //userPhoto.content // Array[Byte]
+        //userPhoto.filename // Option[String]
+        //userPhoto.contentType // String
+        responseBody(s"userPhoto name is ${userPhoto.filename}")
     }
-}
 
-get("/{id1}") { implicit ctx =>
-    requestFormParam("id1".as[Long].opt){ id1 => // Optional[Long]
-        responseBody(s"Param id1 is ${id1}")
+    formParam("userPhoto".multipartFile.opt){ userPhoto => // Option[MultipartFile]
+        responseBody(s"userPhoto length is ${userPhoto.content.length}")
     }
-}
 
-get("/{id1}") { implicit ctx =>
-    requestFormParam("id1".as[Long].default(1234)){ id1 => // Optional[Long]
-        responseBody(s"Param id1 is ${id1}")
-    }
-}
-
-
-get("/{id1}") { implicit ctx =>
-    requestFormParam("id1".as[Long].list){ id1 => // List[Long]
-        responseBody(s"Param id1 is ${id1}")
+    formParam("userPhoto".multipartFile.list){ userPhoto => // List[MultipartFile]
+        responseBody(s"userPhoto length is ${userPhoto.content.length}")
     }
 }
 ```
+
 
 ##### requestHeader
-Extract from 1 to 15 a header params from the request. Keep in mind that a header can be repeated. The key is non case sensitive.
+Extract from 1 to 15 a header params from the request. Keep in mind that a header can be repeated. The key is case insensible.
 
 ``` scala
+import acsgh.mad.scala.server.router.http.params.reader.default._
+
 get("/") { implicit ctx =>
     requestHeader("id1"){ id1 =>
         responseBody(s"Param id1 is ${id1}")
@@ -416,9 +393,11 @@ get("/") { implicit ctx =>
 
 If the param is not present, a 400 Bad Request will be returned
 
-The path param by default is required, it could be optional, have a default value or be a list
+The header param is required by default, it could be optional, have a default value or be a list
 
 ``` scala
+import acsgh.mad.scala.server.router.http.params.reader.default._
+
 get("/") { implicit ctx =>
     requestHeader("id1".opt){ id1 =>
         responseBody(s"Param id1 is ${id1}")
@@ -441,6 +420,8 @@ get("/{id1}") { implicit ctx =>
 By default all params are String, but we can convert them for you. Convert to T needs an implicit HttpParamReader[T] in its context. The conversion can by mix with other methods
                                                                                                                                    
 ``` scala
+import acsgh.mad.scala.server.router.http.params.reader.default._
+
 get("/{id1}") { implicit ctx =>
     requestHeader("id1".as[Long]){ id1 => // Long
         responseBody(s"Param id1 is ${id1}")
@@ -471,9 +452,11 @@ If the param cannot be converted, a 400 Bad Request will be returned
 
 
 ##### requestCookie
-Extract from 1 to 15 cookie value from he request. Keep in mind that a cookie can be repeated. The key is non case sensitive.
+Extract from 1 to 15 cookie value from the request. Keep in mind that a cookie can be repeated. The key is non insensible.
 
 ``` scala
+import acsgh.mad.scala.server.router.http.params.reader.default._
+
 get("/") { implicit ctx =>
     requestCookie("id1"){ id1 =>
         responseBody(s"Param id1 is ${id1}")
@@ -492,6 +475,8 @@ If the param is not present, a 400 Bad Request will be returned
 The path param by default is required, it could be optional, have a default value or be a list
 
 ``` scala
+import acsgh.mad.scala.server.router.http.params.reader.default._
+
 get("/") { implicit ctx =>
     requestCookie("id1".opt){ id1 =>
         responseBody(s"Param id1 is ${id1}")
@@ -514,6 +499,8 @@ get("/{id1}") { implicit ctx =>
 By default all params are String, but we can convert them for you. Convert to T needs an implicit HttpParamReader[T] in its context. The conversion can by mix with other methods
                                                                                                                                    
 ``` scala
+import acsgh.mad.scala.server.router.http.params.reader.default._
+
 get("/{id1}") { implicit ctx =>
     requestCookie("id1".as[Long]){ id1 => // Long
         responseBody(s"Param id1 is ${id1}")
@@ -547,6 +534,8 @@ If the param cannot be converted, a 400 Bad Request will be returned
 Add a header into the response, by default it is a String if you want to add any object different from it you need to add an implicit HttpParamWriter[T] in your scope.
  
  ``` scala
+import acsgh.mad.scala.server.router.http.params.writer.default._
+
  get("/") { implicit ctx =>
      responseHeader("Content-Type", "Greetings"){
          responseBody(s"Hello world!}")
@@ -574,6 +563,7 @@ Add a response cookie into the response
  
  ``` scala
 import acsgh.mad.scala.core.http.model.HttpCookie
+import acsgh.mad.scala.server.router.http.params.writer.default._
 
  get("/") { implicit ctx =>
      responseCookie(HttpCookie("sessionId", "123456")){
@@ -658,6 +648,8 @@ import acsgh.mad.scala.core.http.model.ProtocolVersion._
 
 Set up the response body bytes. The directive has also a way to write content into something more manageable
 ``` scala
+import acsgh.mad.scala.server.router.http.body.writer.default._
+
 get("/") { implicit ctx =>
     responseBody(byte)
 }
@@ -665,6 +657,8 @@ get("/") { implicit ctx =>
 
 If you want to convert the body from an object you can use:
 ``` scala
+import acsgh.mad.scala.server.router.http.body.writer.default._
+
 get("/") { implicit ctx =>
     responseBody(T)
 }
@@ -723,6 +717,7 @@ If can also called by the library in other situations, in case of exceptions ano
 ``` scala
 import acsgh.mad.scala.core.http.model.ResponseStatus._
 import acsgh.mad.scala.server.router.http.handler.ErrorCodeHandler
+import acsgh.mad.scala.server.router.http.body.writer.default._
 
 object MyErrorCodeHandler extends ErrorCodeHandler {
   def handle(responseStatus: ResponseStatus, message: Option[String])(implicit requestContext: HttpRequestContext): HttpResponse = {
@@ -743,6 +738,7 @@ The exception handler render the response when some an unexpected exception happ
 ``` scala
 import acsgh.mad.scala.core.http.model.ResponseStatus._
 import acsgh.mad.scala.server.router.http.handler.ExceptionHandler
+import acsgh.mad.scala.server.router.http.body.writer.default._
 
 object MyExceptionHandler extends ExceptionHandler {
   def handle(throwable: Throwable)(implicit requestContext: HttpRequestContext): HttpResponse = {
