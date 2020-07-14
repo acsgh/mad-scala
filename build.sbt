@@ -202,7 +202,7 @@ lazy val serverSupportSwagger = (project in file("server/support/swagger"))
       "io.swagger.core.v3" % "swagger-core" % "2.0.8",
       "io.swagger.core.v3" % "swagger-annotations" % "2.0.8",
       "io.swagger.core.v3" % "swagger-integration" % "2.0.8",
-      "com.github.swagger-akka-http" %% "swagger-scala-module" % "2.0.4",
+      "com.github.swagger-akka-http" %% "swagger-scala-module" % "2.1.1",
       "org.webjars" % "swagger-ui" % "3.23.0"
     )
   )
