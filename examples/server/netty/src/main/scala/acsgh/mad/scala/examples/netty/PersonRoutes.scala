@@ -7,13 +7,14 @@ import acsgh.mad.scala.core.http.model.ResponseStatus._
 import acsgh.mad.scala.server.ServerBuilder
 import acsgh.mad.scala.server.converter.json.spray.SprayDirectives
 import acsgh.mad.scala.server.converter.template.thymeleaf.{ThymeleafDirectives, ThymeleafTemplate}
+import acsgh.mad.scala.server.router.http.body.writer.default._
+import acsgh.mad.scala.server.router.http.params.reader.default._
 import acsgh.mad.scala.server.support.swagger.ControllerSwagger
 import com.acsgh.common.scala.time.TimerSplitter
 import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.media.NumberSchema
 import org.thymeleaf.TemplateEngine
-import acsgh.mad.scala.server.router.http.body.writer.default._
-import acsgh.mad.scala.server.router.http.params.reader.default._
+import spray.json._
 
 case class PersonRoutes(builder: ServerBuilder)(implicit protected val thymeleafEngine: TemplateEngine) extends ControllerSwagger with JsonProtocol with ThymeleafDirectives with SprayDirectives {
 
@@ -70,7 +71,7 @@ case class PersonRoutes(builder: ServerBuilder)(implicit protected val thymeleaf
         123,
         "Alberto",
         32
-      )
+      ).toJson.prettyPrint
     ),
     responses = ApiResponses(
       CREATED -> ApiResponseJson(classOf[Person], "The person created"),
@@ -99,7 +100,7 @@ case class PersonRoutes(builder: ServerBuilder)(implicit protected val thymeleaf
         123,
         "Alberto",
         32
-      )
+      ).toJson.prettyPrint
     ),
     responses = ApiResponses(
       CREATED -> ApiResponseJson(classOf[Person], "The person modified"),
