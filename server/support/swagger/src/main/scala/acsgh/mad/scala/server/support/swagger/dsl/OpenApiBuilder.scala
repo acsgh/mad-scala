@@ -2,7 +2,6 @@ package acsgh.mad.scala.server.support.swagger.dsl
 
 import acsgh.mad.scala.core.http.model.ResponseStatus
 import io.swagger.v3.core.converter.ModelConverters
-import io.swagger.v3.core.util.Json
 import io.swagger.v3.oas.models._
 import io.swagger.v3.oas.models.callbacks.Callback
 import io.swagger.v3.oas.models.examples.Example
@@ -522,7 +521,7 @@ trait OpenApiBuilder {
     contentClass: Class[T],
     description: String = null,
     required: Boolean = true,
-    example: T = null,
+    example: String = null,
   )(implicit openApi: OpenAPI): RequestBody = {
     val result = new RequestBody()
 
@@ -539,7 +538,7 @@ trait OpenApiBuilder {
   (
     contentClass: Class[T],
     description: String = null,
-    example: T = null
+    example: String = null
   )(implicit openApi: OpenAPI): ApiResponse = {
     val result = new ApiResponse()
     result.description(description)
@@ -550,14 +549,14 @@ trait OpenApiBuilder {
   def ContentJson[T <: AnyRef]
   (
     contentClass: Class[T],
-    example: T = null
+    example: String = null
   )(implicit openApi: OpenAPI): Content = {
     addSchemas(contentClass)
 
     val examples = if (example != null) {
       Map(
         "default" -> Example(
-          Json.pretty().writeValueAsString(example)
+          example
         )
       )
     } else {
