@@ -9,7 +9,7 @@ import play.twirl.api.HtmlFormat
 
 trait TwirlSupport extends HttpDirectives {
 
-  private val htmlCompressorFilter: HtmlCompressor = {
+  protected val htmlCompressorFilter: HtmlCompressor = {
     val c = new HtmlCompressor()
     c.setPreserveLineBreaks(false)
     c.setRemoveComments(true)
