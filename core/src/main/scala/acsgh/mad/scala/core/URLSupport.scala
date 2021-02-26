@@ -1,10 +1,10 @@
 package acsgh.mad.scala.core
 
+import com.acsgh.common.scala.log.LogSupport
+
 import java.io.UnsupportedEncodingException
 import java.net.{URI, URLDecoder}
 import java.util.regex.{Matcher, Pattern}
-
-import com.acsgh.common.scala.log.LogSupport
 
 trait URLSupport extends LogSupport {
 
@@ -62,9 +62,11 @@ trait URLSupport extends LogSupport {
     }
   }
 
-  protected def matchUrl(routeUri: String, requestUri: URI): Boolean = {
+  protected def matchUrl(routeUri: String, requestUri: URI): Boolean = matchUrl(routeUri, requestUri.getPath)
+
+  protected def matchUrl(routeUri: String, path: String): Boolean = {
     val pattern = getPattern(routeUri)
-    Pattern.matches(pattern, requestUri.getPath)
+    Pattern.matches(pattern, path)
   }
 
   private def urlDecode(value: String): String = {

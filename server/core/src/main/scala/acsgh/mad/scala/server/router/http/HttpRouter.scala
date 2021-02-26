@@ -1,15 +1,14 @@
 package acsgh.mad.scala.server.router.http
 
-import java.util.concurrent.TimeUnit
-
 import acsgh.mad.scala.core.WorkerExecutor
-import acsgh.mad.scala.core.http.model.{HttpRequest, HttpResponse, HttpResponseBuilder, ResponseStatus}
+import acsgh.mad.scala.core.http.model._
 import acsgh.mad.scala.server.router.http.handler.{ErrorCodeHandler, ExceptionHandler}
 import acsgh.mad.scala.server.router.http.listener.RequestListener
 import acsgh.mad.scala.server.router.http.model.{Route, _}
 import com.acsgh.common.scala.log.{LogLevel, LogSupport}
 import com.acsgh.common.scala.time.{StopWatch, TimerSplitter}
 
+import java.util.concurrent.TimeUnit
 import scala.concurrent.TimeoutException
 
 case class HttpRouter
@@ -30,6 +29,15 @@ case class HttpRouter
 
   def close(): Unit = {
     handlersGroup.shutdownGracefully()
+  }
+
+  def routeMethods(path: String): Option[Set[RequestMethod]] = {
+    val matchingRoutesMethods = servlet.filter(_.matchUrl(path))
+      .flatMap(_.methods)
+      .toSet
+
+    Option(matchingRoutesMethods)
+      .filter(_.nonEmpty)
   }
 
   private[scala] def process(httpRequest: HttpRequest): HttpResponse = {

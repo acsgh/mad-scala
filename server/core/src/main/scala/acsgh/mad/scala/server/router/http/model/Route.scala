@@ -11,7 +11,9 @@ trait Route[T] extends URLSupport {
 
   private[http] def canApply(request: HttpRequest): Boolean = validMethod(request) && matchUrl(uri, request.uri)
 
-  private def validMethod(request: HttpRequest): Boolean = methods.isEmpty || methods.contains(request.method)
+  private[http] def matchUrl(path: String): Boolean = matchUrl(uri, path)
+
+  private[http] def validMethod(request: HttpRequest): Boolean = methods.isEmpty || methods.contains(request.method)
 
   protected def validUrl(uri: String): Unit = {
     if (!uri.startsWith("/")) {
