@@ -9,9 +9,9 @@ trait Route[T] extends URLSupport {
   val methods: Set[RequestMethod]
   val action: T
 
-  protected def canApply(request: HttpRequest): Boolean = validMethod(request) && matchUrl(uri, request.uri)
+  def matchUrl(path: String): Boolean = matchUrl(uri, path)
 
-  protected def matchUrl(path: String): Boolean = matchUrl(uri, path)
+  def canApply(request: HttpRequest): Boolean = validMethod(request) && matchUrl(uri, request.uri)
 
   protected def validMethod(request: HttpRequest): Boolean = methods.isEmpty || methods.contains(request.method)
 
