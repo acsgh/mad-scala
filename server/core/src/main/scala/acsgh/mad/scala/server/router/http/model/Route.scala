@@ -9,11 +9,11 @@ trait Route[T] extends URLSupport {
   val methods: Set[RequestMethod]
   val action: T
 
-  private[http] def canApply(request: HttpRequest): Boolean = validMethod(request) && matchUrl(uri, request.uri)
+  protected def canApply(request: HttpRequest): Boolean = validMethod(request) && matchUrl(uri, request.uri)
 
-  private[http] def matchUrl(path: String): Boolean = matchUrl(uri, path)
+  protected def matchUrl(path: String): Boolean = matchUrl(uri, path)
 
-  private[http] def validMethod(request: HttpRequest): Boolean = methods.isEmpty || methods.contains(request.method)
+  protected def validMethod(request: HttpRequest): Boolean = methods.isEmpty || methods.contains(request.method)
 
   protected def validUrl(uri: String): Unit = {
     if (!uri.startsWith("/")) {
