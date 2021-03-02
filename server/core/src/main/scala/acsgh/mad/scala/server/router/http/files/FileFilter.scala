@@ -34,7 +34,7 @@ abstract class FileFilter(val uri: String, cacheDuration: Duration = 1 minute) e
 
   override val methods: Set[RequestMethod] = Set(RequestMethod.GET)
 
-  override private[http] def canApply(request: HttpRequest): Boolean = super.canApply(request) && getFileInfo(uri(request)).isDefined
+  override protected def canApply(request: HttpRequest): Boolean = super.canApply(request) && getFileInfo(uri(request)).isDefined
 
   override val action: HttpRouteAction = { implicit ctx =>
     val requestUri = uri(ctx.request)
