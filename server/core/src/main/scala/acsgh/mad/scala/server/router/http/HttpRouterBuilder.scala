@@ -51,9 +51,9 @@ class HttpRouterBuilder() extends HttpRoutes with LogSupport {
     _requestListeners = _requestListeners.filterNot(_ == value)
   }
 
-  override protected def servlet(route: Route[HttpRouteAction]): Unit = _servlet = _servlet ++ List(route)
+  override def servlet(route: Route[HttpRouteAction]): Unit = _servlet = _servlet ++ List(route)
 
-  override protected def filter(route: Route[HttpFilterAction]): Unit = _filters = _filters ++ List(route)
+  override def filter(route: Route[HttpFilterAction]): Unit = _filters = _filters ++ List(route)
 
   def build(serverName: String, productionMode: Boolean): HttpRouter = HttpRouter(
     serverName,
