@@ -2,6 +2,7 @@ package acsgh.mad.scala.server.router.http.model
 
 import acsgh.mad.scala.core.URLSupport
 import acsgh.mad.scala.core.http.model.{HttpRequest, RequestMethod}
+import acsgh.mad.scala.server.router.http.HttpRouter
 
 trait Route[T] extends URLSupport {
 
@@ -11,7 +12,7 @@ trait Route[T] extends URLSupport {
 
   def matchUrl(path: String): Boolean = matchUrl(uri, path)
 
-  def canApply(request: HttpRequest): Boolean = validMethod(request) && matchUrl(uri, request.uri)
+  def canApply(router: HttpRouter, request: HttpRequest): Boolean = validMethod(request) && matchUrl(uri, request.uri)
 
   protected def validMethod(request: HttpRequest): Boolean = methods.isEmpty || methods.contains(request.method)
 

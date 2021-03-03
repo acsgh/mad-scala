@@ -85,7 +85,7 @@ case class HttpRouter
   private def runRoute(route: Route[HttpRouteAction])(implicit context: HttpRequestContext): HttpResponse = {
     val stopWatch = StopWatch.createStarted()
     try {
-      val filtersToExecute = filters.filter(_.canApply(context.request))
+      val filtersToExecute = filters.filter(_.canApply(this, context.request))
       runFilters(route, filtersToExecute)
     } finally {
       stopWatch.printElapseTime("Servlet " + route.methods + " " + route.uri, log, LogLevel.TRACE)
@@ -146,7 +146,7 @@ case class HttpRouter
 
   private def getRequestContext(httpRequest: HttpRequest): HttpRequestContext = {
     val route = servlet
-      .find(_.canApply(httpRequest))
+      .find(_.canApply(this, httpRequest))
 
     val ctx: HttpRequestContext = model.HttpRequestContext(httpRequest, HttpResponseBuilder.from(httpRequest), this, route)
     ctx.response.header("Server", serverName)

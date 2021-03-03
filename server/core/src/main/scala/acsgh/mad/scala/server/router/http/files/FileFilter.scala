@@ -7,9 +7,9 @@ import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.UUID
 import java.util.concurrent.TimeUnit
-
 import acsgh.mad.scala.core.http.model.ResponseStatus.{NOT_FOUND, NOT_MODIFIED}
 import acsgh.mad.scala.core.http.model.{HttpRequest, RequestMethod}
+import acsgh.mad.scala.server.router.http.HttpRouter
 import acsgh.mad.scala.server.router.http.directives.HttpDirectives
 import acsgh.mad.scala.server.router.http.model._
 import acsgh.mad.scala.server.router.http.params.writer.default._
@@ -34,7 +34,7 @@ abstract class FileFilter(val uri: String, cacheDuration: Duration = 1 minute) e
 
   override val methods: Set[RequestMethod] = Set(RequestMethod.GET)
 
-  override def canApply(request: HttpRequest): Boolean = super.canApply(request) && getFileInfo(uri(request)).isDefined
+  override def canApply(router: HttpRouter, request: HttpRequest): Boolean = super.canApply(router, request) && getFileInfo(uri(request)).isDefined
 
   override val action: HttpRouteAction = { implicit ctx =>
     val requestUri = uri(ctx.request)
