@@ -12,7 +12,7 @@ trait Route[T] extends URLSupport {
 
   def matchUrl(path: String): Boolean = matchUrl(uri, path)
 
-  def canApply(router: HttpRouter, request: HttpRequest): Boolean = validMethod(request) && matchUrl(uri, request.uri)
+  def canApply(router: HttpRouter, request: HttpRequest): Boolean = validMethod(request) && matchUrl(request.path)
 
   protected def validMethod(request: HttpRequest): Boolean = methods.isEmpty || methods.contains(request.method)
 

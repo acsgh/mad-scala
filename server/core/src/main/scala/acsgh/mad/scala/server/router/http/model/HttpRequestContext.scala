@@ -11,5 +11,5 @@ case class HttpRequestContext
   router: HttpRouter,
   route: Option[Route[HttpRouteAction]]
 ) extends URLSupport {
-  private[scala] val pathParams: Map[String, String] = route.map(r => extractPathParams(r.uri, request.uri)).getOrElse(Map())
+  private[scala] val pathParams: Map[String, String] = route.map(r => extractPathParams(r.uri, request.path)).getOrElse(Map())
 }

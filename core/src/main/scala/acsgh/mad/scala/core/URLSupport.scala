@@ -8,14 +8,14 @@ import java.util.regex.{Matcher, Pattern}
 
 trait URLSupport extends LogSupport {
 
-  protected def extractPathParams(routeUri: String, requestUri: URI): Map[String, String] = {
+  protected def extractPathParams(routeUri: String, requestPath: String): Map[String, String] = {
     var params = Map[String, String]()
 
-    if (matchUrl(routeUri, requestUri)) {
+    if (matchUrl(routeUri, requestPath)) {
       val names = getParamNames(routeUri)
       val patternString: String = getPattern(routeUri)
       val pattern: Pattern = Pattern.compile(patternString)
-      val matcher: Matcher = pattern.matcher(requestUri.getPath)
+      val matcher: Matcher = pattern.matcher(requestPath)
 
       if (matcher.find) {
         (1 to matcher.groupCount()).foreach { i =>
@@ -61,8 +61,6 @@ trait URLSupport extends LogSupport {
         None
     }
   }
-
-  protected def matchUrl(routeUri: String, requestUri: URI): Boolean = matchUrl(routeUri, requestUri.getPath)
 
   protected def matchUrl(routeUri: String, path: String): Boolean = {
     val pattern = getPattern(routeUri)

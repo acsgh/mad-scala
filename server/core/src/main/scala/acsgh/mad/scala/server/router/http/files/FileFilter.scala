@@ -34,10 +34,10 @@ abstract class FileFilter(val uri: String, cacheDuration: Duration = 1 minute) e
 
   override val methods: Set[RequestMethod] = Set(RequestMethod.GET)
 
-  override def canApply(router: HttpRouter, request: HttpRequest): Boolean = super.canApply(router, request) && getFileInfo(uri(request)).isDefined
+  override def matchUrl(path: String): Boolean = getFileInfo(uri(path)).isDefined
 
   override val action: HttpRouteAction = { implicit ctx =>
-    val requestUri = uri(ctx.request)
+    val requestUri = uri(ctx.request.path)
     log.trace("Requesting file: {}", requestUri)
 
     getFileInfoInt(requestUri).fold(error(NOT_FOUND)) { fileInfo =>
@@ -117,8 +117,8 @@ abstract class FileFilter(val uri: String, cacheDuration: Duration = 1 minute) e
     }
   }
 
-  private def uri(request: HttpRequest): String = {
-    val params = extractPathParams(uri, request.uri)
-    params.get("path").map(addTradingSlash).map(removeEndingSlash).getOrElse(request.path)
+  private def uri(path: String): String = {
+    val params = extractPathParams(uri, path)
+    params.get("path").map(addTradingSlash).map(removeEndingSlash).getOrElse(path)
   }
 }
